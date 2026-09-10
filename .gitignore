@@ -1,0 +1,7 @@
+.DS_Store
+node_modules/
+
+# Internal build audit — names the unresolved CHE number, the unwritten legal
+# pages, the unwired form and the stale headline figures. Stays off the public
+# mirror. Delete this line if you want it versioned.
+CONFIRM.md

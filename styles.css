@@ -1,0 +1,740 @@
+/* ==========================================================================
+   Elysium — design system
+   Vertical: Swiss institutional / instrument-grade.
+   Ground is paper, not near-black. One functional accent: Swiss red.
+   Type: IBM Plex Sans + IBM Plex Mono, self-hosted, subset latin.
+   ========================================================================== */
+
+@font-face{font-family:"Plex";src:url("assets/fonts/plex-sans-400.woff2")format("woff2");font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:"Plex";src:url("assets/fonts/plex-sans-500.woff2")format("woff2");font-weight:500;font-style:normal;font-display:swap}
+@font-face{font-family:"Plex";src:url("assets/fonts/plex-sans-600.woff2")format("woff2");font-weight:600;font-style:normal;font-display:swap}
+@font-face{font-family:"PlexMono";src:url("assets/fonts/plex-mono-400.woff2")format("woff2");font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:"PlexMono";src:url("assets/fonts/plex-mono-500.woff2")format("woff2");font-weight:500;font-style:normal;font-display:swap}
+
+:root{
+  /* ground and ink — measured against --paper #F4F3F1 (L 0.897) */
+  --paper:#F4F3F1;
+  --paper-2:#EBE9E5;
+  --paper-3:#E2DFDA;
+  --ink:#16181A;      /* 16.5:1 */
+  --ink-2:#565B60;    /*  6.4:1 */
+  --ink-3:#666C71;    /*  4.7:1 */
+  --rule:#D6D3CE;
+  --rule-2:#BFBBB4;
+
+  /* functional accent — Swiss red. Graphics + large type only.        */
+  /* --red-ink is the body-size variant (6.2:1).                        */
+  --red:#DA291C;      /* the federal cross ONLY — no longer an accent   */
+  --red-ink:#B01F14;  /*  6.2:1 — body-size text                       */
+  --red-wash:rgba(218,41,28,.08);
+
+  /* authored easing set — named by intent, not by library default */
+  --e-settle:cubic-bezier(.22,.61,.24,1);   /* arrives and stops dead   */
+  --e-gate:cubic-bezier(.62,.02,.20,1);     /* decisive open/close      */
+  --e-trace:cubic-bezier(.35,0,.15,1);      /* an instrument drawing    */
+  --e-expo:cubic-bezier(.16,1,.3,1);        /* arrives from far away    */
+
+  /* the hero's colours, promoted to page tokens. --plate is the one dark
+     ground in the document; the blue is the card's, carried down as the
+     through-line. The Swiss red keeps the cross and nothing else. */
+  --plate:#0C0C0B;
+  --blue:#1F4FD8;
+  --blue-lift:#9FC4FF;   /* 11.0:1 on --plate */
+  --blue-ink:#1B45BE;    /*  7.2:1 on --paper */
+  --t-tick:150ms;
+  --t-move:400ms;
+  --t-draw:1100ms;
+
+  --fs-hero:clamp(2.5rem,6.4vw,5.75rem);
+  --fs-h2:clamp(1.65rem,3vw,2.6rem);
+  --fs-h3:clamp(1.05rem,1.5vw,1.3rem);
+  --fs-body:clamp(.985rem,1.05vw,1.075rem);
+  --fs-mono:.735rem;
+  --gut:clamp(1.15rem,4.2vw,4.5rem);
+  --hdr-h:61px;              /* .hdr-in height + its hairline */
+  --maxw:1420px;
+}
+
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{
+  margin:0;background:var(--paper);color:var(--ink);
+  font-family:"Plex",system-ui,sans-serif;font-size:var(--fs-body);
+  line-height:1.55;font-weight:400;
+  -webkit-font-smoothing:antialiased;
+  font-variant-numeric:tabular-nums;
+}
+img{max-width:100%;display:block}
+a{color:inherit}
+h1,h2,h3,h4{margin:0;font-weight:500;letter-spacing:-.018em;line-height:1.08}
+p{margin:0}
+button{font:inherit;color:inherit}
+
+:focus-visible{outline:2px solid var(--blue-ink);outline-offset:3px;border-radius:1px}
+
+.skip{position:absolute;left:-9999px;top:0;background:var(--plate);color:var(--paper);padding:.75rem 1rem;z-index:99}
+.skip:focus{left:.5rem;top:.5rem}
+
+/* ---------- primitives ------------------------------------------------ */
+.wrap{max-width:var(--maxw);margin-inline:auto;padding-inline:var(--gut)}
+.mono{font-family:"PlexMono",ui-monospace,monospace;font-size:var(--fs-mono);
+  letter-spacing:.085em;text-transform:uppercase;font-weight:500;color:var(--ink-3)}
+.rule{border:0;border-top:1px solid var(--rule);margin:0}
+
+section{padding-block:clamp(3.75rem,8vh,7rem);position:relative}
+.sec-head{position:relative;display:grid;grid-template-columns:minmax(0,10.5rem) minmax(0,1fr);
+  gap:clamp(1rem,3vw,3rem);align-items:baseline;
+  padding-block-start:1.15rem;margin-block-end:2.75rem}
+/* the rule is drawn, not painted: a blue leading edge rides its growing end */
+.sec-rule{position:absolute;inset-inline-start:0;top:0;block-size:1px;inline-size:100%;
+  background:var(--plate);overflow:visible}
+.sec-rule::after{content:"";position:absolute;inset-inline-end:0;top:0;
+  block-size:1px;inline-size:2rem;background:var(--blue-ink);
+  opacity:0;transition:opacity .25s linear}
+.sec-rule.drawing::after{opacity:1}
+.sec-head .mono{color:var(--blue-ink)}
+.sec-head h2{font-size:var(--fs-h2);max-width:24ch}
+.sec-head .lede{grid-column:2;max-width:62ch;color:var(--ink-2);margin-block-start:1.15rem}
+@media (max-width:760px){
+  .sec-head{grid-template-columns:1fr;gap:.65rem}
+  .sec-head .lede{grid-column:1}
+}
+
+/* reveal — scroll-triggered, opacity+transform only */
+.rv{opacity:0;transform:translateY(14px);
+  transition:opacity var(--t-move) var(--e-settle),transform var(--t-move) var(--e-settle);
+  transition-delay:var(--d,0ms)}
+.rv.in{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){.rv{opacity:1;transform:none;transition:none}}
+
+/* ---------- header ---------------------------------------------------- */
+.hdr{position:sticky;top:0;z-index:40;background:color-mix(in srgb,var(--paper) 88%,transparent);
+  backdrop-filter:blur(10px);border-bottom:1px solid var(--rule)}
+.hdr-in{display:flex;align-items:center;gap:clamp(1rem,3vw,2.5rem);
+  height:calc(var(--hdr-h) - 1px);max-width:var(--maxw);margin-inline:auto;padding-inline:var(--gut)}
+.brand{display:flex;align-items:center;gap:.6rem;text-decoration:none;font-weight:600;letter-spacing:.02em}
+.brand .cross{flex:0 0 auto}
+.brand span{font-size:.95rem}
+.hdr nav{margin-inline-start:auto;display:flex;gap:clamp(.75rem,1.8vw,1.75rem)}
+.hdr nav a{font-family:"PlexMono",monospace;font-size:var(--fs-mono);letter-spacing:.08em;
+  text-transform:uppercase;text-decoration:none;color:var(--ink-2);padding-block:.4rem;
+  border-bottom:1px solid transparent;transition:color var(--t-tick) var(--e-settle),border-color var(--t-tick) var(--e-settle)}
+.hdr nav a:hover{color:var(--ink);border-bottom-color:var(--blue-ink)}
+@media (max-width:900px){.hdr nav a[data-opt]{display:none}}
+@media (max-width:680px){.hdr nav a[data-opt2]{display:none}}
+@media (max-width:560px){.hdr nav{gap:1rem}}
+.hdr nav{flex-wrap:nowrap;white-space:nowrap}
+
+/* Swiss cross — white on red, arms 1/6 longer than wide, clear of edges.
+   Federal proportion: field 32, arm width 6, arm length 20, margin 6.      */
+.cross{display:block}
+
+/* the plate does not stop, it resolves. A butt joint between #0C0C0B and
+   #F4F3F1 reads as two pages; this is the ramp between them, carrying the
+   hero's four verticals a little way down so the grid is what hands over.
+   It sits in the space the next section was already padding out. */
+.ground-shift{--from:var(--plate);--to:var(--paper);--gh:clamp(9rem,21vh,15rem);
+  --v:rgba(255,255,255,.09);
+  block-size:var(--gh);pointer-events:none;
+  background:
+    linear-gradient(var(--v),rgba(255,255,255,0)) 12.6% 0/1px 72% no-repeat,
+    linear-gradient(var(--v),rgba(255,255,255,0)) 37.5% 0/1px 72% no-repeat,
+    linear-gradient(var(--v),rgba(255,255,255,0)) 61.9% 0/1px 72% no-repeat,
+    linear-gradient(var(--v),rgba(255,255,255,0)) 86.2% 0/1px 72% no-repeat,
+    linear-gradient(to bottom,
+      var(--from) 0%,#1A1A18 14%,#2B2A27 28%,#423F3A 42%,#5E5B54 56%,
+      #817E76 68%,#A8A59D 79%,#CBC9C2 89%,#E5E3DE 95%,var(--to) 100%)}
+/* going the other way the grid arrives before the dark does */
+.ground-shift[data-to="plate"]{--from:var(--paper);--to:var(--plate);
+  background:
+    linear-gradient(rgba(255,255,255,0),var(--v)) 12.6% 28%/1px 72% no-repeat,
+    linear-gradient(rgba(255,255,255,0),var(--v)) 37.5% 28%/1px 72% no-repeat,
+    linear-gradient(rgba(255,255,255,0),var(--v)) 61.9% 28%/1px 72% no-repeat,
+    linear-gradient(rgba(255,255,255,0),var(--v)) 86.2% 28%/1px 72% no-repeat,
+    linear-gradient(to bottom,
+      var(--from) 0%,#E5E3DE 5%,#CBC9C2 11%,#A8A59D 21%,#817E76 32%,
+      #5E5B54 44%,#423F3A 58%,#2B2A27 72%,#1A1A18 86%,var(--to) 100%)}
+.ground-shift + section{padding-block-start:0}
+
+/* ---------- hero — the dark plate ---------------------------------------
+   One full viewport of black with the card at dead centre. The card holds
+   its printed face until you move a light across it; under the light it is
+   the side that gets handed over — name, number, two Geneva addresses. The
+   headline is the claim, the card is the evidence, and the spotlight is how
+   you check. Entrances are CSS with an inline --d, so the choreography is
+   legible in the markup and nothing waits on JS. */
+.hero{
+  --plate-ink:#fff;
+  --plate-mute:rgba(255,255,255,.5);
+  --plate-line:rgba(255,255,255,.055);
+  --plate-blue:#9FC4FF;
+  position:relative;block-size:100svh;min-block-size:44rem;overflow:hidden;
+  background:var(--plate);color:var(--plate-ink);
+  margin-block-start:calc(-1 * var(--hdr-h));
+  --hg:clamp(1.15rem,4.2vw,3.5rem)}
+
+.hero [style*="--d"]{opacity:0;animation:hRise .9s var(--e-expo) var(--d,0ms) forwards}
+@keyframes hRise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+
+/* --- the grid ---------------------------------------------------------- */
+.hgrid{position:absolute;inset:0;pointer-events:none}
+.hgrid i{position:absolute;display:block;opacity:0;
+  animation-duration:1.2s;animation-timing-function:var(--e-expo);
+  animation-delay:var(--d);animation-fill-mode:forwards}
+.gv{inset-block:0;inline-size:1px;left:var(--x);background:var(--plate-line);
+  transform-origin:top;animation-name:hWipeY}
+.gh{inset-inline:0;block-size:1px;top:var(--y);background:var(--plate-line);
+  transform-origin:left;animation-name:hWipeX}
+@keyframes hWipeY{from{opacity:0;transform:scaleY(0)}to{opacity:1;transform:scaleY(1)}}
+@keyframes hWipeX{from{opacity:0;transform:scaleX(0)}to{opacity:1;transform:scaleX(1)}}
+.gp{left:var(--x);top:var(--y);inline-size:10px;block-size:10px;margin:-5px 0 0 -5px;
+  animation-name:hPop;animation-duration:.7s}
+.gp::before,.gp::after{content:"";position:absolute;background:rgba(255,255,255,.7)}
+.gp::before{inset-inline:0;block-size:1px;top:50%}
+.gp::after{inset-block:0;inline-size:1px;left:50%}
+@keyframes hPop{from{opacity:0;transform:scale(.85)}to{opacity:1;transform:none}}
+
+/* --- headline, top and centred ----------------------------------------- */
+.hbody{position:absolute;inset-inline:var(--hg);top:11.5%;z-index:3;
+  text-align:center;pointer-events:none}
+.heyebrow{color:var(--plate-blue);opacity:.85;margin-block-end:1.1rem}
+.hero h1{font-size:clamp(1.9rem,5.2vw,4.1rem);letter-spacing:-.035em;
+  line-height:1.0;font-weight:400;color:var(--plate-ink)}
+.hero h1 span{display:block}
+/* the one shiny surface on the page: the clause the card is evidence for */
+.hshine{color:transparent;
+  background-image:linear-gradient(to right,
+    #1F4FD8 0%,#2E5FE8 12.5%,#CFE0FF 32.5%,#9FC4FF 50%,
+    #2E5FE8 67.5%,#1F4FD8 87.5%,#1F4FD8 100%);
+  background-size:200% auto;-webkit-background-clip:text;background-clip:text;
+  -webkit-text-fill-color:transparent;filter:url(#grain)}
+.hshine{animation:hRise .9s var(--e-expo) var(--d) forwards,
+                  shiny 6s linear infinite}
+@keyframes shiny{from{background-position:-200% center}to{background-position:200% center}}
+
+/* --- the card, dead centre --------------------------------------------- */
+.hero-panel{position:absolute;margin:0;z-index:2;
+  inset-inline:0;margin-inline:auto;inline-size:min(46vw,33rem);top:33%}
+.bc-glow{position:absolute;inset:-30% -20%;border-radius:50%;
+  background:radial-gradient(closest-side,rgba(45,95,232,.42),rgba(31,79,216,0));
+  filter:blur(50px);pointer-events:none}
+
+/* --- surrounding copy --------------------------------------------------- */
+.hmeta{position:absolute;inset-inline:var(--hg);top:76%;z-index:3;
+  display:flex;flex-wrap:wrap;justify-content:center;gap:.45rem 1.5rem;
+  color:rgba(255,255,255,.62)}
+.hmeta b{font-weight:500;color:var(--plate-ink)}
+.hchip{color:var(--plate-blue)}
+
+.hleft{position:absolute;left:var(--hg);bottom:3.6rem;z-index:3;
+  max-inline-size:17rem;font-size:.82rem;line-height:1.55;color:rgba(255,255,255,.72)}
+.hright{position:absolute;right:var(--hg);bottom:3.6rem;z-index:3;
+  max-inline-size:17rem;display:flex;flex-direction:column;align-items:flex-start;
+  gap:1.1rem;text-align:start}
+.hright p{font-size:.82rem;line-height:1.55;color:rgba(255,255,255,.72)}
+.hcta{display:inline-flex;align-items:center;gap:10px;text-decoration:none;
+  background:var(--plate-blue);color:#000;padding:.8rem 1.35rem;border-radius:100px;
+  font-size:.85rem;font-weight:500;letter-spacing:.01em;white-space:nowrap;
+  transition:background var(--t-tick) var(--e-settle),transform var(--t-tick) var(--e-settle)}
+.hcta:hover{background:#c8e0ff;transform:scale(1.03)}
+.hcta span:first-child{font-size:1rem;line-height:1}
+
+
+@media (max-width:900px){
+  .hero{min-block-size:46rem}
+  .hero-panel{inline-size:min(88vw,26rem);top:28%}
+  .hmeta{top:61%;bottom:auto;gap:.35rem 1rem}
+  .hleft{display:none}
+  .hright{inset-inline:var(--hg);right:auto;max-inline-size:none;bottom:3.4rem;
+    align-items:center;text-align:center}
+  .hright p{display:none}
+}
+
+/* The header's first paint is over the plate, so that is its default state;
+   JS opts it back into the paper bar once the page has left the hero. */
+.hdr{background:transparent;backdrop-filter:none;border-bottom-color:transparent}
+.hdr .brand span{color:#fff}
+.hdr nav a{color:rgba(255,255,255,.72)}
+.hdr nav a:hover{color:#fff;border-bottom-color:var(--plate-blue,#9FC4FF)}
+.hdr.off-plate{background:color-mix(in srgb,var(--paper) 88%,transparent);
+  backdrop-filter:blur(10px);border-bottom-color:var(--rule)}
+.hdr.off-plate .brand span{color:var(--ink)}
+.hdr.off-plate nav a{color:var(--ink-2)}
+.hdr.off-plate nav a:hover{color:var(--ink);border-bottom-color:var(--blue-ink)}
+
+@media (prefers-reduced-motion:reduce){
+  .hero [style*="--d"],.hgrid i{opacity:1;animation:none;transform:none}
+  .hshine{animation:none;background-position:50% center}
+}
+
+.btn{display:inline-flex;align-items:center;gap:.6rem;text-decoration:none;
+  padding:.72rem 1.15rem;border:1px solid var(--plate);background:var(--plate);color:var(--paper);
+  font-size:.9rem;font-weight:500;
+  transition:background var(--t-tick) var(--e-settle),color var(--t-tick) var(--e-settle),transform var(--t-tick) var(--e-settle)}
+.btn:hover{background:var(--blue-ink);border-color:var(--blue-ink)}
+.btn:active{transform:translateY(1px)}
+.btn.ghost{background:transparent;color:var(--ink);border-color:var(--rule-2)}
+.btn.ghost:hover{background:var(--plate);color:var(--paper);border-color:var(--plate)}
+.btn svg{transition:transform var(--t-move) var(--e-settle)}
+.btn:hover svg{transform:translateX(3px)}
+
+/* the studio card — the printed object rebuilt as type, not photographed.
+   Dark stock so it sits in the plate rather than on it: near-black board,
+   the brand blue lifted to #7FA8FF so it survives on black, a glass rim on
+   both faces, and real thickness — the faces are pushed apart on Z with the
+   two long edges as quads between them. Sized in cqw off the stage, so the
+   whole card scales as one drawing at any width.
+
+   The contact face is stacked on the printed face and masked to a soft
+   circle that follows the pointer, so the card reads as one object being
+   lit rather than two images crossfading. */
+.bc-stage{--bc-blue:#1F4FD8;--bc-lift:#7FA8FF;--bc-board:#0B0E13;
+  --bc-board-2:#12161D;--bc-t:1cqw;
+  position:relative;display:block;inline-size:100%;
+  border:0;padding:0;background:none;font:inherit;color:inherit;text-align:start;
+  -webkit-tap-highlight-color:transparent;
+  perspective:1400px;container-type:inline-size}
+.bc-stage:focus-visible{outline:2px solid var(--blue-lift);outline-offset:6px}
+.bc-plate{position:relative;display:block;aspect-ratio:85/55;
+  transform-style:preserve-3d;will-change:transform}
+
+.bc-face{position:absolute;inset:0;border-radius:5px;overflow:hidden;
+  box-shadow:0 50px 100px -30px rgba(0,0,0,.9),inset 0 1px 1px rgba(255,255,255,.1)}
+/* the glass rim: a 1.4px gradient hairline masked to the border only */
+.bc-face::after{content:"";position:absolute;inset:0;border-radius:inherit;
+  padding:1.4px;pointer-events:none;
+  background:linear-gradient(160deg,
+    rgba(255,255,255,.5) 0%,rgba(255,255,255,.14) 22%,
+    rgba(255,255,255,0) 45%,rgba(255,255,255,0) 62%,
+    rgba(255,255,255,.14) 82%,rgba(255,255,255,.45) 100%);
+  -webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
+  -webkit-mask-composite:xor;mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
+  mask-composite:exclude}
+
+.bc-front{background:
+  radial-gradient(120% 90% at 22% 8%,var(--bc-board-2) 0%,var(--bc-board) 62%);
+  transform:translateZ(calc(var(--bc-t) / 2))}
+
+/* the revealed face sits directly on the printed one; without JS it stays
+   hidden and the card is simply its printed side */
+.bc-reveal{transform:translateZ(calc(var(--bc-t) / 2 + .2px));opacity:0;
+  background:radial-gradient(120% 90% at 78% 6%,var(--bc-board-2) 0%,var(--bc-board) 62%);
+  color:var(--bc-lift);
+  display:flex;flex-direction:column;align-items:flex-start;gap:3.4cqw;
+  padding:9.5% 8% 7.5%}
+.bc-reveal.lit{opacity:1}
+/* A spotlight is a pointer idiom. With no pointer it would sit where it was
+   seeded and leave the two type layers permanently half-blended, so touch
+   gets the whole contact face on a tap instead. */
+.bc-reveal{transition:opacity .45s var(--e-settle)}
+@media (hover:none){
+  .bc-reveal{-webkit-mask-image:none!important;mask-image:none!important}
+  .bc-reveal.shown{opacity:1}
+}
+
+/* the two long edges — this is what makes it a card and not a decal */
+.bc-edge{position:absolute;inset-block:0;inline-size:var(--bc-t);
+  background:linear-gradient(180deg,#2C3543 0%,#151A22 45%,#0A0D12 100%)}
+.bc-edge-l{inset-inline-start:0;transform-origin:left center;transform:rotateY(-90deg)}
+.bc-edge-r{inset-inline-end:0;transform-origin:right center;transform:rotateY(90deg)}
+
+/* printed face — the keyword field is texture at reading distance, and
+   legible only if you go looking, which is exactly how it prints */
+.bc-keys{position:absolute;inset:0;padding:6.4% 6%;display:block;
+  font-family:"PlexMono",ui-monospace,monospace;font-size:2.45cqw;line-height:2.02;
+  letter-spacing:.1em;font-weight:500;text-align:justify;word-spacing:.35em;
+  color:rgba(159,196,255,.17);user-select:none;overflow:hidden}
+.bc-mark{position:absolute;inset:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:1.5cqw;text-align:center;color:#fff;
+  background:radial-gradient(ellipse 44% 27% at 50% 49%,
+    var(--bc-board) 0%,var(--bc-board) 40%,rgba(11,14,19,0) 78%)}
+.bc-mark b{font-weight:300;font-size:6.4cqw;line-height:1;
+  letter-spacing:.22em;text-indent:.22em}
+.bc-mark i{font-style:normal;font-family:"PlexMono",ui-monospace,monospace;
+  font-weight:500;font-size:1.65cqw;text-transform:uppercase;
+  letter-spacing:.5em;text-indent:.5em;color:var(--bc-lift)}
+
+/* contact face — the side that gets handed over */
+.bc-bar{position:absolute;inset-inline:0;top:0;block-size:.9cqw;min-block-size:3px;
+  background:linear-gradient(90deg,var(--bc-blue),var(--bc-lift))}
+.bc-who{display:flex;flex-direction:column;gap:.55cqw;text-align:start;
+  padding-inline-start:2.8cqw;border-inline-start:.4cqw solid rgba(127,168,255,.55)}
+.bc-who b{font-weight:600;font-size:3.05cqw;letter-spacing:-.012em;color:#fff}
+.bc-who span{font-family:"PlexMono",ui-monospace,monospace;font-size:2.15cqw;
+  line-height:1.62;color:var(--bc-lift)}
+.bc-addr{display:flex;flex-direction:column;gap:1cqw;text-align:start;
+  font-family:"PlexMono",ui-monospace,monospace;font-size:1.8cqw;line-height:1.55;
+  color:rgba(255,255,255,.62)}
+.bc-addr span{position:relative;padding-inline-start:2.5cqw}
+.bc-addr span::before{content:"";position:absolute;inset-inline-start:0;top:.4em;
+  border-inline-start:.85cqw solid var(--bc-lift);
+  border-block:.5cqw solid transparent}
+.bc-mark-b{position:static;display:block;inset:auto;margin-block-start:auto;
+  text-align:start;color:var(--bc-lift);background:none}
+.bc-mark-b b{display:block;font-size:3.6cqw;color:#fff;font-weight:300;
+  letter-spacing:.2em}
+.bc-mark-b i{display:block;margin-block-start:.9cqw;font-size:1.35cqw;
+  color:var(--bc-lift);opacity:.75}
+.instr-cap{margin-block-start:.75rem;color:var(--ink-3);font-size:.8rem;line-height:1.5;max-width:52ch}
+
+/* applied research, shown inside the R&D card where it belongs */
+.lab-fig{margin:.2rem 0 0;display:grid;grid-template-columns:8.25rem minmax(0,1fr);
+  gap:.9rem;align-items:start}
+.lab-img{position:relative;aspect-ratio:1/1;background:#000;overflow:hidden;
+  outline:1px solid #3A3E42}
+.lab-img img{width:100%;height:100%;object-fit:cover;display:block}
+.lab-img .ov{position:absolute;inset:0;width:100%;height:100%}
+.lab-img .trace{fill:rgba(159,196,255,.14);stroke:var(--blue-lift);stroke-width:1;
+  stroke-linejoin:round;vector-effect:non-scaling-stroke}
+.lab-fig figcaption{font-size:.755rem;line-height:1.5;color:#9BA1A6}
+@media (max-width:420px){.lab-fig{grid-template-columns:1fr}}
+
+/* ---------- roster ---------------------------------------------------- */
+.roster{display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));
+  border-block-start:1px solid var(--rule)}
+.roster li{list-style:none;border-inline-end:1px solid var(--rule);border-block-end:1px solid var(--rule);
+  padding:1.15rem .9rem 1rem;min-height:5.9rem;display:flex;flex-direction:column;gap:.3rem;
+  transition:background var(--t-tick) var(--e-settle)}
+.roster li:hover{background:var(--paper-2)}
+.roster b{font-weight:500;font-size:.99rem;letter-spacing:-.01em}
+.roster small{color:var(--ink-3);font-size:.755rem;line-height:1.35}
+.roster li:hover small{color:var(--ink-2)}
+.stat-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+  gap:1px;background:var(--rule);border:1px solid var(--rule);margin-block-start:2.5rem}
+.stat-row>div{background:var(--paper);padding:1.15rem 1.1rem}
+.stat-row b{display:block;font-size:clamp(1.9rem,3.4vw,2.9rem);font-weight:500;
+  letter-spacing:-.035em;line-height:1;font-family:"PlexMono",monospace}
+.stat-row span{display:block;margin-block-start:.45rem}
+
+/* ---------- specialisation -------------------------------------------- */
+.spec{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:1px;background:var(--rule);border:1px solid var(--rule)}
+@media (max-width:1080px){.spec{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:700px){.spec{grid-template-columns:1fr}}
+.spec article{background:var(--paper);padding:1.4rem 1.25rem 1.5rem;display:flex;flex-direction:column;gap:.6rem;
+  transition:background var(--t-tick) var(--e-settle)}
+.spec article:hover{background:var(--paper-2)}
+.spec article.lead{background:var(--plate);color:var(--paper)}
+.spec article.lead h3,.spec article.lead p{color:var(--paper)}
+.spec article.lead .mono{color:#A9AEB2}
+.spec article.lead .tags b{border-color:#3A3E42;color:#CFD3D6}
+.spec h3{font-size:var(--fs-h3)}
+.spec p{color:var(--ink-2);font-size:.925rem;line-height:1.5}
+.tags{display:flex;flex-wrap:wrap;gap:.3rem;margin-block-start:auto;padding-block-start:.9rem}
+.tags b{font-family:"PlexMono",monospace;font-size:.665rem;letter-spacing:.06em;text-transform:uppercase;
+  font-weight:400;color:var(--ink-3);border:1px solid var(--rule);padding:.2rem .42rem}
+
+/* ---------- healthcare ------------------------------------------------ */
+.care{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(1.5rem,3.5vw,3.25rem)}
+@media (max-width:900px){.care{grid-template-columns:1fr}}
+.case{border:1px solid var(--ink);padding:1.5rem 1.4rem}
+.case h3{font-size:calc(var(--fs-h3) * 1.08);margin-block-end:.8rem;max-width:22ch}
+.case p{color:var(--ink-2);margin-block-end:1rem}
+.case dl{display:grid;grid-template-columns:auto 1fr;gap:.42rem 1.1rem;margin:0;
+  padding-block-start:1rem;border-top:1px solid var(--rule)}
+.case dt{font-family:"PlexMono",monospace;font-size:var(--fs-mono);letter-spacing:.07em;
+  text-transform:uppercase;color:var(--ink-3);font-weight:500}
+.case dd{margin:0;font-size:.9rem}
+.care-list{display:flex;flex-direction:column;gap:0;border-top:1px solid var(--rule)}
+.care-list>div{padding:1rem 0;border-bottom:1px solid var(--rule);display:grid;
+  grid-template-columns:6.5rem minmax(0,1fr);gap:1.25rem;align-items:baseline}
+.care-list h4{font-size:.99rem;font-weight:500;margin:0 0 .2rem}
+.care-list p{color:var(--ink-2);font-size:.885rem;line-height:1.5}
+
+/* ---------- LLM ------------------------------------------------------- */
+.llm{background:var(--plate);color:var(--paper)}
+.llm .sec-rule{background:var(--paper)}
+.llm .sec-rule::after{background:var(--blue-lift)}
+.llm .sec-head .mono{color:var(--blue-lift)}
+.llm .sec-head .lede{color:#B9BDC1}
+.llm .mono{color:#9BA1A6}
+.llm .sec-head .mono{color:var(--blue-lift)}
+.llm-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:clamp(1.5rem,3.5vw,3.5rem);align-items:start}
+@media (max-width:960px){.llm-grid{grid-template-columns:1fr}}
+.llm-points{display:flex;flex-direction:column;border-top:1px solid #33383C}
+.llm-points>div{padding:1.05rem 0;border-bottom:1px solid #33383C}
+.llm-points h4{font-size:1rem;font-weight:500;margin:0 0 .3rem}
+.llm-points p{color:#B0B5B9;font-size:.895rem;line-height:1.5}
+.note{border:1px solid #3A3E42;background:#1D2023;padding:1rem 1.05rem;margin-block-start:1.5rem}
+.note p{color:#C4C9CD;font-size:.885rem;line-height:1.55}
+.note strong{color:var(--paper);font-weight:500}
+
+.calc{border:1px solid #3A3E42;background:#1B1E21}
+.calc-head{padding:.55rem .85rem;border-bottom:1px solid #3A3E42;display:flex;gap:.75rem;align-items:center;flex-wrap:wrap}
+.calc-body{padding:1.1rem .95rem 1.2rem}
+.ctrl{display:grid;grid-template-columns:1fr auto;gap:.35rem .8rem;align-items:center;margin-block-end:.9rem}
+.ctrl label{font-family:"PlexMono",monospace;font-size:var(--fs-mono);letter-spacing:.07em;
+  text-transform:uppercase;color:#9BA1A6}
+.ctrl output{font-family:"PlexMono",monospace;font-size:.85rem;color:var(--paper);font-weight:500}
+.ctrl input[type=range]{grid-column:1/-1;width:100%;accent-color:var(--blue-ink);height:1.4rem;background:transparent}
+.chart{margin-block-start:1.15rem;border-top:1px solid #3A3E42;padding-block-start:1.15rem}
+.bars{display:grid;gap:.7rem}
+.bar{display:grid;grid-template-columns:8.5rem 1fr;gap:.75rem;align-items:center}
+.bar span{font-family:"PlexMono",monospace;font-size:var(--fs-mono);letter-spacing:.06em;
+  text-transform:uppercase;color:#9BA1A6}
+.bar .track{height:1.55rem;background:#26292C;position:relative;overflow:hidden}
+.bar .fill{position:absolute;inset-block:0;inset-inline-start:0;width:0;background:#4A4F53;
+  display:flex;align-items:center;justify-content:flex-end;padding-inline-end:.5rem}
+.bar.hi .fill{background:var(--blue-ink)}
+.bar .fill em{font-style:normal;font-family:"PlexMono",monospace;font-size:.715rem;
+  color:#fff;white-space:nowrap;opacity:0;transition:opacity 300ms var(--e-settle) 700ms}
+.bar .fill.on em{opacity:1}
+/* a short bar cannot hold its own figure — the label steps outside it */
+.bar .fill.out em{position:absolute;inset-inline-start:100%;margin-inline-start:.45rem;color:#C9CED2}
+.cross-note{margin-block-start:1rem;color:#9BA1A6;font-size:.79rem;line-height:1.5}
+.cmp{width:100%;border-collapse:collapse;margin-block-start:1.5rem;font-size:.87rem}
+.cmp th,.cmp td{text-align:left;padding:.62rem .7rem;border-bottom:1px solid #33383C;vertical-align:top}
+.cmp th{font-family:"PlexMono",monospace;font-size:var(--fs-mono);letter-spacing:.07em;
+  text-transform:uppercase;color:#9BA1A6;font-weight:500}
+.cmp td{color:#C4C9CD}
+.cmp td:first-child{color:var(--paper)}
+.scrollx{overflow-x:auto}
+.totals{width:100%;border-collapse:collapse;margin-block-start:1.3rem;font-size:.845rem;
+  font-variant-numeric:tabular-nums}
+.totals th,.totals td{text-align:right;padding:.5rem .55rem;border-bottom:1px solid #33383C}
+.totals thead th{font-family:"PlexMono",monospace;font-size:var(--fs-mono);letter-spacing:.07em;
+  text-transform:uppercase;color:#9BA1A6;font-weight:500}
+.totals tbody th{text-align:left;font-weight:400;color:#B0B5B9;padding-inline-start:0}
+.totals td{color:var(--paper);font-family:"PlexMono",monospace;font-size:.82rem}
+.totals tr.net th{color:#9BA1A6}
+.totals tr.net td{text-align:right;color:#C4C9CD}
+.totals td.good{color:#7FD1A6}
+.totals tbody tr:last-child th,.totals tbody tr:last-child td{border-bottom:0}
+
+/* ---------- portfolio ------------------------------------------------- */
+.filters{display:flex;flex-wrap:wrap;gap:.4rem;margin-block-end:1.75rem}
+.filters button{background:transparent;border:1px solid var(--rule-2);padding:.42rem .8rem;
+  font-family:"PlexMono",monospace;font-size:var(--fs-mono);letter-spacing:.07em;text-transform:uppercase;
+  color:var(--ink-2);cursor:pointer;
+  transition:background var(--t-tick) var(--e-settle),color var(--t-tick) var(--e-settle),border-color var(--t-tick) var(--e-settle)}
+.filters button:hover{border-color:var(--ink);color:var(--ink)}
+.filters button[aria-pressed=true]{background:var(--plate);border-color:var(--plate);color:var(--paper)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1px;
+  background:var(--rule);border:1px solid var(--rule)}
+.card{background:var(--paper);display:flex;flex-direction:column;
+  transition:opacity var(--t-move) var(--e-gate),background var(--t-tick) var(--e-settle)}
+.card[hidden]{display:none}
+.card.out{opacity:0}
+.card:hover{background:var(--paper-2)}
+.card figure{margin:0;background:var(--paper-3);aspect-ratio:16/10;overflow:hidden;border-bottom:1px solid var(--rule)}
+/* recovered archive thumbnails are 130px native — shown at size on a field,
+   never upscaled across the card */
+.card:not(:has(figure)) .body{padding-block-start:1.3rem}
+.card figure img{width:100%;height:100%;object-fit:cover;object-position:top center;
+  transition:transform 600ms var(--e-settle)}
+.card:hover figure img{transform:scale(1.026)}
+.card .body{padding:1.05rem 1.05rem 1.2rem;display:flex;flex-direction:column;gap:.5rem;flex:1}
+.card h3{font-size:1.02rem}
+.card p{color:var(--ink-2);font-size:.88rem;line-height:1.5}
+.card ul{margin:.25rem 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:.28rem}
+.card ul li{font-size:.83rem;color:var(--ink);padding-inline-start:.95rem;position:relative}
+.card ul li::before{content:"";position:absolute;left:0;top:.55em;width:5px;height:1px;background:var(--blue-ink)}
+.card .foot{margin-block-start:auto;padding-block-start:.9rem;display:flex;gap:.5rem 1rem;flex-wrap:wrap;
+  border-top:1px solid var(--rule)}
+
+/* Card disclosure. At rest the grid is an index: thumbnail, practice, title,
+   tags. The detail is written into a strip above the grid as the pointer moves
+   across it.
+
+   Three placements were measured before this one. Expanding the card grows its
+   grid row and pushes every row below it, so reading one card moves the two you
+   were about to read. Hanging a panel out of flow under the card stops the page
+   moving but covers the row beneath, which takes those cards away while you are
+   still reading. Reserving the space inside the card needs the longest detail to
+   fit: at four columns the card is 324x323 and the longest detail is 315, so
+   every card would have to be about twice its height and the grid would stop
+   reading as an index.
+
+   The strip has none of those costs. It is a fixed region that always exists, so
+   nothing moves and nothing is covered, and it gives the detail more room than a
+   card can. The strip is aria-hidden and each card keeps its own copy of the
+   text, visually hidden but present for screen readers, the served markup and
+   the language build. */
+@media (hover: hover) and (pointer: fine) {
+  .card-intel{position:absolute;width:1px;height:1px;padding:0;margin:-1px;
+    overflow:hidden;clip-path:inset(50%);white-space:nowrap;border:0}
+
+  /* Pinned under the header for the length of the grid. Unpinned, the strip
+     scrolls away: the grid is about 800px and the viewport often less, so by
+     the time the bottom row is under the pointer the strip is off the top of
+     the screen and the reader is filling something they cannot see. Measured
+     at 1440x829: the strip sat 171px above the viewport with the last row in
+     view. top is the header's own height — .hdr-in is 60px plus its 1px rule. */
+  .readout{border-block-start:1px solid var(--rule);margin-block-start:1px;
+    padding:1.15rem 0 1.3rem;
+    position:sticky;top:61px;z-index:2;
+    background:var(--paper);border-block-end:1px solid var(--rule)}
+  .readout-rest{margin:0;color:var(--ink-3);
+    transition:opacity var(--t-move) var(--e-gate)}
+  .readout-body{position:absolute;inset:1.15rem 0 auto 0;
+    display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);
+    gap:.4rem 2.4rem;align-items:start;
+    opacity:0;transition:opacity var(--t-move) var(--e-gate)}
+  .readout.live .readout-rest{opacity:0}
+  .readout.live .readout-body{opacity:1}
+  .readout-body p{margin:0;color:var(--ink-2);font-size:.92rem;line-height:1.55;
+    max-width:58ch}
+  .readout-body ul{margin:0;padding:0;list-style:none;
+    display:flex;flex-direction:column;gap:.3rem}
+  .readout-body li{font-size:.86rem;color:var(--ink);
+    padding-inline-start:.95rem;position:relative}
+  .readout-body li::before{content:"";position:absolute;left:0;top:.6em;
+    width:5px;height:1px;background:var(--blue-ink)}
+
+  /* the affordance, and the tie between strip and card: the marker fills in on
+     the card the strip is currently reading */
+  .card .body{padding-block-end:1rem}
+  .card h3{padding-inline-end:1.4rem}
+  .card h3::after{content:"+";position:absolute;right:1.05rem;
+    font:500 .9rem/1 "PlexMono",ui-monospace,monospace;color:var(--ink-3);
+    transition:color var(--t-tick) var(--e-settle),transform var(--t-move) var(--e-gate)}
+  .card{position:relative}
+  .card:hover h3::after,.card:focus-within h3::after{color:var(--blue-ink);transform:rotate(45deg)}
+  .card:focus-visible{outline:2px solid var(--blue-ink);outline-offset:-2px}
+}
+/* no hover: the strip has nothing to drive it, so it goes and the cards keep
+   their detail inline, exactly as before */
+@media (hover: none), (pointer: coarse) {
+  .readout{display:none}
+}
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: reduce) {
+  .readout-rest,.readout-body{transition:opacity var(--t-tick) linear}
+  .card h3::after{transition:none}
+  .card:hover h3::after,.card:focus-within h3::after{transform:none}
+}
+
+/* contact sheet — recovered archive thumbnails, shown at native size */
+.sheet{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:1px;
+  background:var(--paper);border:1px solid var(--rule);margin-block-start:1px}
+.sheet a{outline:1px solid var(--rule)}
+.sheet img{width:100%;aspect-ratio:1/1;object-fit:cover;background:var(--paper-3);
+  filter:grayscale(1) contrast(.95);transition:filter var(--t-move) var(--e-settle)}
+.sheet a{display:block;position:relative}
+.sheet a:hover img{filter:none}
+
+/* ---------- timeline -------------------------------------------------- */
+.tl{border-top:1px solid var(--ink)}
+.tl li{list-style:none;display:grid;grid-template-columns:5.5rem minmax(0,1fr);gap:clamp(.9rem,2.5vw,2.5rem);
+  padding-block:1.05rem;border-bottom:1px solid var(--rule);align-items:baseline}
+.tl time{font-family:"PlexMono",monospace;font-size:.95rem;font-weight:500;color:var(--blue-ink)}
+.tl h4{font-size:1rem;font-weight:500;margin:0 0 .2rem}
+.tl p{color:var(--ink-2);font-size:.885rem;line-height:1.5;max-width:70ch}
+
+/* ---------- cities ---------------------------------------------------- */
+.cities{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1px;
+  background:var(--rule);border:1px solid var(--rule)}
+.cities article{background:var(--paper);padding:1.4rem 1.25rem 1.5rem}
+.cities h3{font-size:1.28rem;margin-block-end:.15rem}
+.cities .co{color:var(--ink-3);font-size:.8rem;margin-block-end:.9rem}
+.cities p{color:var(--ink-2);font-size:.895rem;line-height:1.5}
+
+/* ---------- trust + contact ------------------------------------------- */
+.two{display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);gap:clamp(1.5rem,4vw,4rem)}
+@media (max-width:900px){.two{grid-template-columns:1fr}}
+.trust-list{border-top:1px solid var(--rule)}
+.trust-list>div{padding:.9rem 0;border-bottom:1px solid var(--rule)}
+.trust-list h4{font-size:.96rem;font-weight:500;margin:0 0 .2rem}
+.trust-list p{color:var(--ink-2);font-size:.87rem;line-height:1.5}
+
+form{display:grid;gap:1rem}
+.f2{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+@media (max-width:620px){.f2{grid-template-columns:1fr}}
+.field{display:grid;gap:.35rem}
+.field label{font-family:"PlexMono",monospace;font-size:var(--fs-mono);letter-spacing:.07em;
+  text-transform:uppercase;color:var(--ink-3);font-weight:500}
+.field input,.field select,.field textarea{
+  font:inherit;font-size:.95rem;padding:.65rem .7rem;background:var(--paper);
+  border:1px solid var(--rule-2);color:var(--ink);border-radius:0;width:100%;
+  transition:border-color var(--t-tick) var(--e-settle)}
+.field textarea{min-height:7rem;resize:vertical}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--ink)}
+.field .hint{font-size:.775rem;color:var(--ink-3)}
+form .ok{display:none;border:1px solid var(--ink);padding:.85rem .95rem;font-size:.9rem}
+form.sent .ok{display:block}
+form.sent .fields{display:none}
+
+/* ---------- footer ---------------------------------------------------- */
+footer{border-top:1px solid var(--ink);padding-block:2.5rem 3rem;margin-block-start:2rem}
+.f-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:2rem;margin-block-end:2.25rem}
+.f-grid h4{font-size:.8rem;font-weight:500;margin:0 0 .65rem;font-family:"PlexMono",monospace;
+  letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3)}
+.f-grid p,.f-grid a{font-size:.885rem;color:var(--ink-2);text-decoration:none;display:block;line-height:1.65}
+.f-grid a:hover{color:var(--ink);text-decoration:underline;text-underline-offset:3px}
+.f-bot{display:flex;flex-wrap:wrap;gap:.5rem 1.5rem;align-items:center;
+  padding-block-start:1.25rem;border-top:1px solid var(--rule)}
+.f-bot .sp{margin-inline-start:auto}
+.todo{color:var(--blue-ink);border-bottom:1px dotted var(--blue-ink);cursor:help}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{transition-duration:1ms !important;animation-duration:1ms !important}
+}
+
+/* ---------- motion scaffolding ----------------------------------------
+   Nothing here is visible without JS. The word masks are built at runtime,
+   so the served markup stays one clean sentence for a crawler and for the
+   language build. */
+.wm{display:inline-block;overflow:hidden;vertical-align:bottom;
+  padding-block-end:.12em;margin-block-end:-.12em}
+.wm>i{display:inline-block;font-style:inherit;color:inherit}
+
+/* reading position, stated on the rule the header already has */
+.hdr-prog{position:absolute;inset-inline-start:0;inset-block-end:-1px;height:1px;width:100%;
+  background:var(--blue-ink);transform:scaleX(0);transform-origin:left center;pointer-events:none}
+
+/* the filter state travels between buttons instead of repainting them */
+.filters{position:relative}
+.f-ind{position:absolute;inset-block-start:0;inset-inline-start:0;background:var(--plate);
+  pointer-events:none;z-index:0}
+.filters button{position:relative;z-index:1}
+.filters:has(.f-ind) button[aria-pressed=true]{background:transparent;border-color:transparent}
+.filters:has(.f-ind) button[aria-pressed=true]:hover{border-color:transparent}
+
+@media (prefers-reduced-motion:reduce){
+  .wm{overflow:visible;padding-block-end:0;margin-block-end:0}
+  .hdr-prog,.f-ind{display:none}
+  .filters:has(.f-ind) button[aria-pressed=true]{background:var(--plate);border-color:var(--plate)}
+}
+
+/* ---------- the rail --------------------------------------------------
+   A chart recorder down the margin: eight ticks, one per section, a run
+   that fills behind the needle, and the section name set vertically beside
+   it. Built by JS and absent without it — it is chrome, not content. */
+.rail{position:fixed;inset-block:5.4rem 2.8rem;inset-inline-start:clamp(.9rem,1.6vw,1.6rem);
+  width:1px;background:var(--rule);z-index:30;pointer-events:none}
+.rail-run{position:absolute;inset-inline:0;top:0;height:100%;background:var(--blue-ink);
+  transform-origin:top center;transform:scaleY(0)}
+.rail-tick{position:absolute;inset-inline-start:-3px;width:7px;height:1px;background:var(--rule-2);
+  transition:background var(--t-tick) var(--e-settle),width var(--t-tick) var(--e-settle),
+             inset-inline-start var(--t-tick) var(--e-settle)}
+.rail-tick.past{background:var(--ink-3)}
+.rail-tick.now{background:var(--blue-ink);width:13px;inset-inline-start:-6px}
+.rail-cur{position:absolute;inset-inline-start:0;top:0;width:0;height:0}
+.rail-cur i{position:absolute;inset-inline-start:-7px;top:-1px;display:block;
+  width:15px;height:2px;background:var(--blue-ink)}
+.rail-cur b{position:absolute;inset-inline-start:1.5rem;top:0;writing-mode:vertical-rl;
+  font-family:"PlexMono",monospace;font-size:.655rem;font-weight:400;letter-spacing:.15em;
+  text-transform:uppercase;color:var(--ink-3);white-space:nowrap;
+  transform:translateY(-50%);transition:opacity var(--t-tick) var(--e-settle)}
+@media (max-width:1179px){.rail{display:none}}
+
+/* ---------- the record, read as a trace --------------------------------
+   .live is set by JS: without it every date keeps its own colour. */
+.tl{position:relative}
+.tl-line{position:absolute;inset-block:0;width:1px;background:var(--rule);
+  inset-inline-start:calc(5.5rem + clamp(.9rem,2.5vw,2.5rem) / 2)}
+.tl-fill{position:absolute;inset-inline:0;top:0;height:100%;background:var(--blue-ink);
+  transform-origin:top center;transform:scaleY(0)}
+.tl.live li time{color:var(--ink-3);transition:color var(--t-move) var(--e-settle)}
+.tl.live li.past time{color:var(--blue-ink)}
+@media (max-width:760px){.tl-line{display:none}}
+
+/* the section number stays with the section it numbers */
+@media (min-width:761px){
+  .sec-head>.mono{position:sticky;top:5.2rem;align-self:start}
+}
+
+@media (prefers-reduced-motion:reduce){
+  .rail{display:none}
+  .tl.live li time{color:var(--blue-ink)}
+}

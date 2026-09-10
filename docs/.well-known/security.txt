@@ -1,0 +1,3 @@
+Contact: mailto:info@elysium.cc
+Preferred-Languages: en, fr, de
+Expires: 2027-09-07T00:00:00.000Z

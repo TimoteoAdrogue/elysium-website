@@ -1,0 +1,861 @@
+<!doctype html>
+<html lang="fr-CH">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex,nofollow">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Elysium — Design et technologie</title>
+<meta name="description" content="Elysium Sàrl, Genève, fondée en 2005. Logiciel, design et recherche appliquée pour les agences onusiennes, la santé réglementée et l'industrie. 82 clients, 256 projets, 21 ans.">
+<link rel="canonical" href="https://elysium.cc/fr/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Elysium">
+<meta property="og:title" content="Elysium — Design et technologie">
+<meta property="og:description" content="Genève depuis 2005. Dossiers médicaux électroniques en Sierra Leone, outils d'évaluation de PI pour l'OMPI, systèmes concessionnaires pour Caterpillar. 82 clients, 256 projets.">
+<meta property="og:url" content="https://elysium.cc/fr/">
+<meta property="og:image" content="https://elysium.cc/assets/og.png">
+<meta property="og:locale" content="fr_CH">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="alternate" hreflang="en" href="https://elysium.cc/">
+<link rel="alternate" hreflang="fr" href="https://elysium.cc/fr/">
+<link rel="alternate" hreflang="de" href="https://elysium.cc/de/">
+<link rel="alternate" hreflang="x-default" href="https://elysium.cc/">
+<link rel="preload" as="font" type="font/woff2" href="../assets/fonts/plex-sans-400.woff2" crossorigin>
+<link rel="preload" as="font" type="font/woff2" href="../assets/fonts/plex-mono-500.woff2" crossorigin>
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../styles.css">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Organization","name":"Elysium Sàrl","alternateName":"Elysium",
+"url":"https://elysium.cc/","email":"info@elysium.cc","foundingDate":"2005",
+"slogan":"Design and technology",
+"description":"Swiss software, design and applied-research firm working with UN agencies, regulated healthcare, finance and industry.",
+"address":{"@type":"PostalAddress","streetAddress":"Avenue Cardinal-Mermillod 36","addressLocality":"Carouge","addressRegion":"Genève","addressCountry":"CH"},
+"areaServed":"Worldwide",
+"knowsAbout":["Digital health","Medical image segmentation","Business intelligence","3D visualisation","Retrieval-augmented generation","Computer vision","Motion graphics"]}
+</script>
+</head>
+<body>
+<a class="skip" href="#main">Aller au contenu</a>
+
+<svg width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute">
+  <filter id="grain">
+    <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch"/>
+    <feColorMatrix type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.35 0"/>
+    <feComposite in2="SourceGraphic" operator="in" result="noise"/>
+    <feBlend in="SourceGraphic" in2="noise" mode="multiply"/>
+  </filter>
+</svg>
+
+<header class="hdr">
+  <div class="hdr-in">
+    <a class="brand" href="#top">
+      <svg class="cross" width="20" height="20" viewBox="0 0 32 32" role="img" aria-label="Croix suisse">
+        <rect width="32" height="32" fill="#DA291C"/>
+        <path d="M13 6h6v7h7v6h-7v7h-6v-7H6v-6h7z" fill="#fff"/>
+      </svg>
+      <span>Elysium</span>
+    </a>
+    <nav aria-label="Principale">
+      <a href="#care" data-opt2>Santé</a>
+      <a href="#llm" data-opt2>LLM privés</a>
+      <a href="#work">Travaux</a>
+      <a href="#spec" data-opt>Spécialisation</a>
+      <a href="#record" data-opt>Parcours</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+<div id="top"></div>
+
+<!-- ================= HERO — the dark plate the site opens on ============== -->
+<section class="hero" id="hero">
+
+  <div class="hgrid" aria-hidden="true">
+    <i class="gv" style="--x:12.6%;--d:600ms"></i>
+    <i class="gv" style="--x:37.5%;--d:700ms"></i>
+    <i class="gv" style="--x:61.9%;--d:800ms"></i>
+    <i class="gv" style="--x:86.2%;--d:900ms"></i>
+    <i class="gh" style="--y:32.7%;--d:800ms"></i>
+    <i class="gh" style="--y:71.4%;--d:950ms"></i>
+    <i class="gp" style="--x:12.6%;--y:32.7%;--d:1000ms"></i>
+    <i class="gp" style="--x:37.5%;--y:32.7%;--d:1080ms"></i>
+    <i class="gp" style="--x:61.9%;--y:32.7%;--d:1160ms"></i>
+    <i class="gp" style="--x:86.2%;--y:32.7%;--d:1240ms"></i>
+    <i class="gp" style="--x:12.6%;--y:71.4%;--d:1320ms"></i>
+    <i class="gp" style="--x:37.5%;--y:71.4%;--d:1400ms"></i>
+    <i class="gp" style="--x:61.9%;--y:71.4%;--d:1480ms"></i>
+    <i class="gp" style="--x:86.2%;--y:71.4%;--d:1560ms"></i>
+  </div>
+
+  <div class="hbody">
+    <p class="mono heyebrow" style="--d:200ms">Elysium Sàrl · Genève · depuis 2005</p>
+    <h1>
+      <span style="--d:400ms">Chaque mot inscrit sur cette carte,</span>
+      <span class="hshine" style="--d:560ms">nous l'avons mis en production.</span>
+    </h1>
+  </div>
+
+  <figure class="hero-panel" style="--d:700ms">
+    <button type="button" class="bc-stage" id="bcard" aria-label="Afficher les coordonnées" aria-pressed="false">
+      <span class="bc-glow" aria-hidden="true"></span>
+      <div class="bc-plate" aria-hidden="true">
+
+        <div class="bc-face bc-front">
+          <span class="bc-keys">BLOCKCHAIN
+CSS
+JAVA
+SAAS
+XML
+JSON
+PHP
+JAVASCRIPT
+MYSQL
+PDF
+WORDPRESS
+HASH
+3D-ANIMATIONS
+DESIGN
+UI DESIGN
+BLOGGING
+PUBLICATIONS
+WEBSITES
+SEO
+API
+DATABASES
+SHA256
+VIDEO EDITING
+ENCRYPTION
+HTML
+EPUB
+SMTP
+ALGORITHMS
+DIGITAL DATA VISUALIZATION
+USABILITY
+TESTS
+SSH
+OPEN-SOURCE
+AGILE-METHODOLOGY
+CLIENT-SERVER
+VECTOR GRAPHICS
+AW3
+HTTPS
+HIPAA
+HL7
+VIDEO ENCODING
+VPN
+VRML
+NATIVE / HYBRID</span>
+          <span class="bc-mark"><b>ELYSIUM</b><i>Design + Technology</i></span>
+        </div>
+
+        <div class="bc-face bc-back bc-reveal">
+          <span class="bc-bar"></span>
+          <span class="bc-who">
+            <b>Elysium Sàrl</b>
+            <span>info@elysium.cc</span>
+            <span>www.elysium.cc</span>
+          </span>
+          <span class="bc-addr">
+            <span>3 Place du Cornavin | c/o Spacecode | 1201 Geneva | www.elysium.cc</span>
+            <span>36 Av. Cardinal-Mermillod | c/o Q&amp;S Consulting | 1227 Geneva | Switzerland</span>
+          </span>
+          <span class="bc-mark bc-mark-b"><b>ELYSIUM</b><i>Design + Technology</i></span>
+        </div>
+
+        <i class="bc-edge bc-edge-l"></i>
+        <i class="bc-edge bc-edge-r"></i>
+      </div>
+    </button>
+  </figure>
+
+  <p class="hleft" style="--d:1000ms">Dossiers médicaux électroniques pour un hôpital de Freetown. Outils d'évaluation de propriété intellectuelle pour l'OMPI. Systèmes concessionnaires pour Caterpillar, servis depuis ce domaine depuis 2007.</p>
+
+  <div class="hright" style="--d:1150ms">
+    <p>Vingt et un ans de logiciel pour des organisations qui auditent leurs fournisseurs — agences de l'ONU, santé réglementée, finance et industrie.</p>
+    <a class="hcta" href="#contact">
+      <span aria-hidden="true">&#10022;</span>
+      <span>Confier un mandat</span>
+    </a>
+  </div>
+
+  <div class="hmeta mono" style="--d:1300ms">
+    <span><b>82</b> clients</span>
+    <span><b>256</b> projets</span>
+    <span><b>21</b> ans</span>
+    <span class="hchip">[ 12 DANS L'EQUIPE ]</span>
+  </div>
+
+</section>
+
+<div class="ground-shift" data-to="paper" aria-hidden="true"></div>
+
+<!-- ================= ROSTER ================= -->
+<section class="wrap" id="roster">
+  <div class="sec-head">
+    <i class="sec-rule" aria-hidden="true"></i>
+    <p class="mono">01 — Mandats</p>
+    <div>
+      <h2>Vingt et un ans de travail pour des organisations qui auditent leurs fournisseurs.</h2>
+      <p class="lede">Nommés ci-dessous parce qu'Elysium a livré sous contrat, directement ou en marque blanche derrière une autre agence. Plusieurs mandats ont duré des années ; le toolbox concessionnaires Caterpillar était servi depuis elysium.cc dès 2007.</p>
+    </div>
+  </div>
+
+  <ul class="roster">
+    <li><b>WIPO</b><small>Logiciel d'évaluation de PI, Global Awards, Data Matrix, enseignement à distance</small></li>
+    <li><b>ILO</b><small>Dispositif technique de bout en bout pour la conférence annuelle principale</small></li>
+    <li><b>UNICEF</b><small>Outils pour unités de soins néonatals, Sierra Leone, 2023</small></li>
+    <li><b>WHO</b><small>Publications et supports de communication</small></li>
+    <li><b>WTO</b><small>Publications et supports de communication</small></li>
+    <li><b>CUAMM</b><small>Dossiers médicaux électroniques, PMCH Freetown, 2022</small></li>
+    <li><b>Caterpillar</b><small>Dealer Advisor, 3D d'engins lourds, localisateur de concessionnaires, catmaps</small></li>
+    <li><b>UBS</b><small>Production numérique</small></li>
+    <li><b>Nestlé</b><small>Production numérique</small></li>
+    <li><b>UEFA</b><small>Motion design et vidéo</small></li>
+    <li><b>Becton Dickinson</b><small>Travaux sur dispositifs médicaux</small></li>
+    <li><b>Medtronic</b><small>Travaux sur dispositifs médicaux</small></li>
+    <li><b>GIA</b><small>Plateforme de traçabilité des diamants et application mobile</small></li>
+    <li><b>Award Force</b><small>Tableaux de bord API, indicateurs de programme en direct</small></li>
+    <li><b>Rotel</b><small>Packaging produit</small></li>
+    <li><b>LetsMed</b><small>Catalogue médical, suivi de stock à distance</small></li>
+  </ul>
+
+  <div class="stat-row">
+    <div><b data-count="82">82</b><span class="mono">Clients</span></div>
+    <div><b data-count="256">256</b><span class="mono">Projets livrés</span></div>
+    <div><b data-count="21">21</b><span class="mono">Ans, depuis 2005</span></div>
+    <div><b data-count="3">3</b><span class="mono">Villes</span></div>
+  </div>
+</section>
+
+<!-- ================= SPECIALISATION ================= -->
+<section class="wrap" id="spec">
+  <div class="sec-head">
+    <i class="sec-rule" aria-hidden="true"></i>
+    <p class="mono">02 — Nos domaines</p>
+    <div>
+      <h2>Neuf pratiques. La recherche et développement alimente toutes les autres.</h2>
+      <p class="lede">Le choix de la stack suit la contrainte posée : Salesforce, Oracle DB, AWS et Azure lorsque le client y est déjà, bibliothèques open source dans le cas contraire.</p>
+    </div>
+  </div>
+
+  <div class="spec">
+    <article class="lead">
+      <p class="mono">Elysium Labs</p>
+      <h3>Recherche &amp; développement</h3>
+      <p>Une pratique de déploiement active. Les pipelines de recherche documentaire et les systèmes agentiques tournent aujourd'hui en production chez nos clients. La diffusion et la modélisation générative sont en évaluation, et nous disons lesquelles.</p>
+      <figure class="lab-fig">
+        <div class="lab-img">
+          <img src="../assets/work/echo-00.jpg" width="560" height="560" loading="lazy"
+               alt="Échocardiographie apicale quatre cavités avec le contour calculé de la cavité ventriculaire.">
+          <svg class="ov" viewBox="0 0 112 112" aria-hidden="true">
+            <path class="trace" id="trace" d="M93.09,59.83C93.18,60.35 93.28,60.87 93.32,61.40C93.35,61.93 93.30,62.48 93.30,63.03C93.29,63.58 93.32,64.15 93.30,64.70C93.28,65.26 93.24,65.82 93.20,66.38C93.15,66.94 93.09,67.50 93.04,68.08C92.99,68.66 92.98,69.26 92.90,69.84C92.82,70.43 92.69,71.00 92.57,71.58C92.45,72.16 92.33,72.76 92.18,73.34C92.03,73.93 91.87,74.52 91.66,75.10C91.46,75.68 91.22,76.27 90.94,76.82C90.67,77.37 90.42,77.97 90.03,78.38C89.63,78.78 89.08,79.00 88.55,79.24C88.02,79.48 87.42,79.65 86.83,79.80C86.24,79.95 85.64,80.05 85.02,80.12C84.40,80.19 83.75,80.22 83.10,80.21C82.45,80.20 81.79,80.14 81.12,80.05C80.45,79.96 79.73,79.76 79.08,79.64C78.42,79.53 77.75,79.38 77.18,79.35C76.62,79.32 76.18,79.35 75.70,79.47C75.22,79.58 74.77,79.55 74.31,80.03C73.86,80.51 73.43,81.58 72.95,82.35C72.48,83.12 71.99,83.87 71.48,84.64C70.96,85.41 70.42,86.20 69.86,86.96C69.30,87.73 68.71,88.61 68.12,89.25C67.53,89.89 66.92,90.36 66.33,90.79C65.75,91.22 65.21,91.54 64.62,91.81C64.02,92.08 63.39,92.52 62.76,92.42C62.13,92.32 61.45,91.68 60.86,91.19C60.28,90.70 59.76,90.09 59.27,89.47C58.77,88.85 58.32,88.15 57.87,87.46C57.43,86.78 57.01,86.02 56.62,85.36C56.22,84.71 55.86,84.09 55.51,83.51C55.16,82.94 54.80,82.49 54.52,81.91C54.23,81.33 54.01,80.67 53.80,80.02C53.59,79.38 53.43,78.66 53.25,78.05C53.08,77.44 52.90,76.90 52.75,76.34C52.60,75.77 52.44,75.24 52.34,74.68C52.24,74.11 52.22,73.49 52.16,72.93C52.11,72.37 52.07,71.83 52.03,71.31C51.99,70.79 51.96,70.30 51.92,69.81C51.88,69.33 51.82,68.87 51.80,68.41C51.78,67.94 51.79,67.47 51.78,67.02C51.77,66.58 51.74,66.15 51.74,65.72C51.74,65.30 51.78,64.87 51.79,64.45C51.80,64.04 51.79,63.65 51.80,63.25C51.80,62.86 51.82,62.47 51.81,62.08C51.81,61.70 51.80,61.32 51.77,60.93C51.75,60.54 51.71,60.14 51.66,59.75C51.62,59.35 51.54,58.96 51.49,58.56C51.45,58.16 51.47,57.78 51.40,57.36C51.33,56.94 51.16,56.50 51.05,56.05C50.94,55.61 50.83,55.16 50.73,54.70C50.62,54.23 50.55,53.79 50.43,53.28C50.31,52.78 50.12,52.22 50.00,51.66C49.87,51.11 49.79,50.55 49.70,49.96C49.60,49.37 49.54,48.79 49.42,48.12C49.30,47.46 49.13,46.77 48.96,45.96C48.79,45.16 48.58,44.24 48.39,43.30C48.19,42.35 47.98,41.34 47.79,40.29C47.61,39.24 47.34,38.04 47.26,37.00C47.19,35.96 47.25,34.99 47.35,34.05C47.45,33.12 47.61,32.23 47.84,31.40C48.07,30.57 48.34,29.76 48.72,29.06C49.09,28.37 49.52,27.70 50.09,27.22C50.67,26.75 51.40,26.45 52.14,26.21C52.88,25.96 53.70,25.82 54.53,25.74C55.36,25.65 56.29,25.71 57.14,25.72C57.99,25.72 58.83,25.56 59.65,25.76C60.46,25.96 61.27,26.50 62.05,26.91C62.82,27.33 63.57,27.79 64.30,28.23C65.03,28.67 65.73,29.13 66.42,29.56C67.11,29.99 67.78,30.38 68.43,30.82C69.08,31.26 69.71,31.69 70.31,32.20C70.91,32.72 71.49,33.32 72.04,33.91C72.58,34.50 73.11,35.28 73.61,35.72C74.11,36.16 74.56,36.29 75.03,36.55C75.50,36.81 75.97,37.04 76.44,37.27C76.92,37.51 77.42,37.69 77.88,37.96C78.34,38.23 78.80,38.54 79.21,38.87C79.63,39.20 79.96,39.63 80.36,39.96C80.76,40.28 81.17,40.55 81.60,40.81C82.04,41.08 82.55,41.27 82.98,41.54C83.41,41.81 83.80,42.09 84.16,42.42C84.52,42.75 84.78,43.16 85.13,43.52C85.48,43.89 85.90,44.25 86.26,44.62C86.62,45.00 86.94,45.40 87.29,45.77C87.65,46.14 88.06,46.44 88.39,46.82C88.71,47.20 89.01,47.62 89.24,48.07C89.48,48.52 89.59,49.05 89.79,49.52C89.98,49.99 90.16,50.44 90.40,50.88C90.65,51.32 91.04,51.70 91.26,52.17C91.48,52.64 91.57,53.19 91.72,53.69C91.87,54.20 92.02,54.70 92.14,55.21C92.27,55.72 92.37,56.24 92.47,56.75C92.57,57.26 92.66,57.77 92.76,58.29C92.86,58.80 93.00,59.31 93.09,59.83Z"></path>
+          </svg>
+        </div>
+        <figcaption>Contour de la cavité calculé à partir des pixels — 2 324 px à l'image 0, 1 965 px à l'image 15, soit une contraction de 15,4 %. De la recherche, pas un produit.</figcaption>
+      </figure>
+      <div class="tags"><b>Segmentation</b><b>Deep learning</b><b>RAG</b><b>Agents</b><b>Diffusion</b><b>Generative modelling</b></div>
+    </article>
+
+    <article>
+      <p class="mono">Pratique</p>
+      <h3>Santé numérique</h3>
+      <p>Dossiers médicaux électroniques, outils de soins néonatals, catalogues produits avec visibilité du stock à distance, et flux cliniques qui tiennent devant un contrôle réglementaire.</p>
+      <div class="tags"><b>EMR</b><b>Catalogues</b><b>Suivi de stock</b><b>Clinical UX</b></div>
+    </article>
+
+    <article>
+      <p class="mono">Pratique</p>
+      <h3>Applications pilotées par la donnée &amp; business intelligence</h3>
+      <p>Extraction de bases en temps réel et intégration d'API sur Salesforce, Oracle DB, AWS et Azure, restituées en tableaux de bord que la direction ouvre vraiment.</p>
+      <div class="tags"><b>Salesforce</b><b>Oracle DB</b><b>AWS</b><b>Azure</b><b>APIs</b></div>
+    </article>
+
+    <article>
+      <p class="mono">Pratique</p>
+      <h3>3D &amp; visualisation</h3>
+      <p>Cartes interactives, environnements 3D, simulation de dispositifs médicaux et visualisation de données, produits au studio de Buenos Aires.</p>
+      <div class="tags"><b>Cartes interactives</b><b>Environnements 3D</b><b>Simulation de dispositifs</b></div>
+    </article>
+
+    <article>
+      <p class="mono">Pratique</p>
+      <h3>Automatisation métier &amp; IA agentique</h3>
+      <p>Automatisation des flux sur les systèmes existants, et agents qui interrogent des bases complexes en langage naturel tout en restant ancrés dans les enregistrements sources.</p>
+      <div class="tags"><b>n8n</b><b>Agents</b><b>Ancrage</b><b>Flux de travail</b></div>
+    </article>
+
+    <article>
+      <p class="mono">Pratique</p>
+      <h3>Vision par ordinateur &amp; intégration robotique</h3>
+      <p>Des modèles de vision mis au travail sur des procédés physiques, de l'inspection à la manipulation robotisée.</p>
+      <div class="tags"><b>Détection</b><b>Segmentation</b><b>Robotique</b></div>
+    </article>
+
+    <article>
+      <p class="mono">Pratique</p>
+      <h3>Produit mobile &amp; multiplateforme</h3>
+      <p>Des produits iOS et Android que l'on ouvre chaque semaine : Striker dans les villes européennes, l'application d'origine des diamants du GIA, un flux de commande à ETA en direct pour une seule pizzeria.</p>
+      <div class="tags"><b>iOS</b><b>Android</b><b>Multiplateforme</b></div>
+    </article>
+
+    <article>
+      <p class="mono">Pratique</p>
+      <h3>Motion design &amp; production éditoriale</h3>
+      <p>Animation pour assemblées annuelles, publications électroniques et imprimées, et supports de communication autour d'un programme de conférence.</p>
+      <div class="tags"><b>After Effects</b><b>3D animation</b><b>Imprimé</b><b>Éditorial</b></div>
+    </article>
+
+    <article>
+      <p class="mono">Pratique</p>
+      <h3>Production web institutionnelle &amp; multi-domaines</h3>
+      <p>Sites publics et privés couvrant de nombreuses organisations, technologies et langues, y compris les parcs multilingues sur lesquels fonctionne le système onusien.</p>
+      <div class="tags"><b>Multilingue</b><b>Accessibilité</b><b>CMS</b><b>Migration</b></div>
+    </article>
+  </div>
+</section>
+
+<!-- ================= HEALTHCARE ================= -->
+<section class="wrap" id="care">
+  <div class="sec-head">
+    <i class="sec-rule" aria-hidden="true"></i>
+    <p class="mono">03 — Santé numérique</p>
+    <div>
+      <h2>Un logiciel qui a tourné dans un hôpital à l'électricité intermittente.</h2>
+      <p class="lede">La santé est la pratique sur laquelle Elysium est jugée. La référence la plus forte est aussi la plus dure.</p>
+    </div>
+  </div>
+
+  <div class="care">
+    <div class="case">
+      <p class="mono">Référence · 2022–2023 · Sierra Leone</p>
+      <h3>Dossiers médicaux électroniques, hôpital PMCH, Freetown</h3>
+      <p>Livré avec CUAMM — Médecins avec l'Afrique — et les autorités sanitaires locales. Le pilote a été lancé en mars 2022, après plus de trois semaines de présence des équipes Elysium sur place à Freetown. En mai 2023, la collaboration s'est étendue à un outil pour l'UNICEF, déployé dans les unités de soins néonatals.</p>
+      <p>Les dossiers devaient rester justes malgré les coupures de courant et une connectivité intermittente, et rester lisibles pour un personnel clinique qui n'avait pas le temps d'être formé deux fois. Ces deux contraintes ont dessiné chaque écran.</p>
+      <dl>
+        <dt>Partenaires</dt><dd>CUAMM — Médecins avec l'Afrique, UNICEF, autorités sanitaires locales</dd>
+        <dt>Lancement</dt><dd>Mars 2022, pilote à l'hôpital PMCH</dd>
+        <dt>Extension</dt><dd>Mai 2023, outils SCBU pour l'UNICEF</dd>
+        <dt>Sur place</dt><dd>Plus de 3 semaines, Freetown</dd>
+        <dt>Contrainte</dt><dd>Électricité et connectivité intermittentes ; lisibilité clinique</dd>
+      </dl>
+    </div>
+
+    <div class="care-list">
+      <div>
+        <p class="mono">Imagerie</p>
+        <div>
+          <h4>Segmentation d'échographie cardiaque</h4>
+          <p>Segmentation vidéo de la cavité ventriculaire en échocardiographie, menée d'un jeu de données académique vers l'évaluation hospitalière. Une sortie mesurée s'en trouve dans la fiche Elysium Labs ci-dessus.</p>
+        </div>
+      </div>
+      <div>
+        <p class="mono">Logistique</p>
+        <div>
+          <h4>Catalogue médical &amp; suivi de stock à distance</h4>
+          <p>Numérisation d'un catalogue complet de produits médicaux pour LetsMed, avec visibilité du stock à distance et vues opérationnelles qui résistent à un audit.</p>
+        </div>
+      </div>
+      <div>
+        <p class="mono">Produit</p>
+        <div>
+          <h4>BLU Healthcare</h4>
+          <p>Ingénierie continue pour une jeune entreprise de santé numérique : surfaces produit, intégrations et accès différencié par rôle entre utilisateurs cliniques et administratifs.</p>
+        </div>
+      </div>
+      <div>
+        <p class="mono">Simulation</p>
+        <div>
+          <h4>Simulation 3D de dispositifs médicaux</h4>
+          <p>Comportement des dispositifs restitué pour la formation et pour le dépôt réglementaire, produit notamment avec Becton Dickinson et Medtronic.</p>
+        </div>
+      </div>
+      <div>
+        <p class="mono">Plateforme</p>
+        <div>
+          <h4>Plateforme de dossiers cliniques</h4>
+          <p>Une deuxième construction de dossiers, distincte de Freetown, couvrant de l'admission à la sortie pour un opérateur européen.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="ground-shift" data-to="plate" aria-hidden="true"></div>
+
+<!-- ================= LLM ================= -->
+<section class="llm" id="llm">
+ <div class="wrap">
+  <div class="sec-head">
+    <i class="sec-rule" aria-hidden="true"></i>
+    <p class="mono">04 — Infrastructure LLM privée</p>
+    <div>
+      <h2>Des modèles à poids ouverts, exécutés dans votre périmètre.</h2>
+      <p class="lede">Elysium déploie des modèles de langage sur du matériel que le client contrôle — sur site, ou en cloud souverain suisse. Corpus de recherche, données patients et renseignements internes restent dans le périmètre et n'atteignent aucune API tierce.</p>
+    </div>
+  </div>
+
+  <div class="llm-grid">
+    <div>
+      <div class="llm-points">
+        <div><h4>Localisation des données</h4><p>Poids, base vectorielle et journaux se trouvent là où vous les placez. Nous nommons la machine, la région et la durée de conservation dans le contrat.</p></div>
+        <div><h4>Conformité réglementaire</h4><p>Conçu au regard de la nLPD et du RGPD, et de la règle sectorielle qui vous lie réellement : protection des données cliniques, secret bancaire, ou classification de l'information onusienne.</p></div>
+        <div><h4>Aucun entraînement par des tiers</h4><p>Votre corpus entraîne votre modèle et rien d'autre. C'est ici une propriété architecturale, et elle résiste à un audit fournisseur.</p></div>
+        <div><h4>Piste d'audit</h4><p>Chaque requête, chaque récupération et chaque réponse est attribuable, avec les documents sources dont une réponse ancrée a tiré son contenu.</p></div>
+        <div><h4>Ce que nous opérons</h4><p>Choix du modèle, dimensionnement GPU, affinage sur votre corpus, recherche documentaire sur vos systèmes, évaluation, puis exploitation.</p></div>
+      </div>
+
+      <div class="note">
+        <p><strong>Une chose dite clairement.</strong> GPT, Claude et Gemini ne peuvent pas être téléchargés ; ils existent uniquement via API, et tout fournisseur qui propose d'en installer un sur vos serveurs décrit une chose qui n'existe pas. Ce qui tourne sur votre matériel est à poids ouverts : Llama, Mistral, Qwen, DeepSeek, gpt-oss et leurs versions affinées. Sur le raisonnement général, les API de pointe gardent l'avance. Sur un domaine borné, avec vos documents derrière, l'écart se referme et les données ne sortent jamais.</p>
+      </div>
+    </div>
+
+    <div>
+      <div class="calc">
+        <div class="calc-head">
+          <span class="dot" style="width:6px;height:6px;background:var(--blue-lift);border-radius:50%"></span>
+          <span class="mono">Modèle de coût</span>
+        </div>
+        <div class="calc-body">
+          <p class="cross-note" style="margin-block:0 1.1rem">Réglez les quatre entrées sur vos propres chiffres. Rien ici n'est un banc d'essai mesuré par Elysium — c'est l'arithmétique qui est honnête, et elle est montrée en entier.</p>
+
+          <div class="ctrl">
+            <label for="i-vol">Volume mensuel</label><output id="o-vol">1 500 M tokens</output>
+            <input type="range" id="i-vol" min="5" max="2000" step="5" value="1500"></div>
+          <div class="ctrl">
+            <label for="i-api">Prix API moyen</label><output id="o-api">6,00 $ / M tokens</output>
+            <input type="range" id="i-api" min="25" max="3000" step="25" value="600"></div>
+          <div class="ctrl">
+            <label for="i-gpu">GPU + exploitation, par mois</label><output id="o-gpu">$4 800</output>
+            <input type="range" id="i-gpu" min="800" max="30000" step="200" value="4800"></div>
+          <div class="ctrl">
+            <label for="i-set">Déploiement, coût unique</label><output id="o-set">$45 000</output>
+            <input type="range" id="i-set" min="0" max="250000" step="5000" value="45000"></div>
+
+          <div class="chart">
+            <div class="bars">
+              <div class="bar"><span>API · mois</span>
+                <div class="track"><div class="fill" id="bar-api"><em id="lab-api"></em></div></div></div>
+              <div class="bar hi"><span>Privé · mois</span>
+                <div class="track"><div class="fill" id="bar-self"><em id="lab-self"></em></div></div></div>
+            </div>
+
+            <table class="totals">
+              <thead><tr><th scope="col"></th>
+                <th scope="col">API de pointe</th><th scope="col">Privé, poids ouverts</th></tr></thead>
+              <tbody>
+                <tr><th scope="row">Par mois</th><td id="t-am"></td><td id="t-sm"></td></tr>
+                <tr><th scope="row">Année 1, déploiement inclus</th><td id="t-a1"></td><td id="t-s1"></td></tr>
+                <tr><th scope="row">À partir de l'année 2</th><td id="t-a2"></td><td id="t-s2"></td></tr>
+                <tr class="net"><th scope="row">Écart sur l'année 1</th><td colspan="2" id="t-d1" data-saved="de moins avec le déploiement privé" data-extra="de plus avec le déploiement privé"></td></tr>
+                <tr class="net"><th scope="row">Volume d'équilibre</th><td colspan="2" id="t-be" data-m="M tokens par mois" data-b="Md tokens par mois"></td></tr>
+                <tr class="net"><th scope="row">Déploiement amorti</th><td colspan="2" id="t-pb" data-month="après {n} mois à ce volume" data-never="pas à ce volume — l'API coûte moins par mois"></td></tr>
+              </tbody>
+            </table>
+
+            <p class="cross-note" id="crossover"
+               data-lead="À {p} le million de tokens, le déploiement privé coûte moins au-delà de"
+               data-tail="par mois." data-m="M tokens" data-b="Md tokens"
+               data-under="À votre volume actuel, le déploiement privé est déjà moins cher chaque mois."
+               data-over="Votre volume actuel se situe en dessous de ce seuil."></p>
+          </div>
+        </div>
+      </div>
+
+      <div class="scrollx">
+      <table class="cmp">
+        <caption class="mono" style="text-align:left;padding-block:.9rem .4rem">Là où chaque approche l'emporte</caption>
+        <thead><tr><th scope="col"></th><th scope="col">Poids ouverts, auto-hébergé</th><th scope="col">API de pointe</th></tr></thead>
+        <tbody>
+          <tr><td>Les données quittent le périmètre</td><td>Non</td><td>Oui</td></tr>
+          <tr><td>Plafond de raisonnement général</td><td>Plus bas</td><td>Plus haut</td></tr>
+          <tr><td>Précision sur le domaine après affinage</td><td>Compétitive</td><td>Limitée par l'affinage via API</td></tr>
+          <tr><td>Coût à faible volume</td><td>Moins bon — plancher GPU fixe</td><td>Meilleur</td></tr>
+          <tr><td>Coût à volume soutenu</td><td>Meilleur</td><td>Moins bon</td></tr>
+          <tr><td>Maîtrise de la latence</td><td>La vôtre</td><td>Celle du fournisseur</td></tr>
+          <tr><td>Le modèle change sous vos pieds</td><td>Jamais, tant que vous ne le décidez pas</td><td>Au calendrier du fournisseur</td></tr>
+          <tr><td>Charge d'exploitation</td><td>Réelle — Elysium la porte</td><td>Minimale</td></tr>
+        </tbody>
+      </table>
+      </div>
+    </div>
+  </div>
+ </div>
+</section>
+
+<div class="ground-shift" data-to="paper" aria-hidden="true"></div>
+
+<!-- ================= WORK ================= -->
+<section class="wrap" id="work">
+  <div class="sec-head">
+    <i class="sec-rule" aria-hidden="true"></i>
+    <p class="mono">05 — Mandats choisis</p>
+    <div>
+      <h2>Les travaux, avec la contrainte qui les a façonnés.</h2>
+      <p class="lede">La profondeur est ici volontairement inégale. Certains mandats ont duré des années et méritent la place ; d'autres ont été un bon mois de travail et tiennent en une ligne.</p>
+    </div>
+  </div>
+
+  <div class="filters" role="group" aria-label="Filtrer les projets">
+    <button type="button" data-f="all" aria-pressed="true">Tous</button>
+    <button type="button" data-f="health" aria-pressed="false">Santé</button>
+    <button type="button" data-f="un" aria-pressed="false">International</button>
+    <button type="button" data-f="industry" aria-pressed="false">Industrie</button>
+    <button type="button" data-f="product" aria-pressed="false">Produit</button>
+    <button type="button" data-f="labs" aria-pressed="false">Labs</button>
+  </div>
+
+  <!-- Reading strip. The card detail is written here as the pointer passes over
+       the grid, so the detail never covers a neighbouring card and the grid
+       never changes height. Aria-hidden because each card still carries its own
+       copy of this text; this is a second view of it, not a second source. -->
+  <div class="readout" id="readout" aria-hidden="true">
+    <p class="readout-rest mono">Pointez un mandat pour le détail</p>
+    <div class="readout-body"></div>
+  </div>
+
+  <div class="grid" id="grid">
+
+    <article class="card" tabindex="0" data-cat="health labs">
+      <figure><img src="../assets/work/echo-00.jpg" width="560" height="560" loading="lazy" alt="Image d'échographie cardiaque avec la cavité ventriculaire segmentée."></figure>
+      <div class="body">
+        <p class="mono">Elysium Labs · Santé</p>
+        <h3>Segmentation d'échographie cardiaque</h3>
+        <div class="card-intel">
+          <p>Segmentation vidéo de la cavité ventriculaire gauche sur une étude apicale quatre cavités de 333 images, menée d'un jeu de données académique vers l'évaluation hospitalière.</p>
+          <ul>
+            <li>L'aire de la cavité passe de 2 324 à 1 965 px entre les images 0 et 15</li>
+            <li>−15,4 % sur la contraction mesurée</li>
+            <li>Contour calculé à partir des pixels, jamais tracé à la main</li>
+          </ul>
+          </div>
+        <div class="foot mono"><span>Deep learning</span><span>Imagerie médicale</span></div>
+      </div>
+    </article>
+
+    <article class="card" tabindex="0" data-cat="un">
+      <figure><img src="../assets/work/wipo-assess.jpg" width="1400" height="900" loading="lazy" alt="Interface du logiciel d'évaluation de PI de l'OMPI."></figure>
+      <div class="body">
+        <p class="mono">OMPI · International</p>
+        <h3>Logiciel d'évaluation de PI</h3>
+        <div class="card-intel">
+          <p>Un logiciel qui évalue le portefeuille de propriété intellectuelle d'une entreprise, donnant à l'organisation la visibilité de ce qu'elle détient et un chemin pour le protéger. Il fait partie d'un mandat de longue durée qui couvre aussi le programme Global Awards, la WIPO Data Matrix et le dispositif d'enseignement à distance.</p>
+          <ul>
+            <li>Quatre chantiers distincts sous un même accord-cadre</li>
+            <li>Global Awards soutenu en continu</li>
+            <li>Livré dans le cadre des exigences onusiennes de classification de l'information</li>
+          </ul>
+          </div>
+        <div class="foot mono"><span>Évaluation</span><span>Pluriannuel</span></div>
+      </div>
+    </article>
+
+    <article class="card" tabindex="0" data-cat="un health">
+      <div class="body">
+        <p class="mono">OIT · International</p>
+        <h3>Conférence internationale du Travail</h3>
+        <div class="card-intel">
+          <p>Support technique de bout en bout pour la conférence annuelle principale de l'OIT : inscription, systèmes de site et services aux délégués sur tout le cycle de l'événement, ainsi que les publications électroniques et imprimées qui l'entourent.</p>
+          <ul>
+            <li>Inscription et flux d'information pour un grand rassemblement international</li>
+            <li>Des outils résilients sur tout le cycle de l'événement</li>
+            <li>Production de publications imprimées et électroniques en parallèle</li>
+          </ul>
+          </div>
+        <div class="foot mono"><span>Événements</span><span>Édition</span></div>
+      </div>
+    </article>
+
+    <article class="card" tabindex="0" data-cat="industry">
+      <div class="body">
+        <p class="mono">Caterpillar · Industrie</p>
+        <h3>Dealer Advisor, catmaps et 3D d'engins lourds</h3>
+        <div class="card-intel">
+          <p>Développement de la plateforme Dealer Advisor, modélisation 3D d'engins lourds, localisateur de concessionnaires, cartes virtuelles et outils de communication interne. Plusieurs d'entre eux étaient servis depuis elysium.cc ; le toolbox concessionnaires date de 2007.</p>
+          <ul>
+            <li>En service depuis 2007, sur plusieurs générations de toolbox</li>
+            <li>Localisateur, catmaps et catvideo livrés en systèmes hébergés</li>
+            <li>Modélisation 3D d'engins lourds en parallèle du travail de plateforme</li>
+          </ul>
+          </div>
+        <div class="foot mono"><span>Depuis 2007</span><span>3D</span><span>Plateforme</span></div>
+      </div>
+    </article>
+
+    <article class="card" tabindex="0" data-cat="product">
+      <figure><img src="../assets/work/gia-home.jpg" width="1400" height="900" loading="lazy" alt="Écran d'accueil de la plateforme d'origine des diamants du GIA."></figure>
+      <div class="body">
+        <p class="mono">GIA · Produit</p>
+        <h3>Origine des diamants &amp; plateforme de publication</h3>
+        <div class="card-intel">
+          <p>Application mobile et logiciel d'origine des diamants soutenant une plateforme de publication pour l'une des principales autorités gemmologiques mondiales.</p>
+          <ul>
+            <li>Registres de provenance exposés aux professionnels et au public</li>
+            <li>Application multilingue pour l'industrie du diamant</li>
+          </ul>
+          </div>
+        <div class="foot mono"><span>Provenance</span><span>Mobile</span></div>
+      </div>
+    </article>
+
+    <article class="card" tabindex="0" data-cat="product">
+      <figure><img src="../assets/work/striker_1_v2.jpg" width="1400" height="900" loading="lazy" alt="Écrans de l'application de matchmaking football Striker."></figure>
+      <div class="body">
+        <p class="mono">Striker · Produit</p>
+        <h3>Football amateur dans les villes européennes</h3>
+        <div class="card-intel">
+          <p>Application Android et iOS pour organiser des matchs ville par ville, du matchmaking à la logistique. Elysium a livré l'UX mobile, les services backend et la finition qu'exige une application grand public utilisée chaque semaine.</p>
+          <ul>
+            <li>Livraison de bout en bout : UX, backend, les deux stores</li>
+            <li>Matchmaking et logistique dans plusieurs villes européennes</li>
+          </ul>
+          </div>
+        <div class="foot mono"><span>iOS</span><span>Android</span><span>Bout en bout</span></div>
+      </div>
+    </article>
+
+    <article class="card" tabindex="0" data-cat="un industry">
+      <figure><img src="../assets/work/n8n.jpg" width="1400" height="900" loading="lazy" alt="Graphe de flux d'automatisation."></figure>
+      <div class="body">
+        <p class="mono">Award Force · Automatisation</p>
+        <h3>Tableaux de bord API et indicateurs de programme en direct</h3>
+        <div class="card-intel">
+          <p>Intégration entre la plateforme Award Force et le reporting interne, exposant des indicateurs de programme en direct à la direction et aux opérations. Utilisé derrière un programme international de prix servant des milliers de startups et de PME.</p>
+          <ul>
+            <li>Des milliers de participants sur un cycle de programme</li>
+            <li>Données en temps réel par intégration d'API</li>
+          </ul>
+          </div>
+        <div class="foot mono"><span>API</span><span>Tableaux de bord</span></div>
+      </div>
+    </article>
+
+    <article class="card" tabindex="0" data-cat="health">
+      <div class="body">
+        <p class="mono">LetsMed · Santé</p>
+        <h3>Catalogue médical &amp; suivi de stock à distance</h3>
+        <div class="card-intel">
+          <p>Numérisation d'un catalogue complet de produits médicaux, avec visibilité du stock à distance et vues opérationnelles qui tiennent sous pression réglementaire.</p>
+          <ul>
+            <li>Catalogue complet numérisé</li>
+            <li>Visibilité du stock à distance sur les sites</li>
+          </ul>
+          </div>
+        <div class="foot mono"><span>Catalogue</span><span>Logistique</span></div>
+      </div>
+    </article>
+
+    <article class="card" tabindex="0" data-cat="product">
+      <div class="body">
+        <p class="mono">Minga RUNNER · Produit</p>
+        <h3>Audit de performance à partir de l'historique Garmin et Strava</h3>
+        <div class="card-intel">
+          <p>Plateforme grand public qui ingère l'historique Garmin et Strava d'un athlète, audite la charge, le sommeil et la VFC, puis produit des plans générés avec, en option, des flux de coaching humain par-dessus.</p>
+          <ul><li>Deux sources d'historique tierces ingérées</li><li>Charge, sommeil et VFC modélisés ensemble</li></ul>
+          </div>
+        <div class="foot mono"><span>Grand public</span><span>Intégrations</span></div>
+      </div>
+    </article>
+
+    <article class="card" tabindex="0" data-cat="un">
+      <div class="body">
+        <p class="mono">Agences onusiennes · Motion</p>
+        <h3>Motion design pour assemblées annuelles</h3>
+        <div class="card-intel">
+          <p>Séries vidéo pour deux organisations onusiennes et animation motion design pour assemblées annuelles, produites en parallèle du travail de publication.</p>
+          </div>
+        <div class="foot mono"><span>Animation</span><span>Éditorial</span></div>
+      </div>
+    </article>
+
+    <article class="card" tabindex="0" data-cat="industry">
+      <div class="body">
+        <p class="mono">Rotel · Industrie</p>
+        <h3>Packaging pour une nouvelle gamme</h3>
+        <div class="card-intel">
+          <p>Design de packaging sur une nouvelle gamme de produits.</p>
+          </div>
+        <div class="foot mono"><span>Packaging</span><span>Imprimé</span></div>
+      </div>
+    </article>
+
+    <article class="card" tabindex="0" data-cat="product">
+      <div class="body">
+        <p class="mono">Pizza Brothers · Produit</p>
+        <h3>ETA en direct et commande WhatsApp</h3>
+        <div class="card-intel">
+          <p>Application mobile, logiciel d'ETA en direct et commande via WhatsApp — une petite pizzeria, numérique du premier tap jusqu'à la cuisine.</p>
+          </div>
+        <div class="foot mono"><span>ETA en direct</span><span>WhatsApp</span></div>
+      </div>
+    </article>
+
+  </div>
+
+  <p class="mono" style="margin-block:2.5rem .75rem">Archives · planche-contact retrouvée</p>
+  <div class="sheet" id="sheet">
+    <a href="#work" aria-label="Travaux 3D"><img src="../assets/portfolio/3d_02.jpg" width="130" height="130" loading="lazy" alt="Travaux 3D"></a>
+    <a href="#work" aria-label="Travaux 3D"><img src="../assets/portfolio/3d_05.jpg" width="130" height="130" loading="lazy" alt="Travaux 3D"></a>
+    <a href="#work" aria-label="Travaux 3D"><img src="../assets/portfolio/3d_09.jpg" width="130" height="130" loading="lazy" alt="Travaux 3D"></a>
+    <a href="#work" aria-label="Travaux 3D"><img src="../assets/portfolio/3d_13.jpg" width="130" height="130" loading="lazy" alt="Travaux 3D"></a>
+    <a href="#work" aria-label="Travaux web"><img src="../assets/portfolio/web_01.jpg" width="130" height="130" loading="lazy" alt="Travaux web"></a>
+    <a href="#work" aria-label="Travaux web"><img src="../assets/portfolio/web_04.jpg" width="130" height="130" loading="lazy" alt="Travaux web"></a>
+    <a href="#work" aria-label="Travaux web"><img src="../assets/portfolio/web_10.jpg" width="130" height="130" loading="lazy" alt="Travaux web"></a>
+    <a href="#work" aria-label="Travaux web"><img src="../assets/portfolio/web_16.jpg" width="130" height="130" loading="lazy" alt="Travaux web"></a>
+    <a href="#work" aria-label="Travaux de production"><img src="../assets/portfolio/production_02.jpg" width="130" height="130" loading="lazy" alt="Travaux de production"></a>
+    <a href="#work" aria-label="Travaux de production"><img src="../assets/portfolio/production_06.jpg" width="130" height="130" loading="lazy" alt="Travaux de production"></a>
+    <a href="#work" aria-label="Publication"><img src="../assets/portfolio/publications_01.jpg" width="130" height="130" loading="lazy" alt="Publication"></a>
+    <a href="#work" aria-label="Publication"><img src="../assets/portfolio/publications_05.jpg" width="130" height="130" loading="lazy" alt="Publication"></a>
+    <a href="#work" aria-label="Identité"><img src="../assets/portfolio/branding_03.jpg" width="130" height="130" loading="lazy" alt="Identité"></a>
+    <a href="#work" aria-label="Identité"><img src="../assets/portfolio/branding_07.jpg" width="130" height="130" loading="lazy" alt="Identité"></a>
+    <a href="#work" aria-label="Illustration"><img src="../assets/portfolio/illustration_02.jpg" width="130" height="130" loading="lazy" alt="Illustration"></a>
+    <a href="#work" aria-label="Vidéo"><img src="../assets/portfolio/video_01.jpg" width="130" height="130" loading="lazy" alt="Vidéo"></a>
+    <a href="#work" aria-label="Mobile"><img src="../assets/portfolio/mobile_02.jpg" width="130" height="130" loading="lazy" alt="Mobile"></a>
+    <a href="#work" aria-label="IT"><img src="../assets/portfolio/it_01.jpg" width="130" height="130" loading="lazy" alt="IT"></a>
+  </div>
+  <p class="instr-cap" style="margin-block-start:.9rem">Dix-huit des 78 pièces retrouvées dans les archives du site lui-même, à leur taille d'origine de 130 px. Les originaux pleine résolution sont conservés au studio et les remplacent sur demande.</p>
+</section>
+
+<!-- ================= RECORD ================= -->
+<section class="wrap" id="record">
+  <div class="sec-head">
+    <i class="sec-rule" aria-hidden="true"></i>
+    <p class="mono">06 — Parcours</p>
+    <div>
+      <h2>De 2005 à aujourd'hui, avec des dates vérifiables.</h2>
+      <p class="lede">Chaque entrée ci-dessous s'appuie sur une date publiée ou sur une capture archivée de ce domaine.</p>
+    </div>
+  </div>
+  <ul class="tl">
+    <li><time datetime="2002-08">2002</time><div><h4>Mise en ligne d'elysium.cc</h4>
+      <p>Première capture du domaine dans l'Internet Archive, le 3 août 2002.</p></div></li>
+    <li><time datetime="2005">2005</time><div><h4>Fondation d'Elysium Sàrl à Genève</h4>
+      <p>Conseil en logiciel et en design, immatriculée dans le canton de Genève.</p></div></li>
+    <li><time datetime="2007">2007</time><div><h4>Toolbox concessionnaires Caterpillar</h4>
+      <p>Toolbox concessionnaires, scorecard, catmaps et localisateur servis depuis elysium.cc : le début d'un mandat qui a traversé plusieurs générations.</p></div></li>
+    <li><time datetime="2021-06">2021</time><div><h4>Portraits of Giants, Genève</h4>
+      <p>Support technique aux organisateurs d'un programme de conférences artistiques, scientifiques et culturelles durant le premier semestre 2021.</p></div></li>
+    <li><time datetime="2022-03">2022</time><div><h4>Pilote DME, hôpital PMCH, Freetown</h4>
+      <p>Logiciel médical lancé avec CUAMM — Médecins avec l'Afrique, après plus de trois semaines sur place en Sierra Leone.</p></div></li>
+    <li><time datetime="2023-05">2023</time><div><h4>Unités de soins néonatals de l'UNICEF</h4>
+      <p>Outils mis en œuvre pour l'UNICEF sur les sites SCBU en Sierra Leone, avec CUAMM et les autorités locales.</p></div></li>
+    <li><time datetime="2024-01">2024</time><div><h4>WIPO Global Awards</h4>
+      <p>Mission de conseil pour le programme de prix de l'OMPI destiné aux PME et aux startups, opéré sur la plateforme Award Force.</p></div></li>
+    <li><time datetime="2026">2026</time><div><h4>Infrastructure LLM privée</h4>
+      <p>Déploiement à poids ouverts sur du matériel contrôlé par le client, proposé comme pratique permanente.</p></div></li>
+  </ul>
+</section>
+
+<!-- ================= CITIES ================= -->
+<section class="wrap" id="cities">
+  <div class="sec-head">
+    <i class="sec-rule" aria-hidden="true"></i>
+    <p class="mono">07 — Livraison</p>
+    <div>
+      <h2>Trois villes, un seul modèle de livraison.</h2>
+      <p class="lede">Moins de douze personnes. Le mandat et la gouvernance sont à Genève ; la production à Buenos Aires et la recherche à Zurich.</p>
+    </div>
+  </div>
+  <div class="cities">
+    <article>
+      <h3>Genève</h3><p class="co mono">Suisse · Siège</p>
+      <p>Mandat client, gouvernance, contractualisation et pilotage de la livraison. Immatriculée dans le canton de Genève depuis 2005, à l'avenue Cardinal-Mermillod 36 à Carouge.</p>
+    </article>
+    <article>
+      <h3>Buenos Aires</h3><p class="co mono">Argentine · Studio</p>
+      <p>3D, visualisation et production motion : cartes interactives, environnements 3D, simulation de dispositifs et travaux d'animation.</p>
+    </article>
+    <article>
+      <h3>Zurich</h3><p class="co mono">Suisse · Elysium Labs <span class="todo" title="Indiqué Zurich sur le site 2026 et Mumbai en 2024. À confirmer avant la mise en ligne.">[à confirmer]</span></p>
+      <p>Recherche appliquée : modèles de segmentation, pipelines de recherche documentaire, systèmes agentiques et le travail d'évaluation qui décide de ce qui atteint la production client.</p>
+    </article>
+  </div>
+</section>
+
+<!-- ================= TRUST + CONTACT ================= -->
+<section class="wrap" id="contact">
+  <div class="sec-head">
+    <i class="sec-rule" aria-hidden="true"></i>
+    <p class="mono">08 — Travailler ensemble</p>
+    <div>
+      <h2>Ce que demandent les achats, et comment démarrer.</h2>
+      <p class="lede">Elysium prend un petit nombre de mandats à la fois. Dites-nous la contrainte et nous vous dirons vite si nous sommes la bonne maison.</p>
+    </div>
+  </div>
+
+  <div class="two">
+    <div>
+      <p class="mono" style="margin-block-end:1rem">Posture de conformité</p>
+      <div class="trust-list">
+        <div><h4>Localisation des données</h4><p>Hébergement suisse ou européen sur demande, nommé pour chaque mission, avec la région et la conservation inscrites au contrat.</p></div>
+        <div><h4>nLPD &amp; RGPD</h4><p>Contrat de sous-traitance disponible avant le lancement. Liste des sous-traitants fournie sur demande.</p></div>
+        <div><h4>Certifications</h4><p><span class="todo" title="Fournir la liste actuelle des certifications, ou indiquer clairement qu'il n'y en a aucune.">À fournir</span> — cette ligne reste vide tant qu'elle n'est pas vraie.</p></div>
+        <div><h4>Contact sécurité</h4><p><a href="mailto:info@elysium.cc">info@elysium.cc</a>, et un security.txt servi à /.well-known/security.txt.</p></div>
+        <div><h4>Entité juridique</h4><p>Elysium Sàrl, avenue Cardinal-Mermillod 36, Carouge, canton de Genève, Suisse. Numéro CHE
+          <span class="todo" title="À récupérer sur zefix.ch et à insérer. Ne jamais publier un numéro d'immatriculation supposé.">à insérer</span>.</p></div>
+      </div>
+    </div>
+
+    <div>
+      <p class="mono" style="margin-block-end:1rem">Confier un mandat</p>
+      <form id="contact-form" novalidate>
+        <div class="fields" style="display:grid;gap:1rem">
+          <div class="f2">
+            <div class="field"><label for="n">Nom</label><input id="n" name="name" required autocomplete="name"></div>
+            <div class="field"><label for="o">Organisation</label><input id="o" name="org" required autocomplete="organization"></div>
+          </div>
+          <div class="f2">
+            <div class="field"><label for="e">E-mail</label><input id="e" name="email" type="email" required autocomplete="email"></div>
+            <div class="field"><label for="t">Type de mandat</label>
+              <select id="t" name="type">
+                <option>Santé numérique</option>
+                <option>Infrastructure LLM privée</option>
+                <option>Donnée &amp; business intelligence</option>
+                <option>3D &amp; visualisation</option>
+                <option>Produit web ou mobile</option>
+                <option>Autre chose</option>
+              </select></div>
+          </div>
+          <div class="field"><label for="c">La contrainte déterminante</label>
+            <textarea id="c" name="constraint" required placeholder="Réglementation, disponibilité, localisation des données, langues, échéance — ce qui décide de la conception."></textarea>
+            <span class="hint">Envoyé vers un point de terminaison hébergé en Suisse. <span class="todo" title="À raccorder au point de terminaison suisse avant la mise en ligne ; le formulaire ne fait pour l'instant que valider.">Point de terminaison à raccorder</span>.</span>
+          </div>
+          <div><button class="btn" type="submit">Envoyer
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5"/></svg></button>
+            <a class="btn ghost" href="mailto:info@elysium.cc" style="margin-inline-start:.5rem">info@elysium.cc</a></div>
+        </div>
+        <p class="ok" role="status">Bien reçu. Elysium répond depuis Genève sous deux jours ouvrables.</p>
+      </form>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer class="wrap">
+  <div class="f-grid">
+    <div><h4>Elysium Sàrl</h4>
+      <p>Avenue Cardinal-Mermillod 36<br>Carouge, canton de Genève<br>Suisse</p></div>
+    <div><h4>Contact</h4>
+      <a href="mailto:info@elysium.cc">info@elysium.cc</a>
+      <a href="#contact">Confier un mandat</a></div>
+    <div><h4>Sections</h4>
+      <a href="#care">Santé numérique</a><a href="#llm">Infrastructure LLM privée</a>
+      <a href="#work">Mandats choisis</a><a href="#record">Parcours</a></div>
+    <div><h4>Mentions légales</h4>
+      <a href="/elysium-website/privacy/">Politique de confidentialité</a><a href="/elysium-website/legal/">Mentions légales</a>
+      <a href="/elysium-website/.well-known/security.txt">Sécurité</a></div>
+    <div><h4>Langue</h4>
+      <a href="/elysium-website/">English</a><a href="/elysium-website/fr/" aria-current="page">Français</a><a href="/elysium-website/de/">Deutsch</a></div>
+  </div>
+  <div class="f-bot mono">
+    <span>Design et technologie</span>
+    <span>Fondée à Genève en 2005</span>
+    <span class="sp">© 2026 Elysium Sàrl</span>
+  </div>
+</footer>
+
+<script src="../assets/vendor/motion.js" defer></script>
+<script src="../assets/vendor/anime.js" defer></script>
+<script src="../main.js" defer></script>
+</body>
+</html>
