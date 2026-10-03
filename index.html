@@ -3,941 +3,604 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Elysium — Design and technology</title>
-<meta name="description" content="Elysium Sàrl, Geneva, founded 2005. Software, design and applied research for UN agencies, regulated healthcare and industry. 82 clients, 256 projects, 21 years.">
+<title>Elysium — Design and technology · Geneva and Zürich since 2005</title>
+<meta name="description" content="Elysium Sàrl, Geneva and Zürich since 2005: software, 3D and data products for UBS, Nestlé, WIPO and WHO. 82 clients, 256 projects.">
 <link rel="canonical" href="https://elysium.cc/">
-<meta property="og:type" content="website">
-<meta property="og:site_name" content="Elysium">
-<meta property="og:title" content="Elysium — Design and technology">
-<meta property="og:description" content="Geneva since 2005. Electronic medical records in Sierra Leone, IP assessment tooling for WIPO, dealer systems for Caterpillar. 82 clients, 256 projects.">
-<meta property="og:url" content="https://elysium.cc/">
-<meta property="og:image" content="https://elysium.cc/assets/og.png">
-<meta property="og:locale" content="en_GB">
-<meta name="twitter:card" content="summary_large_image">
 <link rel="alternate" hreflang="en" href="https://elysium.cc/">
 <link rel="alternate" hreflang="fr" href="https://elysium.cc/fr/">
 <link rel="alternate" hreflang="de" href="https://elysium.cc/de/">
 <link rel="alternate" hreflang="x-default" href="https://elysium.cc/">
-<link rel="preload" as="font" type="font/woff2" href="assets/fonts/plex-sans-400.woff2" crossorigin>
-<link rel="preload" as="font" type="font/woff2" href="assets/fonts/plex-mono-500.woff2" crossorigin>
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Elysium">
+<meta property="og:title" content="Elysium — Design and technology.">
+<meta property="og:description" content="Software, 3D and data products for UBS, Nestlé, WIPO and WHO, built in Geneva and Zürich since 2005.">
+<meta property="og:url" content="https://elysium.cc/">
+<meta property="og:image" content="https://elysium.cc/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="en_GB">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#050607">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preload" href="assets/fonts/geist-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/geist-mono-400.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="styles.css">
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"Organization","name":"Elysium Sàrl","alternateName":"Elysium",
-"url":"https://elysium.cc/","email":"info@elysium.cc","foundingDate":"2005",
-"slogan":"Design and technology",
-"description":"Swiss software, design and applied-research firm working with UN agencies, regulated healthcare, finance and industry.",
-"address":{"@type":"PostalAddress","streetAddress":"Avenue Cardinal-Mermillod 36","addressLocality":"Carouge","addressRegion":"Genève","addressCountry":"CH"},
-"areaServed":"Worldwide",
-"knowsAbout":["Digital health","Medical image segmentation","Business intelligence","3D visualisation","Retrieval-augmented generation","Computer vision","Motion graphics"]}
+{"@context":"https://schema.org","@type":"Organization","name":"Elysium Sàrl","alternateName":"Elysium","url":"https://elysium.cc/",
+"email":"info@elysium.cc","telephone":"+41 44 505 39 00","foundingDate":"2005","foundingLocation":{"@type":"Place","name":"Geneva, Switzerland"},
+"slogan":"Design and technology.",
+"address":[
+ {"@type":"PostalAddress","streetAddress":"Avenue Cardinal-Mermillod 36","postalCode":"1227","addressLocality":"Carouge","addressRegion":"GE","addressCountry":"CH"},
+ {"@type":"PostalAddress","streetAddress":"Schaffhauserstrasse 449","postalCode":"8052","addressLocality":"Zürich","addressRegion":"ZH","addressCountry":"CH"}]}
 </script>
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
+<div class="ground" aria-hidden="true"></div>
+<div class="grid-bg" aria-hidden="true"><div><div></div></div></div>
 
-<svg width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute">
-  <filter id="grain">
-    <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch"/>
-    <feColorMatrix type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.35 0"/>
-    <feComposite in2="SourceGraphic" operator="in" result="noise"/>
-    <feBlend in="SourceGraphic" in2="noise" mode="multiply"/>
-  </filter>
-</svg>
-
-<header class="hdr">
-  <div class="hdr-in">
-    <a class="brand" href="#top">
-      <svg class="cross" width="20" height="20" viewBox="0 0 32 32" role="img" aria-label="Swiss cross">
-        <rect width="32" height="32" fill="#DA291C"/>
-        <path d="M13 6h6v7h7v6h-7v7h-6v-7H6v-6h7z" fill="#fff"/>
-      </svg>
-      <span>Elysium</span>
+<header class="nav" id="nav">
+  <div class="wrap nav-in">
+    <a class="brand" href="#top" aria-label="Elysium, back to top">
+      <span class="wm-plate"><img src="assets/wordmark.png" width="320" height="63" alt=""></span>
+      <svg class="mark" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" fill="#DA291C"/><path d="M13 6h6v7h7v6h-7v7h-6v-7H6v-6h7z" fill="#FFFFFF"/></svg>
     </a>
     <nav aria-label="Main">
-      <a href="#care" data-opt2>Healthcare</a>
-      <a href="#llm" data-opt2>Private LLMs</a>
-      <a href="#work">Work</a>
-      <a href="#spec" data-opt>Specialisation</a>
-      <a href="#record" data-opt>Record</a>
-      <a href="#contact">Contact</a>
+      <ul class="links label">
+        <li><a href="#clients">Clients</a></li>
+        <li><a href="#expertise">Expertise</a></li>
+        <li><a href="#healthcare">Healthcare</a></li>
+        <li><a href="#labs">Labs</a></li>
+        <li><a href="#private-ai">Private AI</a></li>
+        <li><a href="#work">Work</a></li>
+        <li><a href="#contact">Contact</a></li>
+        <li class="pill" aria-hidden="true"></li>
+      </ul>
     </nav>
+    <p class="label clock">GENÈVE <time data-clock></time></p>
+    <ul class="label lang" aria-label="Language">
+      <li><a href="/fr/" lang="fr" hreflang="fr">FR</a></li>
+      <li><a href="/de/" lang="de" hreflang="de">DE</a></li>
+      <li><a href="/" lang="en" hreflang="en" aria-current="true">EN</a></li>
+    </ul>
   </div>
 </header>
 
 <main id="main">
-<div id="top"></div>
 
-<!-- ================= HERO — the dark plate the site opens on ============== -->
-<section class="hero" id="hero">
-
-  <div class="hgrid" aria-hidden="true">
-    <i class="gv" style="--x:12.6%;--d:600ms"></i>
-    <i class="gv" style="--x:37.5%;--d:700ms"></i>
-    <i class="gv" style="--x:61.9%;--d:800ms"></i>
-    <i class="gv" style="--x:86.2%;--d:900ms"></i>
-    <i class="gh" style="--y:32.7%;--d:800ms"></i>
-    <i class="gh" style="--y:71.4%;--d:950ms"></i>
-    <i class="gp" style="--x:12.6%;--y:32.7%;--d:1000ms"></i>
-    <i class="gp" style="--x:37.5%;--y:32.7%;--d:1080ms"></i>
-    <i class="gp" style="--x:61.9%;--y:32.7%;--d:1160ms"></i>
-    <i class="gp" style="--x:86.2%;--y:32.7%;--d:1240ms"></i>
-    <i class="gp" style="--x:12.6%;--y:71.4%;--d:1320ms"></i>
-    <i class="gp" style="--x:37.5%;--y:71.4%;--d:1400ms"></i>
-    <i class="gp" style="--x:61.9%;--y:71.4%;--d:1480ms"></i>
-    <i class="gp" style="--x:86.2%;--y:71.4%;--d:1560ms"></i>
-  </div>
-
-  <div class="hbody">
-    <p class="mono heyebrow" style="--d:200ms">Elysium Sàrl · Geneva · since 2005</p>
-    <h1>
-      <span style="--d:400ms">Every word on this card</span>
-      <span class="hshine" style="--d:560ms">we put into production.</span>
-    </h1>
-  </div>
-
-  <figure class="hero-panel" style="--d:700ms">
-    <button type="button" class="bc-stage" id="bcard" aria-label="Show the contact details" aria-pressed="false">
-      <span class="bc-glow" aria-hidden="true"></span>
-      <div class="bc-plate" aria-hidden="true">
-
-        <div class="bc-face bc-front">
-          <span class="bc-keys">BLOCKCHAIN
-CSS
-JAVA
-SAAS
-XML
-JSON
-PHP
-JAVASCRIPT
-MYSQL
-PDF
-WORDPRESS
-HASH
-3D-ANIMATIONS
-DESIGN
-UI DESIGN
-BLOGGING
-PUBLICATIONS
-WEBSITES
-SEO
-API
-DATABASES
-SHA256
-VIDEO EDITING
-ENCRYPTION
-HTML
-EPUB
-SMTP
-ALGORITHMS
-DIGITAL DATA VISUALIZATION
-USABILITY
-TESTS
-SSH
-OPEN-SOURCE
-AGILE-METHODOLOGY
-CLIENT-SERVER
-VECTOR GRAPHICS
-AW3
-HTTPS
-HIPAA
-HL7
-VIDEO ENCODING
-VPN
-VRML
-NATIVE / HYBRID</span>
-          <span class="bc-mark"><b>ELYSIUM</b><i>Design + Technology</i></span>
-        </div>
-
-        <div class="bc-face bc-back bc-reveal">
-          <span class="bc-bar"></span>
-          <span class="bc-who">
-            <b>Elysium Sàrl</b>
-            <span>info@elysium.cc</span>
-            <span>www.elysium.cc</span>
-          </span>
-          <span class="bc-addr">
-            <span>3 Place du Cornavin | c/o Spacecode | 1201 Geneva | www.elysium.cc</span>
-            <span>36 Av. Cardinal-Mermillod | c/o Q&amp;S Consulting | 1227 Geneva | Switzerland</span>
-          </span>
-          <span class="bc-mark bc-mark-b"><b>ELYSIUM</b><i>Design + Technology</i></span>
-        </div>
-
-        <i class="bc-edge bc-edge-l"></i>
-        <i class="bc-edge bc-edge-r"></i>
-      </div>
-    </button>
+<!-- ================================ 1 HERO ================================ -->
+<section class="hero wrap cols" id="top" aria-labelledby="h-top">
+  <p class="label eyebrow"><svg class="mark" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" fill="#DA291C"/><path d="M13 6h6v7h7v6h-7v7h-6v-7H6v-6h7z" fill="#FFFFFF"/></svg>ELYSIUM SÀRL · GENEVA · ZÜRICH · SINCE 2005</p>
+  <h1 class="display" id="h-top">Design <span class="t2">and technology.</span></h1>
+  <p class="lede">Software, 3D and data products for UBS, Nestlé, WIPO and WHO, built in Geneva and Zürich since 2005.</p>
+  <p class="ctas"><a class="pill-btn primary" href="#contact">Start a project <span class="arr" aria-hidden="true">→</span></a><a class="pill-btn secondary" href="#work">See the work <span class="arr" aria-hidden="true">→</span></a></p>
+  <p class="hero-new label"><a href="#private-ai"><i aria-hidden="true"></i>In preparation: private AI servers <span aria-hidden="true">→</span></a></p>
+  <figure class="flag" aria-hidden="true">
+    <svg id="flag-build" viewBox="0 0 32 32" shape-rendering="crispEdges">
+      <defs><pattern id="nodes" width="1" height="1" patternUnits="userSpaceOnUse"><path d="M1 0H0V1" fill="none" stroke="rgba(255,255,255,.08)" stroke-width=".04"/><circle r=".08" fill="rgba(255,255,255,.22)" shape-rendering="geometricPrecision"/></pattern></defs>
+      <rect width="32" height="32" fill="url(#nodes)"/>
+      <path d="M32 0V32H0" fill="none" stroke="rgba(255,255,255,.08)" stroke-width=".04"/>
+      <g class="cells"></g>
+      <g class="solid"><rect width="32" height="32" fill="#DA291C"/><path d="M13 6h6v7h7v6h-7v7h-6v-7H6v-6h7z" fill="#FFFFFF"/></g>
+    </svg>
   </figure>
-
-  <p class="hleft" style="--d:1000ms">Electronic medical records for a hospital in Freetown.
-    IP assessment tooling for WIPO. Dealer systems for Caterpillar, served from this
-    domain since 2007.</p>
-
-  <div class="hright" style="--d:1150ms">
-    <p>Twenty-one years of software for organisations that audit their suppliers —
-      UN agencies, regulated healthcare, finance and industry.</p>
-    <a class="hcta" href="#contact">
-      <span aria-hidden="true">&#10022;</span>
-      <span>Start a mandate</span>
-    </a>
-  </div>
-
-  <div class="hmeta mono" style="--d:1300ms">
-    <span><b>82</b> clients</span>
-    <span><b>256</b> projects</span>
-    <span><b>21</b> years</span>
-    <span class="hchip">[ 12 IN THE TEAM ]</span>
-  </div>
-
 </section>
 
-<div class="ground-shift" data-to="paper" aria-hidden="true"></div>
-
-<!-- ================= ROSTER ================= -->
-<section class="wrap" id="roster">
-  <div class="sec-head">
-    <i class="sec-rule" aria-hidden="true"></i>
-    <p class="mono">01 — Mandates</p>
-    <div>
-      <h2>Twenty-one years of work for organisations that audit their suppliers.</h2>
-      <p class="lede">Named below because Elysium delivered under contract, directly or
-        white-label behind another agency. Several mandates ran for years; the Caterpillar
-        dealer toolbox was served from elysium.cc from 2007.</p>
-    </div>
+<!-- ================================ 2 CLIENTS ================================ -->
+<section class="sec" id="clients" aria-labelledby="h-clients">
+  <div class="wrap"><div class="sec-rule" aria-hidden="true"></div></div>
+  <div class="wrap cols sec-head">
+    <p class="label idx">01 / Clients</p>
+    <h2 id="h-clients">82 clients since 2005, from UBS and Nestlé to the WHO and WIPO.</h2>
+    <p class="lede">Swiss finance and industry, the international organisations of Geneva, and ventures such as LetsMed, BLU Healthcare and Striker. Some of the 256 projects shipped white-label, under the name of the agency that hired Elysium.</p>
+  </div>
+  <div class="wrap cols figs">
+    <p class="fig"><b>21</b><span class="label">Years · 2005–2026</span></p>
+    <p class="fig"><b>82</b><span class="label">Clients</span></p>
+    <p class="fig"><b>256</b><span class="label">Projects</span></p>
+    <p class="label figs-src">Clients and projects as published by Elysium in 2024.</p>
   </div>
 
-  <ul class="roster">
-    <li><b>WIPO</b><small>IP assessment software, Global Awards, Data Matrix, distance learning</small></li>
-    <li><b>ILO</b><small>End-to-end technical stack for the main annual conference</small></li>
-    <li><b>UNICEF</b><small>Special Care Baby Unit tooling, Sierra Leone, 2023</small></li>
-    <li><b>WHO</b><small>Publications and communication material</small></li>
-    <li><b>WTO</b><small>Publications and communication material</small></li>
-    <li><b>CUAMM</b><small>Electronic medical records, PMCH Freetown, 2022</small></li>
-    <li><b>Caterpillar</b><small>Dealer Advisor, heavy-equipment 3D, dealer locator, catmaps</small></li>
-    <li><b>UBS</b><small>Digital production</small></li>
-    <li><b>Nestlé</b><small>Digital production</small></li>
-    <li><b>UEFA</b><small>Motion graphics and video</small></li>
-    <li><b>Becton Dickinson</b><small>Medical device work</small></li>
-    <li><b>Medtronic</b><small>Medical device work</small></li>
-    <li><b>GIA</b><small>Diamond-origin platform and mobile app</small></li>
-    <li><b>Award Force</b><small>API dashboards, live programme metrics</small></li>
-    <li><b>Rotel</b><small>Product packaging</small></li>
-    <li><b>LetsMed</b><small>Medical catalogue, remote stock monitoring</small></li>
-  </ul>
-
-  <div class="stat-row">
-    <div><b data-count="82">82</b><span class="mono">Clients</span></div>
-    <div><b data-count="256">256</b><span class="mono">Projects delivered</span></div>
-    <div><b data-count="21">21</b><span class="mono">Years, since 2005</span></div>
-    <div><b data-count="3">3</b><span class="mono">Cities</span></div>
+  <div class="roster">
+    <div class="wrap cols"><p class="label">Mandates · point at or focus a name</p></div>
+    <div class="mq mq-row-a">
+      <ul class="mq-track" aria-label="Clients and their mandates">
+        <li><button type="button" data-m="3D visualisation of a real-estate project">UBS<span class="sr-only">: 3D visualisation of a real-estate project</span></button></li>
+        <li><button type="button" data-m="3D visualisation of corporate buildings and factories">Nestlé<span class="sr-only">: 3D visualisation of corporate buildings and factories</span></button></li>
+        <li><button type="button" data-m="Motion graphics for the annual meeting">UEFA<span class="sr-only">: motion graphics for the annual meeting</span></button></li>
+        <li><button type="button" data-m="Dealer Advisor platform, heavy-equipment 3D modelling, internal communication tools">Caterpillar<span class="sr-only">: Dealer Advisor platform, heavy-equipment 3D modelling, internal communication tools</span></button></li>
+        <li><button type="button" data-m="IT consulting, websites, communication material, motion graphics, medical 3D device simulation">WHO<span class="sr-only">: IT consulting, websites, communication material, motion graphics, medical 3D device simulation</span></button></li>
+        <li><button type="button" data-m="Distance-learning support, Global Awards technical partner, WIPO Data Matrix, IP Assessment tool">WIPO<span class="sr-only">: distance-learning support, Global Awards technical partner, WIPO Data Matrix, IP Assessment tool</span></button></li>
+        <li><button type="button" data-m="Mobile app, diamond-origin software and publication platform">GIA<span class="sr-only">: mobile app, diamond-origin software and publication platform</span></button></li>
+        <li><button type="button" data-m="Electronic and printed publications, IT support for the annual conference">ILO<span class="sr-only">: electronic and printed publications, IT support for the annual conference</span></button></li>
+        <li><button type="button" data-m="Mobile app for the sales team">Medtronic<span class="sr-only">: mobile app for the sales team</span></button></li>
+        <li><button type="button" data-m="Publications and communication material">UNICEF<span class="sr-only">: publications and communication material</span></button></li>
+      </ul>
+    </div>
+    <div class="mq mq-row-b">
+      <ul class="mq-track" aria-label="More clients, by sector">
+        <li><button type="button" data-m="Enterprise &amp; industry">Becton Dickinson<span class="sr-only">: enterprise and industry</span></button></li>
+        <li><button type="button" data-m="Enterprise &amp; industry">Rotel<span class="sr-only">: enterprise and industry</span></button></li>
+        <li><button type="button" data-m="UN system &amp; international">WTO<span class="sr-only">: UN system and international</span></button></li>
+        <li><button type="button" data-m="UN system &amp; international · EMR pilot, Freetown, March 2022">CUAMM<span class="sr-only">: UN system and international; EMR pilot, Freetown, March 2022</span></button></li>
+        <li><button type="button" data-m="Certification &amp; sector · API dashboards, January 2024">Award Force<span class="sr-only">: certification and sector; API dashboards, January 2024</span></button></li>
+        <li><button type="button" data-m="Ventures &amp; SMEs">BLU Healthcare<span class="sr-only">: ventures and SMEs</span></button></li>
+        <li><button type="button" data-m="Ventures &amp; SMEs · digital catalogue and remote stock monitoring">LetsMed<span class="sr-only">: ventures and SMEs; digital catalogue and remote stock monitoring</span></button></li>
+        <li><button type="button" data-m="Ventures &amp; SMEs">Faro Investors<span class="sr-only">: ventures and SMEs</span></button></li>
+        <li><button type="button" data-m="Ventures &amp; SMEs">Minga RUNNER<span class="sr-only">: ventures and SMEs</span></button></li>
+        <li><button type="button" data-m="Ventures &amp; SMEs">Striker<span class="sr-only">: ventures and SMEs</span></button></li>
+        <li><button type="button" data-m="Ventures &amp; SMEs">Geneva Guide Association<span class="sr-only">: ventures and SMEs</span></button></li>
+        <li><button type="button" data-m="Ventures &amp; SMEs">Pizza Brothers<span class="sr-only">: ventures and SMEs</span></button></li>
+      </ul>
+    </div>
+    <div class="wrap cols"><p class="readout mono" aria-hidden="true"><span class="label">22 clients named · 10 with a published mandate</span></p></div>
   </div>
 </section>
 
-<!-- ================= SPECIALISATION ================= -->
-<section class="wrap" id="spec">
-  <div class="sec-head">
-    <i class="sec-rule" aria-hidden="true"></i>
-    <p class="mono">02 — Where we operate</p>
-    <div>
-      <h2>Nine practices. Research and development is the one that feeds the rest.</h2>
-      <p class="lede">Stack choices follow the constraint in front of them: Salesforce,
-        Oracle DB, AWS and Azure where the client already lives there, open-source
-        libraries where they do not.</p>
-    </div>
+<!-- ================================ 3 EXPERTISE ================================ -->
+<section class="sec" id="expertise" data-ground="raised" aria-labelledby="h-xp">
+  <div class="wrap"><div class="sec-rule" aria-hidden="true"></div></div>
+  <div class="wrap cols sec-head">
+    <p class="label idx">02 / Expertise</p>
+    <h2 id="h-xp">Nine practices, from Salesforce dashboards to cardiac ultrasound.</h2>
+    <p class="lede">3D is produced in the Buenos Aires studio and research runs at Elysium Labs in Zürich, under the Geneva headquarters founded in 2005.</p>
   </div>
+  <div class="wrap cols">
+    <div class="xp-side" aria-hidden="true">
+      <p class="xp-count"><span class="n">01</span><span class="of">/ 09</span></p>
+      <p class="xp-now">Data-driven applications &amp; business intelligence</p>
+      <p class="label xp-where"></p>
+    </div>
+    <ol class="xp-list">
+      <li class="xp-item"><p class="label no">01 / 09</p>
+        <h3>Data-driven applications &amp; business intelligence</h3>
+        <p>Applications on Salesforce, Oracle DB, AWS and Azure, with real-time extraction and APIs: WIPO’s IP Assessment tool and Data Matrix, and Caterpillar’s Dealer Advisor platform.</p>
+        <p class="label stack">Salesforce · Oracle DB · AWS · Azure · APIs</p></li>
+      <li class="xp-item" data-where="Buenos Aires"><p class="label no">02 / 09</p>
+        <h3>3D &amp; visualisation</h3>
+        <p>3D visualisation of a real-estate project for UBS and of Nestlé’s corporate buildings and factories, heavy-equipment models for Caterpillar, and medical 3D device simulation for the WHO.</p>
+        <p class="label stack">Buenos Aires studio</p></li>
+      <li class="xp-item" data-where="Freetown · Sierra Leone"><p class="label no">03 / 09</p>
+        <h3>Digital healthcare</h3>
+        <p>An electronic medical record piloted at PMCH Hospital, Freetown, in March 2022; UNICEF tooling for Special Care Baby Units in May 2023; LetsMed’s catalogue with remote stock monitoring.</p>
+        <p><a class="link" href="#healthcare">The Sierra Leone record</a></p></li>
+      <li class="xp-item"><p class="label no">04 / 09</p>
+        <h3>Motion graphics &amp; editorial production</h3>
+        <p>Motion graphics for UEFA’s annual meeting and for the WHO; electronic and printed publications for the ILO, publications for UNICEF.</p></li>
+      <li class="xp-item"><p class="label no">05 / 09</p>
+        <h3>Mobile &amp; cross-platform</h3>
+        <p>GIA’s diamond-origin app, and a mobile app for Medtronic’s sales team.</p>
+        <p><a class="link" href="#case-gia">The GIA case</a></p></li>
+      <li class="xp-item"><p class="label no">06 / 09</p>
+        <h3>Business automation &amp; agentic AI</h3>
+        <p>Workflows on n8n and agents that act on CRMs and databases, built on open-weight language models.</p>
+        <p><a class="link" href="#case-n8n">An n8n workflow</a> · <a class="link" href="#private-ai">Private AI servers, in preparation</a></p></li>
+      <li class="xp-item"><p class="label no">07 / 09</p>
+        <h3>Computer vision &amp; robotics integration</h3>
+        <p>Segmentation measured on Elysium’s own ultrasound frames: the heart’s cavity falls from 2,324 to 1,965 pixels, −15.4%.</p></li>
+      <li class="xp-item"><p class="label no">08 / 09</p>
+        <h3>Institutional multi-language web production</h3>
+        <p>Websites and communication material for the WHO, distance-learning support for WIPO, and IT support for the ILO’s annual conference.</p></li>
+      <li class="xp-item" data-where="Zürich"><p class="label no">09 / 09</p>
+        <h3>R&amp;D: Elysium Labs</h3>
+        <p>At Schaffhauserstrasse 449, Zürich: medical-image segmentation, diffusion models, computer vision, agentic systems and retrieval-augmented generation, taken from discovery to deployment.</p>
+        <p><a class="link" href="#labs">Inside Elysium Labs</a></p></li>
+    </ol>
+  </div>
+</section>
 
-  <div class="spec">
-    <article class="lead">
-      <p class="mono">Elysium Labs</p>
-      <h3>Research &amp; development</h3>
-      <p>An active deployment practice. Retrieval pipelines and agentic systems run in
-        client production today. Diffusion and generative modelling are in evaluation, and
-        we say which is which.</p>
-      <figure class="lab-fig">
-        <div class="lab-img">
-          <img src="assets/work/echo-00.jpg" width="560" height="560" loading="lazy"
-               alt="Apical four-chamber cardiac ultrasound with the computed ventricular cavity boundary.">
-          <svg class="ov" viewBox="0 0 112 112" aria-hidden="true">
-            <path class="trace" id="trace" d="M93.09,59.83C93.18,60.35 93.28,60.87 93.32,61.40C93.35,61.93 93.30,62.48 93.30,63.03C93.29,63.58 93.32,64.15 93.30,64.70C93.28,65.26 93.24,65.82 93.20,66.38C93.15,66.94 93.09,67.50 93.04,68.08C92.99,68.66 92.98,69.26 92.90,69.84C92.82,70.43 92.69,71.00 92.57,71.58C92.45,72.16 92.33,72.76 92.18,73.34C92.03,73.93 91.87,74.52 91.66,75.10C91.46,75.68 91.22,76.27 90.94,76.82C90.67,77.37 90.42,77.97 90.03,78.38C89.63,78.78 89.08,79.00 88.55,79.24C88.02,79.48 87.42,79.65 86.83,79.80C86.24,79.95 85.64,80.05 85.02,80.12C84.40,80.19 83.75,80.22 83.10,80.21C82.45,80.20 81.79,80.14 81.12,80.05C80.45,79.96 79.73,79.76 79.08,79.64C78.42,79.53 77.75,79.38 77.18,79.35C76.62,79.32 76.18,79.35 75.70,79.47C75.22,79.58 74.77,79.55 74.31,80.03C73.86,80.51 73.43,81.58 72.95,82.35C72.48,83.12 71.99,83.87 71.48,84.64C70.96,85.41 70.42,86.20 69.86,86.96C69.30,87.73 68.71,88.61 68.12,89.25C67.53,89.89 66.92,90.36 66.33,90.79C65.75,91.22 65.21,91.54 64.62,91.81C64.02,92.08 63.39,92.52 62.76,92.42C62.13,92.32 61.45,91.68 60.86,91.19C60.28,90.70 59.76,90.09 59.27,89.47C58.77,88.85 58.32,88.15 57.87,87.46C57.43,86.78 57.01,86.02 56.62,85.36C56.22,84.71 55.86,84.09 55.51,83.51C55.16,82.94 54.80,82.49 54.52,81.91C54.23,81.33 54.01,80.67 53.80,80.02C53.59,79.38 53.43,78.66 53.25,78.05C53.08,77.44 52.90,76.90 52.75,76.34C52.60,75.77 52.44,75.24 52.34,74.68C52.24,74.11 52.22,73.49 52.16,72.93C52.11,72.37 52.07,71.83 52.03,71.31C51.99,70.79 51.96,70.30 51.92,69.81C51.88,69.33 51.82,68.87 51.80,68.41C51.78,67.94 51.79,67.47 51.78,67.02C51.77,66.58 51.74,66.15 51.74,65.72C51.74,65.30 51.78,64.87 51.79,64.45C51.80,64.04 51.79,63.65 51.80,63.25C51.80,62.86 51.82,62.47 51.81,62.08C51.81,61.70 51.80,61.32 51.77,60.93C51.75,60.54 51.71,60.14 51.66,59.75C51.62,59.35 51.54,58.96 51.49,58.56C51.45,58.16 51.47,57.78 51.40,57.36C51.33,56.94 51.16,56.50 51.05,56.05C50.94,55.61 50.83,55.16 50.73,54.70C50.62,54.23 50.55,53.79 50.43,53.28C50.31,52.78 50.12,52.22 50.00,51.66C49.87,51.11 49.79,50.55 49.70,49.96C49.60,49.37 49.54,48.79 49.42,48.12C49.30,47.46 49.13,46.77 48.96,45.96C48.79,45.16 48.58,44.24 48.39,43.30C48.19,42.35 47.98,41.34 47.79,40.29C47.61,39.24 47.34,38.04 47.26,37.00C47.19,35.96 47.25,34.99 47.35,34.05C47.45,33.12 47.61,32.23 47.84,31.40C48.07,30.57 48.34,29.76 48.72,29.06C49.09,28.37 49.52,27.70 50.09,27.22C50.67,26.75 51.40,26.45 52.14,26.21C52.88,25.96 53.70,25.82 54.53,25.74C55.36,25.65 56.29,25.71 57.14,25.72C57.99,25.72 58.83,25.56 59.65,25.76C60.46,25.96 61.27,26.50 62.05,26.91C62.82,27.33 63.57,27.79 64.30,28.23C65.03,28.67 65.73,29.13 66.42,29.56C67.11,29.99 67.78,30.38 68.43,30.82C69.08,31.26 69.71,31.69 70.31,32.20C70.91,32.72 71.49,33.32 72.04,33.91C72.58,34.50 73.11,35.28 73.61,35.72C74.11,36.16 74.56,36.29 75.03,36.55C75.50,36.81 75.97,37.04 76.44,37.27C76.92,37.51 77.42,37.69 77.88,37.96C78.34,38.23 78.80,38.54 79.21,38.87C79.63,39.20 79.96,39.63 80.36,39.96C80.76,40.28 81.17,40.55 81.60,40.81C82.04,41.08 82.55,41.27 82.98,41.54C83.41,41.81 83.80,42.09 84.16,42.42C84.52,42.75 84.78,43.16 85.13,43.52C85.48,43.89 85.90,44.25 86.26,44.62C86.62,45.00 86.94,45.40 87.29,45.77C87.65,46.14 88.06,46.44 88.39,46.82C88.71,47.20 89.01,47.62 89.24,48.07C89.48,48.52 89.59,49.05 89.79,49.52C89.98,49.99 90.16,50.44 90.40,50.88C90.65,51.32 91.04,51.70 91.26,52.17C91.48,52.64 91.57,53.19 91.72,53.69C91.87,54.20 92.02,54.70 92.14,55.21C92.27,55.72 92.37,56.24 92.47,56.75C92.57,57.26 92.66,57.77 92.76,58.29C92.86,58.80 93.00,59.31 93.09,59.83Z"></path>
-          </svg>
+<!-- ================================ 4 RECORD ================================ -->
+<section class="sec" id="record" aria-labelledby="h-record">
+  <div class="wrap"><div class="sec-rule" aria-hidden="true"></div></div>
+  <div class="wrap cols sec-head">
+    <p class="label idx">03 / Record</p>
+    <h2 id="h-record">69 archived pieces, 22 named clients, 8 dates since 2002.</h2>
+    <p class="lede">The archive count comes from the Internet Archive’s copies of elysium.cc; the clients are those Elysium named on its own site in 2024 and 2026.</p>
+  </div>
+  <div class="wrap cols">
+    <div class="span-r" id="chart-a" data-of="of" data-source-label="Source:" data-bars="Horizontal bars." data-view-chart="View as chart" data-view-table="View as table">
+      <div class="chart-tools">
+        <div class="seg" role="group" aria-label="Dataset">
+          <span class="seg-pill" aria-hidden="true"></span>
+          <button type="button" aria-pressed="true">Archive by discipline</button>
+          <button type="button" aria-pressed="false">Clients by sector</button>
         </div>
-        <figcaption>Cavity boundary computed from the frame pixels — 2 324 px at frame 0,
-          1 965 px at frame 15, a 15.4% contraction. Research, not a product.</figcaption>
+        <button class="chip view-table" type="button" aria-pressed="false">View as table</button>
+      </div>
+      <figure class="chart-fig">
+        <svg width="100%" height="424" tabindex="-1" role="group" aria-labelledby="ca-t" aria-describedby="ca-d">
+          <title id="ca-t">Archive by discipline: 69 pieces</title>
+          <desc id="ca-d">Horizontal bars. 3D 15, Web 14, Branding 9, Production 9, Illustration 7, Publications 5, Mobile 4, Video 3, IT 3.</desc>
+          <g class="ticks" aria-hidden="true">
+            <g class="tick" data-t="0"><line x1="0%" x2="0%" y1="20" y2="424"/><text x="0%" y="12" text-anchor="start">0</text></g>
+            <g class="tick" data-t="5"><line x1="33.333%" x2="33.333%" y1="20" y2="424"/><text x="33.333%" y="12" text-anchor="middle">5</text></g>
+            <g class="tick" data-t="10"><line x1="66.667%" x2="66.667%" y1="20" y2="424"/><text x="66.667%" y="12" text-anchor="middle">10</text></g>
+            <g class="tick" data-t="15"><line x1="100%" x2="100%" y1="20" y2="424"/><text x="100%" y="12" text-anchor="end">15</text></g>
+          </g>
+          <g class="xhair" aria-hidden="true" opacity="0"><line class="xv" y1="20" y2="424"/><line class="xh" x1="0" x2="100%"/></g>
+          <g class="row" tabindex="0" role="img" aria-label="3D: 15 pieces" transform="translate(0 28)"><rect class="hit" y="-4" width="100%" height="44" rx="6"/><text class="lab" y="14">3D</text><text class="lab" y="14" opacity="0"></text><text class="val" x="100%" y="14" text-anchor="end">15</text><g class="bar" transform="scale(1 1)"><rect class="b" y="22" width="100%" height="12"/><rect class="hi" y="22" width="100%" height="12" opacity="0"/></g></g>
+          <g class="row" tabindex="0" role="img" aria-label="Web: 14 pieces" transform="translate(0 72)"><rect class="hit" y="-4" width="100%" height="44" rx="6"/><text class="lab" y="14">Web</text><text class="lab" y="14" opacity="0"></text><text class="val" x="100%" y="14" text-anchor="end">14</text><g class="bar" transform="scale(.9333 1)"><rect class="b" y="22" width="100%" height="12"/><rect class="hi" y="22" width="100%" height="12" opacity="0"/></g></g>
+          <g class="row" tabindex="0" role="img" aria-label="Branding: 9 pieces" transform="translate(0 116)"><rect class="hit" y="-4" width="100%" height="44" rx="6"/><text class="lab" y="14">Branding</text><text class="lab" y="14" opacity="0"></text><text class="val" x="100%" y="14" text-anchor="end">9</text><g class="bar" transform="scale(.6 1)"><rect class="b" y="22" width="100%" height="12"/><rect class="hi" y="22" width="100%" height="12" opacity="0"/></g></g>
+          <g class="row" tabindex="0" role="img" aria-label="Production: 9 pieces" transform="translate(0 160)"><rect class="hit" y="-4" width="100%" height="44" rx="6"/><text class="lab" y="14">Production</text><text class="lab" y="14" opacity="0"></text><text class="val" x="100%" y="14" text-anchor="end">9</text><g class="bar" transform="scale(.6 1)"><rect class="b" y="22" width="100%" height="12"/><rect class="hi" y="22" width="100%" height="12" opacity="0"/></g></g>
+          <g class="row" tabindex="0" role="img" aria-label="Illustration: 7 pieces" transform="translate(0 204)"><rect class="hit" y="-4" width="100%" height="44" rx="6"/><text class="lab" y="14">Illustration</text><text class="lab" y="14" opacity="0"></text><text class="val" x="100%" y="14" text-anchor="end">7</text><g class="bar" transform="scale(.4667 1)"><rect class="b" y="22" width="100%" height="12"/><rect class="hi" y="22" width="100%" height="12" opacity="0"/></g></g>
+          <g class="row" tabindex="0" role="img" aria-label="Publications: 5 pieces" transform="translate(0 248)"><rect class="hit" y="-4" width="100%" height="44" rx="6"/><text class="lab" y="14">Publications</text><text class="lab" y="14" opacity="0"></text><text class="val" x="100%" y="14" text-anchor="end">5</text><g class="bar" transform="scale(.3333 1)"><rect class="b" y="22" width="100%" height="12"/><rect class="hi" y="22" width="100%" height="12" opacity="0"/></g></g>
+          <g class="row" tabindex="0" role="img" aria-label="Mobile: 4 pieces" transform="translate(0 292)"><rect class="hit" y="-4" width="100%" height="44" rx="6"/><text class="lab" y="14">Mobile</text><text class="lab" y="14" opacity="0"></text><text class="val" x="100%" y="14" text-anchor="end">4</text><g class="bar" transform="scale(.2667 1)"><rect class="b" y="22" width="100%" height="12"/><rect class="hi" y="22" width="100%" height="12" opacity="0"/></g></g>
+          <g class="row" tabindex="0" role="img" aria-label="Video: 3 pieces" transform="translate(0 336)"><rect class="hit" y="-4" width="100%" height="44" rx="6"/><text class="lab" y="14">Video</text><text class="lab" y="14" opacity="0"></text><text class="val" x="100%" y="14" text-anchor="end">3</text><g class="bar" transform="scale(.2 1)"><rect class="b" y="22" width="100%" height="12"/><rect class="hi" y="22" width="100%" height="12" opacity="0"/></g></g>
+          <g class="row" tabindex="0" role="img" aria-label="IT: 3 pieces" transform="translate(0 380)"><rect class="hit" y="-4" width="100%" height="44" rx="6"/><text class="lab" y="14">IT</text><text class="lab" y="14" opacity="0"></text><text class="val" x="100%" y="14" text-anchor="end">3</text><g class="bar" transform="scale(.2 1)"><rect class="b" y="22" width="100%" height="12"/><rect class="hi" y="22" width="100%" height="12" opacity="0"/></g></g>
+        </svg>
+        <div class="tip" aria-hidden="true"><b></b><span class="mono"></span><span class="n"></span></div>
       </figure>
-      <div class="tags"><b>Segmentation</b><b>Deep learning</b><b>RAG</b><b>Agents</b><b>Diffusion</b><b>Generative modelling</b></div>
-    </article>
-
-    <article>
-      <p class="mono">Practice</p>
-      <h3>Digital healthcare</h3>
-      <p>Electronic medical records, neonatal care tooling, product catalogues with remote
-        stock visibility, and clinical workflows that hold up under regulatory review.</p>
-      <div class="tags"><b>EMR</b><b>Catalogues</b><b>Stock monitoring</b><b>Clinical UX</b></div>
-    </article>
-
-    <article>
-      <p class="mono">Practice</p>
-      <h3>Data-driven applications &amp; business intelligence</h3>
-      <p>Real-time database extraction and API integration over Salesforce, Oracle DB, AWS
-        and Azure, surfaced as dashboards leadership actually opens.</p>
-      <div class="tags"><b>Salesforce</b><b>Oracle DB</b><b>AWS</b><b>Azure</b><b>APIs</b></div>
-    </article>
-
-    <article>
-      <p class="mono">Practice</p>
-      <h3>3D &amp; visualisation</h3>
-      <p>Interactive maps, 3D environments, medical device simulation and data
-        visualisation, produced in the Buenos Aires studio.</p>
-      <div class="tags"><b>Interactive maps</b><b>3D environments</b><b>Device simulation</b></div>
-    </article>
-
-    <article>
-      <p class="mono">Practice</p>
-      <h3>Business automation &amp; agentic AI</h3>
-      <p>Workflow automation over existing systems, and agents that query complex
-        databases in natural language while staying grounded in the source records.</p>
-      <div class="tags"><b>n8n</b><b>Agents</b><b>Grounding</b><b>Workflow</b></div>
-    </article>
-
-    <article>
-      <p class="mono">Practice</p>
-      <h3>Computer vision &amp; robotics integration</h3>
-      <p>Vision models put to work on physical processes, from inspection through to
-        robotic handling.</p>
-      <div class="tags"><b>Detection</b><b>Segmentation</b><b>Robotics</b></div>
-    </article>
-
-    <article>
-      <p class="mono">Practice</p>
-      <h3>Mobile &amp; cross-platform product</h3>
-      <p>iOS and Android products people open every week: Striker across European cities,
-        the GIA diamond-origin app, a live-ETA ordering flow for a single pizzeria.</p>
-      <div class="tags"><b>iOS</b><b>Android</b><b>Cross-platform</b></div>
-    </article>
-
-    <article>
-      <p class="mono">Practice</p>
-      <h3>Motion graphics &amp; editorial production</h3>
-      <p>Animation for annual meetings, electronic and printed publications, and the
-        communication material around a conference programme.</p>
-      <div class="tags"><b>After Effects</b><b>3D animation</b><b>Print</b><b>Editorial</b></div>
-    </article>
-
-    <article>
-      <p class="mono">Practice</p>
-      <h3>Institutional &amp; multi-domain web production</h3>
-      <p>Public and private sites across many organisations, technologies and languages,
-        including the multilingual estates the UN system runs on.</p>
-      <div class="tags"><b>Multilingual</b><b>Accessibility</b><b>CMS</b><b>Migration</b></div>
-    </article>
-  </div>
-</section>
-
-<!-- ================= HEALTHCARE ================= -->
-<section class="wrap" id="care">
-  <div class="sec-head">
-    <i class="sec-rule" aria-hidden="true"></i>
-    <p class="mono">03 — Digital healthcare</p>
-    <div>
-      <h2>Software that ran in a hospital with intermittent power.</h2>
-      <p class="lede">Healthcare is the practice Elysium is judged on. The strongest
-        reference is also the hardest one.</p>
+      <div class="tbl sr-only"><table class="data" data-set="discipline" data-title="Archive by discipline" data-unit="pieces" data-source="Internet Archive copies of elysium.cc/assets/portfolio/">
+        <caption>Archive by discipline. Source: Internet Archive copies of elysium.cc/assets/portfolio/.</caption>
+        <thead><tr><th scope="col">Discipline</th><th scope="col">Pieces</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">3D</th><td>15</td></tr><tr><th scope="row">Web</th><td>14</td></tr>
+          <tr><th scope="row">Branding</th><td>9</td></tr><tr><th scope="row">Production</th><td>9</td></tr>
+          <tr><th scope="row">Illustration</th><td>7</td></tr><tr><th scope="row">Publications</th><td>5</td></tr>
+          <tr><th scope="row">Mobile</th><td>4</td></tr><tr><th scope="row">Video</th><td>3</td></tr>
+          <tr><th scope="row">IT</th><td>3</td></tr>
+        </tbody>
+        <tfoot><tr><th scope="row">Total</th><td>69</td></tr></tfoot>
+      </table></div>
+      <div class="tbl sr-only" hidden><table class="data" data-set="sector" data-title="Clients by sector" data-unit="clients" data-source="clients named by Elysium, 2024 and 2026">
+        <caption>Clients by sector. Source: clients named by Elysium, 2024 and 2026.</caption>
+        <thead><tr><th scope="col">Sector</th><th scope="col">Clients</th><th scope="col">Names</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Enterprise &amp; industry</th><td>7</td><td>UBS, Nestlé, UEFA, Caterpillar, Becton Dickinson, Medtronic, Rotel</td></tr>
+          <tr><th scope="row">UN system &amp; international</th><td>6</td><td>WHO, WIPO, WTO, UNICEF, ILO, CUAMM</td></tr>
+          <tr><th scope="row">Certification &amp; sector</th><td>2</td><td>GIA, Award Force</td></tr>
+          <tr><th scope="row">Ventures &amp; SMEs</th><td>7</td><td>BLU Healthcare, LetsMed, Faro Investors, Minga RUNNER, Striker, Geneva Guide Association, Pizza Brothers</td></tr>
+        </tbody>
+        <tfoot><tr><th scope="row">Total</th><td>22</td><td></td></tr></tfoot>
+      </table></div>
+      <p class="total"><span class="label">Total</span> <span class="mono" data-total>69</span> <span class="unit-out">pieces</span></p>
+      <p class="src" data-src>Source: Internet Archive copies of elysium.cc/assets/portfolio/.</p>
     </div>
   </div>
 
-  <div class="care">
-    <div class="case">
-      <p class="mono">Flagship · 2022–2023 · Sierra Leone</p>
-      <h3>Electronic medical records, PMCH Hospital, Freetown</h3>
-      <p>Delivered with CUAMM — Doctors with Africa — and local health authorities. The
-        pilot launched in March 2022 after more than three weeks of Elysium staff working
-        on site in Freetown. In May 2023 the collaboration extended to a tool for UNICEF,
-        deployed across Special Care Baby Units.</p>
-      <p>Records had to stay correct through power cuts and intermittent connectivity, and
-        legible to clinical staff who had no time to be trained twice. Those two
-        constraints shaped every screen.</p>
-      <dl>
-        <dt>Partners</dt><dd>CUAMM — Doctors with Africa, UNICEF, local health authorities</dd>
-        <dt>Launched</dt><dd>March 2022, pilot at PMCH Hospital</dd>
-        <dt>Extended</dt><dd>May 2023, UNICEF SCBU tooling</dd>
-        <dt>On site</dt><dd>3+ weeks, Freetown</dd>
-        <dt>Constraint</dt><dd>Intermittent power and connectivity; clinical legibility</dd>
+  <div class="tl blk" id="timeline">
+    <div class="tl-pin">
+      <div class="tl-stage wrap cols">
+        <div class="span-r">
+          <div class="tl-head"><h3>2002 → 2026</h3><p class="tl-yr mono" aria-hidden="true">2026</p></div>
+          <div class="tl-track">
+            <svg class="tl-axis" aria-hidden="true" width="100%" height="24"></svg>
+            <ol class="tl-list">
+              <li data-x=".025" data-lane="a1"><time datetime="2002-08-03">3 Aug 2002</time><h4>elysium.cc goes live</h4><p>First archived copy of the domain.</p></li>
+              <li data-x=".125" data-lane="b1"><time datetime="2005">2005</time><h4>Elysium Sàrl founded</h4><p>Geneva.</p></li>
+              <li data-x=".208" data-lane="a2"><time datetime="2007">2007</time><h4>Caterpillar dealer toolbox</h4><p>Served from elysium.cc.</p></li>
+              <li data-x=".802" data-lane="b1"><time datetime="2021">H1 2021</time><h4>Portraits of Giants</h4><p>Exhibition, Geneva.</p></li>
+              <li data-x=".840" data-lane="a1"><time datetime="2022-03">Mar 2022</time><h4>EMR pilot, PMCH Freetown</h4><p>With CUAMM.</p></li>
+              <li data-x=".890" data-lane="b2" class="end"><time datetime="2023-05">May 2023</time><h4>UNICEF SCBU tooling</h4><p>Sierra Leone, with CUAMM.</p></li>
+              <li data-x=".918" data-lane="a2" class="end"><time datetime="2024-01">Jan 2024</time><h4>WIPO Global Awards</h4><p>Consulting on Award Force.</p></li>
+              <li data-x="1" data-lane="a3" class="end"><time datetime="2026">2026</time><h4>Today</h4><p>21 years, Geneva and Zürich.</p></li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================ 5 HEALTHCARE ================================ -->
+<section class="sec" id="healthcare" aria-labelledby="h-hc">
+  <div class="wrap"><div class="sec-rule" aria-hidden="true"></div></div>
+  <div class="wrap cols sec-head">
+    <p class="label idx">04 / Digital healthcare</p>
+    <h2 id="h-hc">An electronic medical record, piloted in a Freetown hospital in March 2022.</h2>
+    <p class="lede">Two mandates in Sierra Leone with CUAMM: a hospital record system in 2022, then tooling for UNICEF’s neonatal units in 2023.</p>
+  </div>
+  <div class="wrap cols hc">
+    <div class="hc-case">
+      <h3>PMCH Hospital, Freetown, with CUAMM</h3>
+      <p>Elysium staff spent more than three weeks on site at PMCH Hospital in Freetown to launch the electronic medical record pilot with CUAMM in March 2022.</p>
+      <p>In May 2023 the work with CUAMM extended to UNICEF tooling for the Special Care Baby Units across Sierra Leone.</p>
+      <dl class="facts">
+        <dt class="label">Partner</dt><dd>CUAMM</dd>
+        <dt class="label">Pilot</dt><dd>March 2022 · PMCH Hospital, Freetown</dd>
+        <dt class="label">On site</dt><dd>3+ weeks</dd>
+        <dt class="label">Extension</dt><dd>May 2023 · UNICEF · Special Care Baby Units</dd>
       </dl>
     </div>
+    <figure class="hc-map">
+      <svg viewBox="-10 -10 530 780" role="img" aria-labelledby="map-t">
+        <title id="map-t">Dot map of Europe and West Africa with an arc from Geneva, 46.20° N 6.14° E, to Freetown, 8.48° N 13.23° W, marked March 2022 and May 2023.</title>
+        <path class="dots" d="M203.7 0.0h0M218.2 0.0h0M378.3 0.0h0M421.9 0.0h0M436.5 0.0h0M174.6 16.8h0M189.1 16.8h0M218.2 16.8h0M232.8 16.8h0M247.3 16.8h0M378.3 16.8h0M480.1 16.8h0M509.2 16.8h0M160.0 33.6h0M174.6 33.6h0M189.1 33.6h0M232.8 33.6h0M247.3 33.6h0M261.9 33.6h0M363.7 33.6h0M378.3 33.6h0M392.8 33.6h0M407.4 33.6h0M421.9 33.6h0M436.5 33.6h0M451.0 33.6h0M465.6 33.6h0M480.1 33.6h0M494.7 33.6h0M509.2 33.6h0M160.0 50.4h0M174.6 50.4h0M218.2 50.4h0M232.8 50.4h0M247.3 50.4h0M261.9 50.4h0M276.4 50.4h0M320.1 50.4h0M334.6 50.4h0M349.2 50.4h0M363.7 50.4h0M378.3 50.4h0M392.8 50.4h0M407.4 50.4h0M421.9 50.4h0M436.5 50.4h0M451.0 50.4h0M465.6 50.4h0M480.1 50.4h0M494.7 50.4h0M509.2 50.4h0M218.2 67.2h0M232.8 67.2h0M247.3 67.2h0M261.9 67.2h0M276.4 67.2h0M305.5 67.2h0M320.1 67.2h0M334.6 67.2h0M349.2 67.2h0M363.7 67.2h0M378.3 67.2h0M392.8 67.2h0M407.4 67.2h0M421.9 67.2h0M436.5 67.2h0M451.0 67.2h0M465.6 67.2h0M480.1 67.2h0M494.7 67.2h0M509.2 67.2h0M203.7 84.0h0M291.0 84.0h0M305.5 84.0h0M320.1 84.0h0M334.6 84.0h0M349.2 84.0h0M363.7 84.0h0M378.3 84.0h0M392.8 84.0h0M407.4 84.0h0M421.9 84.0h0M436.5 84.0h0M451.0 84.0h0M465.6 84.0h0M480.1 84.0h0M494.7 84.0h0M509.2 84.0h0M232.8 100.8h0M247.3 100.8h0M261.9 100.8h0M276.4 100.8h0M291.0 100.8h0M305.5 100.8h0M320.1 100.8h0M334.6 100.8h0M349.2 100.8h0M363.7 100.8h0M378.3 100.8h0M392.8 100.8h0M407.4 100.8h0M421.9 100.8h0M436.5 100.8h0M451.0 100.8h0M465.6 100.8h0M480.1 100.8h0M494.7 100.8h0M509.2 100.8h0M232.8 117.6h0M247.3 117.6h0M261.9 117.6h0M276.4 117.6h0M291.0 117.6h0M305.5 117.6h0M320.1 117.6h0M334.6 117.6h0M349.2 117.6h0M363.7 117.6h0M378.3 117.6h0M392.8 117.6h0M407.4 117.6h0M421.9 117.6h0M436.5 117.6h0M451.0 117.6h0M465.6 117.6h0M480.1 117.6h0M494.7 117.6h0M509.2 117.6h0M261.9 134.4h0M276.4 134.4h0M291.0 134.4h0M305.5 134.4h0M320.1 134.4h0M334.6 134.4h0M349.2 134.4h0M363.7 134.4h0M378.3 134.4h0M392.8 134.4h0M407.4 134.4h0M421.9 134.4h0M436.5 134.4h0M451.0 134.4h0M465.6 134.4h0M480.1 134.4h0M494.7 134.4h0M509.2 134.4h0M261.9 151.2h0M276.4 151.2h0M291.0 151.2h0M305.5 151.2h0M320.1 151.2h0M334.6 151.2h0M349.2 151.2h0M363.7 151.2h0M378.3 151.2h0M392.8 151.2h0M407.4 151.2h0M436.5 151.2h0M451.0 151.2h0M465.6 151.2h0M480.1 151.2h0M494.7 151.2h0M509.2 151.2h0M261.9 168.0h0M276.4 168.0h0M291.0 168.0h0M305.5 168.0h0M320.1 168.0h0M334.6 168.0h0M349.2 168.0h0M363.7 168.0h0M392.8 168.0h0M407.4 168.0h0M465.6 168.0h0M480.1 168.0h0M494.7 168.0h0M509.2 168.0h0M160.0 184.8h0M174.6 184.8h0M189.1 184.8h0M203.7 184.8h0M218.2 184.8h0M232.8 184.8h0M247.3 184.8h0M261.9 184.8h0M276.4 184.8h0M291.0 184.8h0M378.3 184.8h0M407.4 184.8h0M421.9 184.8h0M436.5 184.8h0M494.7 184.8h0M509.2 184.8h0M160.0 201.6h0M174.6 201.6h0M189.1 201.6h0M203.7 201.6h0M218.2 201.6h0M232.8 201.6h0M247.3 201.6h0M261.9 201.6h0M276.4 201.6h0M291.0 201.6h0M378.3 201.6h0M421.9 201.6h0M436.5 201.6h0M451.0 201.6h0M509.2 201.6h0M160.0 218.4h0M174.6 218.4h0M189.1 218.4h0M203.7 218.4h0M218.2 218.4h0M232.8 218.4h0M247.3 218.4h0M261.9 218.4h0M378.3 218.4h0M451.0 218.4h0M465.6 218.4h0M480.1 218.4h0M509.2 218.4h0M160.0 235.2h0M174.6 235.2h0M189.1 235.2h0M203.7 235.2h0M218.2 235.2h0M232.8 235.2h0M247.3 235.2h0M261.9 235.2h0M465.6 235.2h0M174.6 252.0h0M189.1 252.0h0M203.7 252.0h0M218.2 252.0h0M232.8 252.0h0M247.3 252.0h0M421.9 252.0h0M436.5 252.0h0M451.0 252.0h0M189.1 268.8h0M203.7 268.8h0M218.2 268.8h0M232.8 268.8h0M320.1 268.8h0M334.6 268.8h0M349.2 268.8h0M363.7 268.8h0M378.3 268.8h0M392.8 268.8h0M203.7 285.6h0M261.9 285.6h0M276.4 285.6h0M291.0 285.6h0M305.5 285.6h0M320.1 285.6h0M334.6 285.6h0M349.2 285.6h0M363.7 285.6h0M378.3 285.6h0M392.8 285.6h0M189.1 302.4h0M203.7 302.4h0M218.2 302.4h0M232.8 302.4h0M247.3 302.4h0M261.9 302.4h0M276.4 302.4h0M291.0 302.4h0M305.5 302.4h0M320.1 302.4h0M334.6 302.4h0M349.2 302.4h0M363.7 302.4h0M378.3 302.4h0M174.6 319.2h0M189.1 319.2h0M203.7 319.2h0M218.2 319.2h0M232.8 319.2h0M247.3 319.2h0M261.9 319.2h0M276.4 319.2h0M291.0 319.2h0M305.5 319.2h0M320.1 319.2h0M334.6 319.2h0M349.2 319.2h0M363.7 319.2h0M378.3 319.2h0M392.8 319.2h0M160.0 336.0h0M174.6 336.0h0M189.1 336.0h0M203.7 336.0h0M218.2 336.0h0M232.8 336.0h0M247.3 336.0h0M261.9 336.0h0M276.4 336.0h0M291.0 336.0h0M305.5 336.0h0M320.1 336.0h0M334.6 336.0h0M349.2 336.0h0M363.7 336.0h0M378.3 336.0h0M392.8 336.0h0M407.4 336.0h0M421.9 336.0h0M436.5 336.0h0M451.0 336.0h0M509.2 336.0h0M160.0 352.8h0M174.6 352.8h0M189.1 352.8h0M203.7 352.8h0M218.2 352.8h0M232.8 352.8h0M247.3 352.8h0M261.9 352.8h0M276.4 352.8h0M291.0 352.8h0M305.5 352.8h0M320.1 352.8h0M334.6 352.8h0M349.2 352.8h0M363.7 352.8h0M378.3 352.8h0M392.8 352.8h0M407.4 352.8h0M421.9 352.8h0M436.5 352.8h0M451.0 352.8h0M465.6 352.8h0M480.1 352.8h0M509.2 352.8h0M160.0 369.6h0M174.6 369.6h0M189.1 369.6h0M203.7 369.6h0M218.2 369.6h0M232.8 369.6h0M247.3 369.6h0M261.9 369.6h0M276.4 369.6h0M291.0 369.6h0M305.5 369.6h0M320.1 369.6h0M334.6 369.6h0M349.2 369.6h0M363.7 369.6h0M378.3 369.6h0M392.8 369.6h0M407.4 369.6h0M421.9 369.6h0M436.5 369.6h0M451.0 369.6h0M465.6 369.6h0M480.1 369.6h0M494.7 369.6h0M509.2 369.6h0M130.9 386.4h0M145.5 386.4h0M160.0 386.4h0M174.6 386.4h0M189.1 386.4h0M203.7 386.4h0M218.2 386.4h0M232.8 386.4h0M247.3 386.4h0M261.9 386.4h0M276.4 386.4h0M291.0 386.4h0M305.5 386.4h0M320.1 386.4h0M334.6 386.4h0M349.2 386.4h0M363.7 386.4h0M378.3 386.4h0M392.8 386.4h0M407.4 386.4h0M421.9 386.4h0M436.5 386.4h0M451.0 386.4h0M465.6 386.4h0M480.1 386.4h0M494.7 386.4h0M509.2 386.4h0M116.4 403.2h0M130.9 403.2h0M145.5 403.2h0M160.0 403.2h0M174.6 403.2h0M189.1 403.2h0M203.7 403.2h0M218.2 403.2h0M232.8 403.2h0M247.3 403.2h0M261.9 403.2h0M276.4 403.2h0M291.0 403.2h0M305.5 403.2h0M320.1 403.2h0M334.6 403.2h0M349.2 403.2h0M363.7 403.2h0M378.3 403.2h0M392.8 403.2h0M407.4 403.2h0M421.9 403.2h0M436.5 403.2h0M451.0 403.2h0M465.6 403.2h0M480.1 403.2h0M494.7 403.2h0M509.2 403.2h0M101.8 420.0h0M116.4 420.0h0M130.9 420.0h0M145.5 420.0h0M160.0 420.0h0M174.6 420.0h0M189.1 420.0h0M203.7 420.0h0M218.2 420.0h0M232.8 420.0h0M247.3 420.0h0M261.9 420.0h0M276.4 420.0h0M291.0 420.0h0M305.5 420.0h0M320.1 420.0h0M334.6 420.0h0M349.2 420.0h0M363.7 420.0h0M378.3 420.0h0M392.8 420.0h0M407.4 420.0h0M421.9 420.0h0M436.5 420.0h0M451.0 420.0h0M465.6 420.0h0M480.1 420.0h0M494.7 420.0h0M509.2 420.0h0M87.3 436.8h0M101.8 436.8h0M116.4 436.8h0M130.9 436.8h0M145.5 436.8h0M160.0 436.8h0M174.6 436.8h0M189.1 436.8h0M203.7 436.8h0M218.2 436.8h0M232.8 436.8h0M247.3 436.8h0M261.9 436.8h0M276.4 436.8h0M291.0 436.8h0M305.5 436.8h0M320.1 436.8h0M334.6 436.8h0M349.2 436.8h0M363.7 436.8h0M378.3 436.8h0M392.8 436.8h0M407.4 436.8h0M421.9 436.8h0M436.5 436.8h0M451.0 436.8h0M465.6 436.8h0M480.1 436.8h0M494.7 436.8h0M509.2 436.8h0M72.7 453.6h0M87.3 453.6h0M101.8 453.6h0M116.4 453.6h0M130.9 453.6h0M145.5 453.6h0M160.0 453.6h0M174.6 453.6h0M189.1 453.6h0M203.7 453.6h0M218.2 453.6h0M232.8 453.6h0M247.3 453.6h0M261.9 453.6h0M276.4 453.6h0M291.0 453.6h0M305.5 453.6h0M320.1 453.6h0M334.6 453.6h0M349.2 453.6h0M363.7 453.6h0M378.3 453.6h0M392.8 453.6h0M407.4 453.6h0M421.9 453.6h0M436.5 453.6h0M451.0 453.6h0M465.6 453.6h0M480.1 453.6h0M494.7 453.6h0M509.2 453.6h0M72.7 470.4h0M87.3 470.4h0M101.8 470.4h0M116.4 470.4h0M130.9 470.4h0M145.5 470.4h0M160.0 470.4h0M174.6 470.4h0M189.1 470.4h0M203.7 470.4h0M218.2 470.4h0M232.8 470.4h0M247.3 470.4h0M261.9 470.4h0M276.4 470.4h0M291.0 470.4h0M305.5 470.4h0M320.1 470.4h0M334.6 470.4h0M349.2 470.4h0M363.7 470.4h0M378.3 470.4h0M392.8 470.4h0M407.4 470.4h0M421.9 470.4h0M436.5 470.4h0M451.0 470.4h0M465.6 470.4h0M480.1 470.4h0M494.7 470.4h0M509.2 470.4h0M72.7 487.2h0M87.3 487.2h0M101.8 487.2h0M116.4 487.2h0M130.9 487.2h0M145.5 487.2h0M160.0 487.2h0M174.6 487.2h0M189.1 487.2h0M203.7 487.2h0M218.2 487.2h0M232.8 487.2h0M247.3 487.2h0M261.9 487.2h0M276.4 487.2h0M291.0 487.2h0M305.5 487.2h0M320.1 487.2h0M334.6 487.2h0M349.2 487.2h0M363.7 487.2h0M378.3 487.2h0M392.8 487.2h0M407.4 487.2h0M421.9 487.2h0M436.5 487.2h0M451.0 487.2h0M465.6 487.2h0M480.1 487.2h0M494.7 487.2h0M509.2 487.2h0M72.7 504.0h0M87.3 504.0h0M101.8 504.0h0M116.4 504.0h0M130.9 504.0h0M145.5 504.0h0M160.0 504.0h0M174.6 504.0h0M189.1 504.0h0M203.7 504.0h0M218.2 504.0h0M232.8 504.0h0M247.3 504.0h0M261.9 504.0h0M276.4 504.0h0M291.0 504.0h0M305.5 504.0h0M320.1 504.0h0M334.6 504.0h0M349.2 504.0h0M363.7 504.0h0M378.3 504.0h0M392.8 504.0h0M407.4 504.0h0M421.9 504.0h0M436.5 504.0h0M451.0 504.0h0M465.6 504.0h0M480.1 504.0h0M494.7 504.0h0M509.2 504.0h0M72.7 520.8h0M87.3 520.8h0M101.8 520.8h0M116.4 520.8h0M130.9 520.8h0M145.5 520.8h0M160.0 520.8h0M174.6 520.8h0M189.1 520.8h0M203.7 520.8h0M218.2 520.8h0M232.8 520.8h0M247.3 520.8h0M261.9 520.8h0M276.4 520.8h0M291.0 520.8h0M305.5 520.8h0M320.1 520.8h0M334.6 520.8h0M349.2 520.8h0M363.7 520.8h0M378.3 520.8h0M392.8 520.8h0M407.4 520.8h0M421.9 520.8h0M436.5 520.8h0M451.0 520.8h0M465.6 520.8h0M480.1 520.8h0M494.7 520.8h0M509.2 520.8h0M72.7 537.6h0M87.3 537.6h0M101.8 537.6h0M116.4 537.6h0M130.9 537.6h0M145.5 537.6h0M160.0 537.6h0M174.6 537.6h0M189.1 537.6h0M203.7 537.6h0M218.2 537.6h0M232.8 537.6h0M247.3 537.6h0M261.9 537.6h0M276.4 537.6h0M291.0 537.6h0M305.5 537.6h0M320.1 537.6h0M334.6 537.6h0M349.2 537.6h0M363.7 537.6h0M378.3 537.6h0M392.8 537.6h0M407.4 537.6h0M421.9 537.6h0M436.5 537.6h0M451.0 537.6h0M465.6 537.6h0M480.1 537.6h0M494.7 537.6h0M509.2 537.6h0M72.7 554.4h0M87.3 554.4h0M101.8 554.4h0M116.4 554.4h0M130.9 554.4h0M145.5 554.4h0M160.0 554.4h0M174.6 554.4h0M189.1 554.4h0M203.7 554.4h0M218.2 554.4h0M232.8 554.4h0M247.3 554.4h0M261.9 554.4h0M276.4 554.4h0M291.0 554.4h0M305.5 554.4h0M320.1 554.4h0M334.6 554.4h0M349.2 554.4h0M363.7 554.4h0M378.3 554.4h0M392.8 554.4h0M407.4 554.4h0M421.9 554.4h0M436.5 554.4h0M451.0 554.4h0M465.6 554.4h0M480.1 554.4h0M494.7 554.4h0M509.2 554.4h0M72.7 571.2h0M87.3 571.2h0M101.8 571.2h0M116.4 571.2h0M130.9 571.2h0M145.5 571.2h0M160.0 571.2h0M174.6 571.2h0M189.1 571.2h0M203.7 571.2h0M218.2 571.2h0M232.8 571.2h0M247.3 571.2h0M261.9 571.2h0M276.4 571.2h0M291.0 571.2h0M305.5 571.2h0M320.1 571.2h0M334.6 571.2h0M349.2 571.2h0M363.7 571.2h0M378.3 571.2h0M392.8 571.2h0M407.4 571.2h0M421.9 571.2h0M436.5 571.2h0M451.0 571.2h0M465.6 571.2h0M480.1 571.2h0M494.7 571.2h0M509.2 571.2h0M72.7 588.0h0M87.3 588.0h0M101.8 588.0h0M116.4 588.0h0M130.9 588.0h0M145.5 588.0h0M160.0 588.0h0M174.6 588.0h0M189.1 588.0h0M203.7 588.0h0M218.2 588.0h0M232.8 588.0h0M247.3 588.0h0M261.9 588.0h0M276.4 588.0h0M291.0 588.0h0M305.5 588.0h0M320.1 588.0h0M334.6 588.0h0M349.2 588.0h0M363.7 588.0h0M378.3 588.0h0M392.8 588.0h0M407.4 588.0h0M421.9 588.0h0M436.5 588.0h0M451.0 588.0h0M465.6 588.0h0M480.1 588.0h0M494.7 588.0h0M509.2 588.0h0M72.7 604.8h0M87.3 604.8h0M101.8 604.8h0M116.4 604.8h0M130.9 604.8h0M145.5 604.8h0M160.0 604.8h0M174.6 604.8h0M189.1 604.8h0M203.7 604.8h0M218.2 604.8h0M232.8 604.8h0M247.3 604.8h0M261.9 604.8h0M276.4 604.8h0M291.0 604.8h0M305.5 604.8h0M320.1 604.8h0M334.6 604.8h0M349.2 604.8h0M363.7 604.8h0M378.3 604.8h0M392.8 604.8h0M407.4 604.8h0M421.9 604.8h0M436.5 604.8h0M451.0 604.8h0M465.6 604.8h0M480.1 604.8h0M494.7 604.8h0M509.2 604.8h0M72.7 621.6h0M87.3 621.6h0M101.8 621.6h0M116.4 621.6h0M130.9 621.6h0M145.5 621.6h0M160.0 621.6h0M174.6 621.6h0M189.1 621.6h0M203.7 621.6h0M218.2 621.6h0M232.8 621.6h0M247.3 621.6h0M261.9 621.6h0M276.4 621.6h0M291.0 621.6h0M305.5 621.6h0M320.1 621.6h0M334.6 621.6h0M349.2 621.6h0M363.7 621.6h0M378.3 621.6h0M392.8 621.6h0M407.4 621.6h0M421.9 621.6h0M436.5 621.6h0M451.0 621.6h0M465.6 621.6h0M480.1 621.6h0M494.7 621.6h0M509.2 621.6h0M101.8 638.4h0M116.4 638.4h0M130.9 638.4h0M145.5 638.4h0M160.0 638.4h0M174.6 638.4h0M189.1 638.4h0M203.7 638.4h0M218.2 638.4h0M232.8 638.4h0M247.3 638.4h0M261.9 638.4h0M276.4 638.4h0M291.0 638.4h0M305.5 638.4h0M320.1 638.4h0M334.6 638.4h0M349.2 638.4h0M363.7 638.4h0M378.3 638.4h0M392.8 638.4h0M407.4 638.4h0M421.9 638.4h0M436.5 638.4h0M451.0 638.4h0M465.6 638.4h0M480.1 638.4h0M494.7 638.4h0M509.2 638.4h0M116.4 655.2h0M130.9 655.2h0M145.5 655.2h0M160.0 655.2h0M174.6 655.2h0M189.1 655.2h0M203.7 655.2h0M218.2 655.2h0M232.8 655.2h0M247.3 655.2h0M261.9 655.2h0M276.4 655.2h0M291.0 655.2h0M305.5 655.2h0M320.1 655.2h0M334.6 655.2h0M349.2 655.2h0M363.7 655.2h0M378.3 655.2h0M392.8 655.2h0M407.4 655.2h0M421.9 655.2h0M436.5 655.2h0M451.0 655.2h0M465.6 655.2h0M480.1 655.2h0M494.7 655.2h0M509.2 655.2h0M116.4 672.0h0M130.9 672.0h0M145.5 672.0h0M160.0 672.0h0M174.6 672.0h0M189.1 672.0h0M203.7 672.0h0M218.2 672.0h0M232.8 672.0h0M247.3 672.0h0M261.9 672.0h0M276.4 672.0h0M291.0 672.0h0M305.5 672.0h0M320.1 672.0h0M334.6 672.0h0M349.2 672.0h0M363.7 672.0h0M378.3 672.0h0M392.8 672.0h0M407.4 672.0h0M421.9 672.0h0M436.5 672.0h0M451.0 672.0h0M465.6 672.0h0M480.1 672.0h0M494.7 672.0h0M509.2 672.0h0M130.9 688.8h0M145.5 688.8h0M160.0 688.8h0M174.6 688.8h0M189.1 688.8h0M203.7 688.8h0M218.2 688.8h0M232.8 688.8h0M247.3 688.8h0M261.9 688.8h0M276.4 688.8h0M291.0 688.8h0M305.5 688.8h0M320.1 688.8h0M334.6 688.8h0M349.2 688.8h0M363.7 688.8h0M378.3 688.8h0M392.8 688.8h0M407.4 688.8h0M421.9 688.8h0M436.5 688.8h0M451.0 688.8h0M465.6 688.8h0M480.1 688.8h0M494.7 688.8h0M509.2 688.8h0M160.0 705.6h0M174.6 705.6h0M189.1 705.6h0M203.7 705.6h0M218.2 705.6h0M232.8 705.6h0M247.3 705.6h0M261.9 705.6h0M334.6 705.6h0M349.2 705.6h0M363.7 705.6h0M378.3 705.6h0M392.8 705.6h0M407.4 705.6h0M421.9 705.6h0M436.5 705.6h0M451.0 705.6h0M465.6 705.6h0M480.1 705.6h0M494.7 705.6h0M509.2 705.6h0M174.6 722.4h0M349.2 722.4h0M378.3 722.4h0M392.8 722.4h0M407.4 722.4h0M421.9 722.4h0M436.5 722.4h0M451.0 722.4h0M465.6 722.4h0M480.1 722.4h0M494.7 722.4h0M509.2 722.4h0M392.8 739.2h0M407.4 739.2h0M421.9 739.2h0M436.5 739.2h0M451.0 739.2h0M465.6 739.2h0M480.1 739.2h0M494.7 739.2h0M509.2 739.2h0"/>
+        <path class="arc" d="M341.2 137.2Q40 330 106.3 665.3"/>
+        <circle class="ring" cx="341.2" cy="137.2" r="10"/><circle class="pt" cx="341.2" cy="137.2" r="4.5"/>
+        <circle class="ring" cx="106.3" cy="665.3" r="10"/><circle class="pt" cx="106.3" cy="665.3" r="4.5"/>
+        <text x="358" y="132" paint-order="stroke" stroke="#050607" stroke-width="6">GENEVA</text>
+        <text x="124" y="690" paint-order="stroke" stroke="#050607" stroke-width="6">FREETOWN</text>
+        <text class="d" x="146" y="372" paint-order="stroke" stroke="#050607" stroke-width="6">MAR 2022 · EMR PILOT</text>
+        <text class="d" x="112" y="512" paint-order="stroke" stroke="#050607" stroke-width="6">MAY 2023 · UNICEF SCBU</text>
+      </svg>
+      <figcaption class="label">Land from Natural Earth · 1.2° grid</figcaption>
+    </figure>
+  </div>
+  <div class="wrap">
+    <ul class="hc-more">
+      <li><p class="label">Logistics · LetsMed</p><h4>A digital catalogue of medical products, with remote stock monitoring</h4></li>
+      <li><p class="label">Simulation · WHO</p><h4>Medical 3D device simulation</h4></li>
+    </ul>
+  </div>
+</section>
 
-    <div class="care-list">
-      <div>
-        <p class="mono">Imaging</p>
-        <div>
-          <h4>Cardiac ultrasound segmentation</h4>
-          <p>Video segmentation of the ventricular cavity on echocardiography, taken from
-            an academic dataset toward hospital evaluation. One measured output of it sits in
-            the Elysium Labs card above.</p>
-        </div>
+<!-- ================================ 6 LABS ================================ -->
+<section class="sec" id="labs" data-ground="raised" aria-labelledby="h-labs">
+  <div class="wrap"><div class="sec-rule" aria-hidden="true"></div></div>
+  <div class="wrap cols sec-head">
+    <p class="label idx">05 / Elysium Labs</p>
+    <h2 id="h-labs">Elysium Labs, Zürich, takes models from first test to deployment.</h2>
+    <p class="lede">The exhibit is a cardiac ultrasound from the Labs’ segmentation work. The contour is computed from the pixels of frames 00 and 15, and the cavity it encloses falls from 2,324 to 1,965 pixels, −15.4%.</p>
+  </div>
+  <div class="wrap cols labs">
+    <figure class="ex">
+      <div class="ex-frame">
+        <picture class="f00"><source type="image/avif" srcset="assets/work/echo-00-560.avif"><source type="image/webp" srcset="assets/work/echo-00-560.webp"><img src="assets/work/echo-00-560.jpg" width="560" height="560" loading="lazy" decoding="async" alt="Cardiac ultrasound, apical four-chamber view, frame 00."></picture>
+        <picture class="f15"><source type="image/avif" srcset="assets/work/echo-15-560.avif"><source type="image/webp" srcset="assets/work/echo-15-560.webp"><img src="assets/work/echo-15-560.jpg" width="560" height="560" loading="lazy" decoding="async" alt="The same view at frame 15, with the cavity contracted."></picture>
+        <svg viewBox="0 0 112 112" aria-hidden="true">
+          <path class="contour" id="c-live" d="M87.47,56.43C87.51,56.91 87.52,57.42 87.56,57.92C87.60,58.42 87.62,58.91 87.69,59.44C87.76,59.96 87.92,60.51 87.98,61.06C88.05,61.61 87.96,62.12 88.09,62.74C88.23,63.35 88.58,64.07 88.79,64.75C89.00,65.42 89.20,66.10 89.36,66.80C89.52,67.49 89.68,68.21 89.78,68.91C89.87,69.61 89.94,70.34 89.92,71.01C89.90,71.67 89.83,72.31 89.65,72.88C89.47,73.46 89.21,74.03 88.86,74.47C88.51,74.91 88.11,75.27 87.55,75.52C86.99,75.77 86.19,75.85 85.50,75.97C84.81,76.09 84.11,76.20 83.39,76.24C82.66,76.27 81.89,76.22 81.15,76.19C80.40,76.16 79.63,76.08 78.94,76.06C78.24,76.04 77.59,76.02 76.97,76.05C76.34,76.09 75.73,76.15 75.20,76.29C74.67,76.42 74.23,76.62 73.77,76.86C73.31,77.10 72.89,77.40 72.45,77.73C72.01,78.06 71.57,78.45 71.13,78.86C70.69,79.26 70.27,79.71 69.80,80.17C69.34,80.62 68.85,81.15 68.35,81.61C67.84,82.06 67.32,82.49 66.78,82.88C66.23,83.26 65.64,83.60 65.06,83.91C64.48,84.22 63.90,84.52 63.29,84.76C62.69,84.99 62.06,85.20 61.43,85.34C60.79,85.48 60.13,85.55 59.48,85.58C58.83,85.62 58.15,85.66 57.52,85.56C56.89,85.45 56.26,85.22 55.69,84.93C55.13,84.64 54.61,84.27 54.15,83.83C53.69,83.38 53.29,82.82 52.91,82.27C52.54,81.73 52.21,81.16 51.90,80.55C51.60,79.95 51.31,79.32 51.08,78.65C50.85,77.98 50.68,77.24 50.52,76.53C50.36,75.82 50.21,75.09 50.10,74.39C49.98,73.69 49.92,72.97 49.83,72.33C49.74,71.68 49.67,71.09 49.58,70.54C49.49,69.98 49.39,69.48 49.30,68.98C49.21,68.49 49.11,68.03 49.04,67.55C48.98,67.08 48.97,66.58 48.90,66.13C48.82,65.68 48.67,65.28 48.60,64.84C48.53,64.40 48.51,63.94 48.46,63.51C48.41,63.08 48.34,62.67 48.29,62.26C48.23,61.85 48.19,61.46 48.14,61.07C48.10,60.68 48.08,60.29 48.01,59.90C47.95,59.51 47.87,59.13 47.75,58.74C47.63,58.35 47.40,57.97 47.28,57.57C47.17,57.16 47.13,56.74 47.04,56.33C46.94,55.91 46.82,55.49 46.73,55.07C46.64,54.64 46.60,54.22 46.50,53.79C46.41,53.35 46.27,52.90 46.16,52.45C46.05,51.99 45.92,51.53 45.84,51.06C45.77,50.59 45.71,50.11 45.70,49.63C45.68,49.14 45.74,48.65 45.74,48.13C45.74,47.61 45.71,47.07 45.71,46.52C45.71,45.97 45.75,45.42 45.74,44.83C45.74,44.23 45.70,43.59 45.69,42.94C45.68,42.28 45.70,41.61 45.70,40.89C45.70,40.17 45.70,39.42 45.69,38.60C45.69,37.78 45.62,36.84 45.66,35.99C45.70,35.13 45.76,34.25 45.91,33.46C46.07,32.68 46.32,31.96 46.60,31.28C46.88,30.60 47.20,29.95 47.59,29.37C47.97,28.79 48.43,28.27 48.92,27.81C49.42,27.34 49.97,26.93 50.57,26.61C51.16,26.29 51.80,25.94 52.51,25.88C53.22,25.83 54.06,26.08 54.83,26.27C55.60,26.47 56.39,26.76 57.13,27.03C57.87,27.30 58.58,27.53 59.27,27.89C59.97,28.24 60.63,28.75 61.28,29.18C61.93,29.61 62.57,30.00 63.18,30.46C63.79,30.92 64.38,31.42 64.95,31.93C65.52,32.44 66.07,33.09 66.59,33.52C67.10,33.94 67.57,34.20 68.05,34.50C68.53,34.80 69.00,35.05 69.47,35.30C69.93,35.54 70.39,35.83 70.86,35.98C71.33,36.13 71.84,36.07 72.30,36.20C72.76,36.33 73.17,36.58 73.60,36.76C74.03,36.94 74.49,37.06 74.88,37.27C75.27,37.47 75.59,37.76 75.96,38.00C76.33,38.24 76.72,38.48 77.12,38.72C77.52,38.96 77.96,39.17 78.36,39.44C78.76,39.70 79.14,39.99 79.52,40.30C79.89,40.61 80.24,41.00 80.61,41.32C80.98,41.64 81.40,41.90 81.75,42.23C82.09,42.56 82.35,42.96 82.69,43.28C83.04,43.60 83.50,43.81 83.83,44.14C84.16,44.47 84.45,44.85 84.68,45.25C84.92,45.66 85.04,46.13 85.23,46.58C85.42,47.02 85.67,47.45 85.83,47.91C86.00,48.36 86.11,48.85 86.22,49.32C86.33,49.80 86.38,50.29 86.51,50.76C86.64,51.23 86.87,51.68 86.98,52.15C87.08,52.62 87.09,53.11 87.14,53.58C87.19,54.06 87.23,54.53 87.28,55.01C87.34,55.48 87.42,55.94 87.47,56.43Z"/>
+          <path id="c00" d="M93.09,59.83C93.18,60.35 93.28,60.87 93.32,61.40C93.35,61.93 93.30,62.48 93.30,63.03C93.29,63.58 93.32,64.15 93.30,64.70C93.28,65.26 93.24,65.82 93.20,66.38C93.15,66.94 93.09,67.50 93.04,68.08C92.99,68.66 92.98,69.26 92.90,69.84C92.82,70.43 92.69,71.00 92.57,71.58C92.45,72.16 92.33,72.76 92.18,73.34C92.03,73.93 91.87,74.52 91.66,75.10C91.46,75.68 91.22,76.27 90.94,76.82C90.67,77.37 90.42,77.97 90.03,78.38C89.63,78.78 89.08,79.00 88.55,79.24C88.02,79.48 87.42,79.65 86.83,79.80C86.24,79.95 85.64,80.05 85.02,80.12C84.40,80.19 83.75,80.22 83.10,80.21C82.45,80.20 81.79,80.14 81.12,80.05C80.45,79.96 79.73,79.76 79.08,79.64C78.42,79.53 77.75,79.38 77.18,79.35C76.62,79.32 76.18,79.35 75.70,79.47C75.22,79.58 74.77,79.55 74.31,80.03C73.86,80.51 73.43,81.58 72.95,82.35C72.48,83.12 71.99,83.87 71.48,84.64C70.96,85.41 70.42,86.20 69.86,86.96C69.30,87.73 68.71,88.61 68.12,89.25C67.53,89.89 66.92,90.36 66.33,90.79C65.75,91.22 65.21,91.54 64.62,91.81C64.02,92.08 63.39,92.52 62.76,92.42C62.13,92.32 61.45,91.68 60.86,91.19C60.28,90.70 59.76,90.09 59.27,89.47C58.77,88.85 58.32,88.15 57.87,87.46C57.43,86.78 57.01,86.02 56.62,85.36C56.22,84.71 55.86,84.09 55.51,83.51C55.16,82.94 54.80,82.49 54.52,81.91C54.23,81.33 54.01,80.67 53.80,80.02C53.59,79.38 53.43,78.66 53.25,78.05C53.08,77.44 52.90,76.90 52.75,76.34C52.60,75.77 52.44,75.24 52.34,74.68C52.24,74.11 52.22,73.49 52.16,72.93C52.11,72.37 52.07,71.83 52.03,71.31C51.99,70.79 51.96,70.30 51.92,69.81C51.88,69.33 51.82,68.87 51.80,68.41C51.78,67.94 51.79,67.47 51.78,67.02C51.77,66.58 51.74,66.15 51.74,65.72C51.74,65.30 51.78,64.87 51.79,64.45C51.80,64.04 51.79,63.65 51.80,63.25C51.80,62.86 51.82,62.47 51.81,62.08C51.81,61.70 51.80,61.32 51.77,60.93C51.75,60.54 51.71,60.14 51.66,59.75C51.62,59.35 51.54,58.96 51.49,58.56C51.45,58.16 51.47,57.78 51.40,57.36C51.33,56.94 51.16,56.50 51.05,56.05C50.94,55.61 50.83,55.16 50.73,54.70C50.62,54.23 50.55,53.79 50.43,53.28C50.31,52.78 50.12,52.22 50.00,51.66C49.87,51.11 49.79,50.55 49.70,49.96C49.60,49.37 49.54,48.79 49.42,48.12C49.30,47.46 49.13,46.77 48.96,45.96C48.79,45.16 48.58,44.24 48.39,43.30C48.19,42.35 47.98,41.34 47.79,40.29C47.61,39.24 47.34,38.04 47.26,37.00C47.19,35.96 47.25,34.99 47.35,34.05C47.45,33.12 47.61,32.23 47.84,31.40C48.07,30.57 48.34,29.76 48.72,29.06C49.09,28.37 49.52,27.70 50.09,27.22C50.67,26.75 51.40,26.45 52.14,26.21C52.88,25.96 53.70,25.82 54.53,25.74C55.36,25.65 56.29,25.71 57.14,25.72C57.99,25.72 58.83,25.56 59.65,25.76C60.46,25.96 61.27,26.50 62.05,26.91C62.82,27.33 63.57,27.79 64.30,28.23C65.03,28.67 65.73,29.13 66.42,29.56C67.11,29.99 67.78,30.38 68.43,30.82C69.08,31.26 69.71,31.69 70.31,32.20C70.91,32.72 71.49,33.32 72.04,33.91C72.58,34.50 73.11,35.28 73.61,35.72C74.11,36.16 74.56,36.29 75.03,36.55C75.50,36.81 75.97,37.04 76.44,37.27C76.92,37.51 77.42,37.69 77.88,37.96C78.34,38.23 78.80,38.54 79.21,38.87C79.63,39.20 79.96,39.63 80.36,39.96C80.76,40.28 81.17,40.55 81.60,40.81C82.04,41.08 82.55,41.27 82.98,41.54C83.41,41.81 83.80,42.09 84.16,42.42C84.52,42.75 84.78,43.16 85.13,43.52C85.48,43.89 85.90,44.25 86.26,44.62C86.62,45.00 86.94,45.40 87.29,45.77C87.65,46.14 88.06,46.44 88.39,46.82C88.71,47.20 89.01,47.62 89.24,48.07C89.48,48.52 89.59,49.05 89.79,49.52C89.98,49.99 90.16,50.44 90.40,50.88C90.65,51.32 91.04,51.70 91.26,52.17C91.48,52.64 91.57,53.19 91.72,53.69C91.87,54.20 92.02,54.70 92.14,55.21C92.27,55.72 92.37,56.24 92.47,56.75C92.57,57.26 92.66,57.77 92.76,58.29C92.86,58.80 93.00,59.31 93.09,59.83Z" fill="none" stroke="none"/>
+          <path id="c15" d="M87.47,56.43C87.51,56.91 87.52,57.42 87.56,57.92C87.60,58.42 87.62,58.91 87.69,59.44C87.76,59.96 87.92,60.51 87.98,61.06C88.05,61.61 87.96,62.12 88.09,62.74C88.23,63.35 88.58,64.07 88.79,64.75C89.00,65.42 89.20,66.10 89.36,66.80C89.52,67.49 89.68,68.21 89.78,68.91C89.87,69.61 89.94,70.34 89.92,71.01C89.90,71.67 89.83,72.31 89.65,72.88C89.47,73.46 89.21,74.03 88.86,74.47C88.51,74.91 88.11,75.27 87.55,75.52C86.99,75.77 86.19,75.85 85.50,75.97C84.81,76.09 84.11,76.20 83.39,76.24C82.66,76.27 81.89,76.22 81.15,76.19C80.40,76.16 79.63,76.08 78.94,76.06C78.24,76.04 77.59,76.02 76.97,76.05C76.34,76.09 75.73,76.15 75.20,76.29C74.67,76.42 74.23,76.62 73.77,76.86C73.31,77.10 72.89,77.40 72.45,77.73C72.01,78.06 71.57,78.45 71.13,78.86C70.69,79.26 70.27,79.71 69.80,80.17C69.34,80.62 68.85,81.15 68.35,81.61C67.84,82.06 67.32,82.49 66.78,82.88C66.23,83.26 65.64,83.60 65.06,83.91C64.48,84.22 63.90,84.52 63.29,84.76C62.69,84.99 62.06,85.20 61.43,85.34C60.79,85.48 60.13,85.55 59.48,85.58C58.83,85.62 58.15,85.66 57.52,85.56C56.89,85.45 56.26,85.22 55.69,84.93C55.13,84.64 54.61,84.27 54.15,83.83C53.69,83.38 53.29,82.82 52.91,82.27C52.54,81.73 52.21,81.16 51.90,80.55C51.60,79.95 51.31,79.32 51.08,78.65C50.85,77.98 50.68,77.24 50.52,76.53C50.36,75.82 50.21,75.09 50.10,74.39C49.98,73.69 49.92,72.97 49.83,72.33C49.74,71.68 49.67,71.09 49.58,70.54C49.49,69.98 49.39,69.48 49.30,68.98C49.21,68.49 49.11,68.03 49.04,67.55C48.98,67.08 48.97,66.58 48.90,66.13C48.82,65.68 48.67,65.28 48.60,64.84C48.53,64.40 48.51,63.94 48.46,63.51C48.41,63.08 48.34,62.67 48.29,62.26C48.23,61.85 48.19,61.46 48.14,61.07C48.10,60.68 48.08,60.29 48.01,59.90C47.95,59.51 47.87,59.13 47.75,58.74C47.63,58.35 47.40,57.97 47.28,57.57C47.17,57.16 47.13,56.74 47.04,56.33C46.94,55.91 46.82,55.49 46.73,55.07C46.64,54.64 46.60,54.22 46.50,53.79C46.41,53.35 46.27,52.90 46.16,52.45C46.05,51.99 45.92,51.53 45.84,51.06C45.77,50.59 45.71,50.11 45.70,49.63C45.68,49.14 45.74,48.65 45.74,48.13C45.74,47.61 45.71,47.07 45.71,46.52C45.71,45.97 45.75,45.42 45.74,44.83C45.74,44.23 45.70,43.59 45.69,42.94C45.68,42.28 45.70,41.61 45.70,40.89C45.70,40.17 45.70,39.42 45.69,38.60C45.69,37.78 45.62,36.84 45.66,35.99C45.70,35.13 45.76,34.25 45.91,33.46C46.07,32.68 46.32,31.96 46.60,31.28C46.88,30.60 47.20,29.95 47.59,29.37C47.97,28.79 48.43,28.27 48.92,27.81C49.42,27.34 49.97,26.93 50.57,26.61C51.16,26.29 51.80,25.94 52.51,25.88C53.22,25.83 54.06,26.08 54.83,26.27C55.60,26.47 56.39,26.76 57.13,27.03C57.87,27.30 58.58,27.53 59.27,27.89C59.97,28.24 60.63,28.75 61.28,29.18C61.93,29.61 62.57,30.00 63.18,30.46C63.79,30.92 64.38,31.42 64.95,31.93C65.52,32.44 66.07,33.09 66.59,33.52C67.10,33.94 67.57,34.20 68.05,34.50C68.53,34.80 69.00,35.05 69.47,35.30C69.93,35.54 70.39,35.83 70.86,35.98C71.33,36.13 71.84,36.07 72.30,36.20C72.76,36.33 73.17,36.58 73.60,36.76C74.03,36.94 74.49,37.06 74.88,37.27C75.27,37.47 75.59,37.76 75.96,38.00C76.33,38.24 76.72,38.48 77.12,38.72C77.52,38.96 77.96,39.17 78.36,39.44C78.76,39.70 79.14,39.99 79.52,40.30C79.89,40.61 80.24,41.00 80.61,41.32C80.98,41.64 81.40,41.90 81.75,42.23C82.09,42.56 82.35,42.96 82.69,43.28C83.04,43.60 83.50,43.81 83.83,44.14C84.16,44.47 84.45,44.85 84.68,45.25C84.92,45.66 85.04,46.13 85.23,46.58C85.42,47.02 85.67,47.45 85.83,47.91C86.00,48.36 86.11,48.85 86.22,49.32C86.33,49.80 86.38,50.29 86.51,50.76C86.64,51.23 86.87,51.68 86.98,52.15C87.08,52.62 87.09,53.11 87.14,53.58C87.19,54.06 87.23,54.53 87.28,55.01C87.34,55.48 87.42,55.94 87.47,56.43Z" fill="none" stroke="none"/>
+        </svg>
       </div>
-      <div>
-        <p class="mono">Logistics</p>
-        <div>
-          <h4>Medical catalogue &amp; remote stock monitoring</h4>
-          <p>Digitalisation of a full medical products catalogue for LetsMed, with remote
-            stock visibility and operational views that survive an audit.</p>
+      <figcaption>
+        <div class="ex-read mono" aria-live="off" data-measured="measured" data-interp="interpolated" data-a00="2,324 px" data-a15="1,965 px">
+          <span><span class="label">Frame</span><b data-r="frame">15</b></span>
+          <span><span class="label">Cavity</span><b data-r="area">1,965 px</b></span>
+          <span><span class="label">State</span><b class="state" data-r="state">measured</b></span>
         </div>
-      </div>
-      <div>
-        <p class="mono">Product</p>
-        <div>
-          <h4>BLU Healthcare</h4>
-          <p>Ongoing engineering for a digital health venture: product surfaces,
-            integrations, and role-aware access across clinical and administrative users.</p>
-        </div>
-      </div>
-      <div>
-        <p class="mono">Simulation</p>
-        <div>
-          <h4>Medical 3D device simulation</h4>
-          <p>Device behaviour rendered for training and for regulatory submission, produced
-            with Becton Dickinson and Medtronic among others.</p>
-        </div>
-      </div>
-      <div>
-        <p class="mono">Platform</p>
-        <div>
-          <h4>Clinical health records platform</h4>
-          <p>A second records build, separate from Freetown, covering admission through
-            discharge for a European operator.</p>
-        </div>
-      </div>
+        <p class="ex-note">Measured by assets/echo/seg.js on frames 00 (2,324 px) and 15 (1,965 px). Scrolling moves between the two; any state in between is interpolated and carries no measurement.</p>
+      </figcaption>
+    </figure>
+    <div class="lab-side">
+      <p class="label">Research lines</p>
+      <ul class="lab-list">
+        <li><span>Medical-image segmentation</span><b class="status label">Status —</b></li>
+        <li><span>Deep learning</span><b class="status label">Status —</b></li>
+        <li><span>Diffusion models</span><b class="status label">Status —</b></li>
+        <li><span>Computer vision</span><b class="status label">Status —</b></li>
+        <li><span>Agentic systems</span><b class="status label">Status —</b></li>
+        <li><span>Retrieval-augmented generation</span><b class="status label">Status —</b></li>
+      </ul>
+      <p class="lab-note">Language-model work uses open-weight models only. Elysium Labs works from Schaffhauserstrasse 449, 8052 Zürich.</p>
     </div>
   </div>
 </section>
 
-<div class="ground-shift" data-to="plate" aria-hidden="true"></div>
-
-<!-- ================= LLM ================= -->
-<section class="llm" id="llm">
- <div class="wrap">
-  <div class="sec-head">
-    <i class="sec-rule" aria-hidden="true"></i>
-    <p class="mono">04 — Private LLM infrastructure</p>
-    <div>
-      <h2>Open-weight models, running inside your perimeter.</h2>
-      <p class="lede">Elysium deploys language models on hardware the client controls —
-        on-premise, or Swiss sovereign cloud. Research corpora, patient data and internal
-        intelligence stay inside the perimeter and reach no third-party API.</p>
-    </div>
+<!-- ================================ 7 PRIVATE AI ================================ -->
+<section class="sec" id="private-ai" aria-labelledby="h-pai">
+  <div class="wrap"><div class="sec-rule" aria-hidden="true"></div></div>
+  <div class="wrap cols sec-head">
+    <p class="label idx">06 / Private AI</p>
+    <h2 id="h-pai">Private AI servers, for organisations that cannot send confidential data to a public AI.</h2>
+    <p class="lede">In preparation at Elysium Labs, Zürich: dedicated servers on which an organisation runs open-weight language models over its own documents. Prompts, files and answers stay on that server.</p>
   </div>
-
-  <div class="llm-grid">
-    <div>
-      <div class="llm-points">
-        <div><h4>Data residency</h4><p>Weights, vector store and logs sit where you put
-          them. We name the machine, the region and the retention period in the contract.</p></div>
-        <div><h4>Regulatory fit</h4><p>Built against nLPD and GDPR, and against the sector
-          rule that actually binds you: clinical data protection, banking secrecy, or UN
-          information classification.</p></div>
-        <div><h4>No third-party training</h4><p>Your corpus trains your model and nothing
-          else. That is an architectural property here, and it survives a vendor audit.</p></div>
-        <div><h4>Audit trail</h4><p>Every prompt, every retrieval and every response is
-          attributable, with the source documents a grounded answer drew from.</p></div>
-        <div><h4>What we run</h4><p>Model selection, GPU sizing, fine-tuning on your
-          corpus, retrieval over your systems, evaluation, and operation afterwards.</p></div>
-      </div>
-
-      <div class="note">
-        <p><strong>One thing said plainly.</strong> GPT, Claude and Gemini cannot be
-          downloaded; they are API-only, and any vendor who offers to install one on your
-          servers is describing something that does not exist. What runs on your metal is
-          open-weight: Llama, Mistral, Qwen, DeepSeek, gpt-oss and their fine-tunes. On
-          general reasoning the frontier APIs are still ahead. On a bounded domain with
-          your documents behind them, the gap closes and the data never leaves.</p>
-      </div>
-    </div>
-
-    <div>
-      <div class="calc">
-        <div class="calc-head">
-          <span class="dot" style="width:6px;height:6px;background:var(--blue-lift);border-radius:50%"></span>
-          <span class="mono">Cost model</span>
-        </div>
-        <div class="calc-body">
-          <p class="cross-note" style="margin-block:0 1.1rem">Set the four inputs to your own
-            figures. Nothing here is a benchmark Elysium measured — the arithmetic is the
-            honest part, and it is shown in full.</p>
-
-          <div class="ctrl">
-            <label for="i-vol">Monthly volume</label><output id="o-vol">1 500 M tokens</output>
-            <input type="range" id="i-vol" min="5" max="2000" step="5" value="1500"></div>
-          <div class="ctrl">
-            <label for="i-api">Blended API price</label><output id="o-api">$6.00 / M tokens</output>
-            <input type="range" id="i-api" min="25" max="3000" step="25" value="600"></div>
-          <div class="ctrl">
-            <label for="i-gpu">GPU + operation, monthly</label><output id="o-gpu">$4 800</output>
-            <input type="range" id="i-gpu" min="800" max="30000" step="200" value="4800"></div>
-          <div class="ctrl">
-            <label for="i-set">Deployment, one-off</label><output id="o-set">$45 000</output>
-            <input type="range" id="i-set" min="0" max="250000" step="5000" value="45000"></div>
-
-          <div class="chart">
-            <div class="bars">
-              <div class="bar"><span>API · month</span>
-                <div class="track"><div class="fill" id="bar-api"><em id="lab-api"></em></div></div></div>
-              <div class="bar hi"><span>Private · month</span>
-                <div class="track"><div class="fill" id="bar-self"><em id="lab-self"></em></div></div></div>
+  <div class="wrap cols pai">
+    <figure class="pai-diag">
+      <div class="pai-org">
+        <svg class="pai-edge" aria-hidden="true"><rect x="0" y="0" width="100%" height="100%" rx="18"/></svg>
+        <p class="label pai-org-l">Your organisation</p>
+        <div class="pai-flow">
+          <div class="pai-node">
+            <svg class="pai-ico" viewBox="0 0 48 48" aria-hidden="true"><path d="M14 9h16l8 8v24H14z"/><path d="M30 9v8h8"/><path d="M19 24h14M19 30h14M19 36h9"/><path d="M10 13v32h22"/></svg>
+            <p>Documents</p>
+          </div>
+          <i class="pai-arrow" aria-hidden="true"></i>
+          <div class="pai-mid">
+            <div class="pai-node pai-server">
+              <svg class="pai-ico" viewBox="0 0 48 48" aria-hidden="true"><rect x="8" y="9" width="32" height="10" rx="2"/><rect x="8" y="23" width="32" height="10" rx="2"/><path d="M14 14h2M14 28h2M24 40h0"/><path d="M24 33v7M16 40h16"/></svg>
+              <p>Private server</p><p class="label">Open-weight model</p>
             </div>
-
-            <table class="totals">
-              <thead><tr><th scope="col"></th>
-                <th scope="col">Frontier API</th><th scope="col">Private, open-weight</th></tr></thead>
-              <tbody>
-                <tr><th scope="row">Per month</th><td id="t-am"></td><td id="t-sm"></td></tr>
-                <tr><th scope="row">Year one, with deployment</th><td id="t-a1"></td><td id="t-s1"></td></tr>
-                <tr><th scope="row">Year two onward</th><td id="t-a2"></td><td id="t-s2"></td></tr>
-                <tr class="net"><th scope="row">Year-one difference</th><td colspan="2" id="t-d1" data-saved="less with the private deployment" data-extra="more with the private deployment"></td></tr>
-                <tr class="net"><th scope="row">Break-even volume</th><td colspan="2" id="t-be" data-m="M tokens a month" data-b="B tokens a month"></td></tr>
-                <tr class="net"><th scope="row">Deployment paid back</th><td colspan="2" id="t-pb" data-month="after {n} months at this volume" data-never="not at this volume — the API is cheaper per month"></td></tr>
-              </tbody>
-            </table>
-
-            <p class="cross-note" id="crossover"
-               data-lead="At {p} per million tokens, the private deployment costs less beyond"
-               data-tail="a month." data-m="M tokens" data-b="B tokens"
-               data-under="At your current volume the private deployment is already cheaper each month."
-               data-over="Your current volume sits below that line."></p>
+            <i class="pai-down" aria-hidden="true"></i>
+            <i class="pai-x" aria-hidden="true"></i>
+          </div>
+          <i class="pai-arrow" aria-hidden="true"></i>
+          <div class="pai-node">
+            <svg class="pai-ico" viewBox="0 0 48 48" aria-hidden="true"><circle cx="16" cy="17" r="5"/><circle cx="32" cy="17" r="5"/><circle cx="24" cy="25" r="5"/><path d="M8 37c1-5 4-8 8-8M40 37c-1-5-4-8-8-8M15 42c1-6 5-9 9-9s8 3 9 9"/></svg>
+            <p>Team</p>
           </div>
         </div>
       </div>
-
-      <div class="scrollx">
-      <table class="cmp">
-        <caption class="mono" style="text-align:left;padding-block:.9rem .4rem">Where each approach wins</caption>
-        <thead><tr><th scope="col"></th><th scope="col">Open-weight, self-hosted</th><th scope="col">Frontier API</th></tr></thead>
-        <tbody>
-          <tr><td>Data leaves the perimeter</td><td>No</td><td>Yes</td></tr>
-          <tr><td>General reasoning ceiling</td><td>Lower</td><td>Higher</td></tr>
-          <tr><td>Domain accuracy after fine-tuning</td><td>Competitive</td><td>Limited by API tuning</td></tr>
-          <tr><td>Cost at low volume</td><td>Worse — fixed GPU floor</td><td>Better</td></tr>
-          <tr><td>Cost at sustained volume</td><td>Better</td><td>Worse</td></tr>
-          <tr><td>Latency control</td><td>Yours</td><td>Vendor's</td></tr>
-          <tr><td>Model changes under you</td><td>Never, until you choose</td><td>On the vendor's schedule</td></tr>
-          <tr><td>Operating burden</td><td>Real — Elysium carries it</td><td>Minimal</td></tr>
-        </tbody>
-      </table>
-      </div>
+      <figcaption class="pai-out"><span class="label">Public AI providers</span> <span class="label pai-no">No connection</span></figcaption>
+    </figure>
+    <div class="pai-side">
+      <dl class="facts pai-facts">
+        <dt class="label">Model</dt><dd>Open-weight language models, running on the server itself. No prompt or file is sent to a public AI provider.</dd>
+        <dt class="label">Answers</dt><dd>Drawn from the organisation’s own documents through retrieval-augmented generation, one of the Labs’ research lines.</dd>
+        <dt class="label">Access</dt><dd>One private server per client organisation, used by its own team.</dd>
+        <dt class="label">Status</dt><dd>In preparation. Organisations can register their interest now.</dd>
+      </dl>
+      <p class="ctas"><a class="pill-btn primary" href="#contact" data-topic="Private AI servers: ">Register interest <span class="arr" aria-hidden="true">→</span></a></p>
     </div>
-  </div>
- </div>
-</section>
-
-<div class="ground-shift" data-to="paper" aria-hidden="true"></div>
-
-<!-- ================= WORK ================= -->
-<section class="wrap" id="work">
-  <div class="sec-head">
-    <i class="sec-rule" aria-hidden="true"></i>
-    <p class="mono">05 — Selected mandates</p>
-    <div>
-      <h2>The work, with the constraint that shaped it.</h2>
-      <p class="lede">Depth here is uneven on purpose. Some mandates ran for years and
-        deserve the room; others were a good month's work and get a line.</p>
-    </div>
-  </div>
-
-  <div class="filters" role="group" aria-label="Filter projects">
-    <button type="button" data-f="all" aria-pressed="true">All</button>
-    <button type="button" data-f="health" aria-pressed="false">Healthcare</button>
-    <button type="button" data-f="un" aria-pressed="false">International</button>
-    <button type="button" data-f="industry" aria-pressed="false">Industry</button>
-    <button type="button" data-f="product" aria-pressed="false">Product</button>
-    <button type="button" data-f="labs" aria-pressed="false">Labs</button>
-  </div>
-
-  <!-- Reading strip. The card detail is written here as the pointer passes over
-       the grid, so the detail never covers a neighbouring card and the grid
-       never changes height. Aria-hidden because each card still carries its own
-       copy of this text; this is a second view of it, not a second source. -->
-  <div class="readout" id="readout" aria-hidden="true">
-    <p class="readout-rest mono">Point at a mandate for the detail</p>
-    <div class="readout-body"></div>
-  </div>
-
-  <div class="grid" id="grid">
-
-    <article class="card" tabindex="0" data-cat="health labs">
-      <figure><img src="assets/work/echo-00.jpg" width="560" height="560" loading="lazy" alt="Cardiac ultrasound frame with the ventricular cavity segmented."></figure>
-      <div class="body">
-        <p class="mono">Elysium Labs · Healthcare</p>
-        <h3>Cardiac ultrasound segmentation</h3>
-        <div class="card-intel">
-          <p>Video segmentation of the left-ventricular cavity across a 333-frame apical
-            four-chamber study, moving from an academic dataset toward hospital evaluation.</p>
-          <ul>
-            <li>Cavity area falls 2 324 → 1 965 px between frames 0 and 15</li>
-            <li>−15.4% across the measured contraction</li>
-            <li>Boundary computed from pixel data, never hand-drawn</li>
-          </ul>
-          </div>
-        <div class="foot mono"><span>Deep learning</span><span>Medical imaging</span></div>
-      </div>
-    </article>
-
-    <article class="card" tabindex="0" data-cat="un">
-      <figure><img src="assets/work/wipo-assess.jpg" width="1400" height="900" loading="lazy" alt="WIPO IP assessment software interface."></figure>
-      <div class="body">
-        <p class="mono">WIPO · International</p>
-        <h3>IP assessment software</h3>
-        <div class="card-intel">
-          <p>Software that assesses a company's intellectual property portfolio, giving an
-            organisation awareness of what it holds and a path to protect it. Part of a
-            long-running mandate that also covers the Global Awards programme, the WIPO Data
-            Matrix and the distance-learning stack.</p>
-          <ul>
-            <li>Four distinct workstreams under one standing agreement</li>
-            <li>Global Awards supported on an ongoing basis</li>
-            <li>Delivered into UN information-classification requirements</li>
-          </ul>
-          </div>
-        <div class="foot mono"><span>Assessment</span><span>Multi-year</span></div>
-      </div>
-    </article>
-
-    <article class="card" tabindex="0" data-cat="un health">
-      <div class="body">
-        <p class="mono">ILO · International</p>
-        <h3>International Labour Conference</h3>
-        <div class="card-intel">
-          <p>End-to-end technical support for the ILO's main annual conference: registration,
-            venue systems and delegate-facing services across the full event cycle, plus the
-            electronic and printed publications around it.</p>
-          <ul>
-            <li>Registration and information flows for a large international gathering</li>
-            <li>Resilient tooling across the whole event cycle</li>
-            <li>Print and electronic publication production alongside</li>
-          </ul>
-          </div>
-        <div class="foot mono"><span>Events</span><span>Publishing</span></div>
-      </div>
-    </article>
-
-    <article class="card" tabindex="0" data-cat="industry">
-      <div class="body">
-        <p class="mono">Caterpillar · Industry</p>
-        <h3>Dealer Advisor, catmaps and heavy-equipment 3D</h3>
-        <div class="card-intel">
-          <p>Dealer Advisor platform development, heavy-equipment 3D modelling, dealer
-            locator, virtual maps and internal communication tools. Several of these were
-            served from elysium.cc itself; the dealer toolbox dates to 2007.</p>
-          <ul>
-            <li>Running from 2007 across multiple toolbox generations</li>
-            <li>Dealer locator, catmaps and catvideo delivered as hosted systems</li>
-            <li>3D modelling for heavy equipment alongside the platform work</li>
-          </ul>
-          </div>
-        <div class="foot mono"><span>Since 2007</span><span>3D</span><span>Platform</span></div>
-      </div>
-    </article>
-
-    <article class="card" tabindex="0" data-cat="product">
-      <figure><img src="assets/work/gia-home.jpg" width="1400" height="900" loading="lazy" alt="GIA diamond origin platform home screen."></figure>
-      <div class="body">
-        <p class="mono">GIA · Product</p>
-        <h3>Diamond origin &amp; publication platform</h3>
-        <div class="card-intel">
-          <p>Mobile app and diamond-origin software backing a publication platform for one of
-            the world's leading gemmological authorities.</p>
-          <ul>
-            <li>Provenance records surfaced to trade and public audiences</li>
-            <li>Multi-language app for the diamond industry</li>
-          </ul>
-          </div>
-        <div class="foot mono"><span>Provenance</span><span>Mobile</span></div>
-      </div>
-    </article>
-
-    <article class="card" tabindex="0" data-cat="product">
-      <figure><img src="assets/work/striker_1_v2.jpg" width="1400" height="900" loading="lazy" alt="Striker football matchmaking app screens."></figure>
-      <div class="body">
-        <p class="mono">Striker · Product</p>
-        <h3>Amateur football across European cities</h3>
-        <div class="card-intel">
-          <p>Android and iOS application for organising matches city by city, from
-            matchmaking through to logistics. Elysium delivered mobile UX, backend services
-            and the finish a consumer app needs to survive weekly use.</p>
-          <ul>
-            <li>End-to-end delivery: UX, backend, both stores</li>
-            <li>Matchmaking and logistics across multiple European cities</li>
-          </ul>
-          </div>
-        <div class="foot mono"><span>iOS</span><span>Android</span><span>End-to-end</span></div>
-      </div>
-    </article>
-
-    <article class="card" tabindex="0" data-cat="un industry">
-      <figure><img src="assets/work/n8n.jpg" width="1400" height="900" loading="lazy" alt="Automation workflow graph."></figure>
-      <div class="body">
-        <p class="mono">Award Force · Automation</p>
-        <h3>API dashboards and live programme metrics</h3>
-        <div class="card-intel">
-          <p>Integration between the Award Force platform and internal reporting, surfacing
-            live programme metrics to leadership and operations. Used behind an international
-            awards programme serving thousands of startups and SMEs.</p>
-          <ul>
-            <li>Thousands of participants across one programme cycle</li>
-            <li>Real-time data through API integration</li>
-          </ul>
-          </div>
-        <div class="foot mono"><span>API</span><span>Dashboards</span></div>
-      </div>
-    </article>
-
-    <article class="card" tabindex="0" data-cat="health">
-      <div class="body">
-        <p class="mono">LetsMed · Healthcare</p>
-        <h3>Medical catalogue &amp; remote stock monitoring</h3>
-        <div class="card-intel">
-          <p>Digitalisation of a full medical products catalogue, with remote stock
-            visibility and operational views that hold under regulatory pressure.</p>
-          <ul>
-            <li>Full catalogue digitalised</li>
-            <li>Remote stock visibility across sites</li>
-          </ul>
-          </div>
-        <div class="foot mono"><span>Catalogue</span><span>Logistics</span></div>
-      </div>
-    </article>
-
-    <article class="card" tabindex="0" data-cat="product">
-      <div class="body">
-        <p class="mono">Minga RUNNER · Product</p>
-        <h3>Performance audit from Garmin and Strava history</h3>
-        <div class="card-intel">
-          <p>Consumer platform that ingests an athlete's Garmin and Strava history, audits
-            load, sleep and HRV, then issues generated plans with optional human-coach
-            workflows on top.</p>
-          <ul><li>Two third-party history sources ingested</li><li>Load, sleep and HRV modelled together</li></ul>
-          </div>
-        <div class="foot mono"><span>Consumer</span><span>Integrations</span></div>
-      </div>
-    </article>
-
-    <article class="card" tabindex="0" data-cat="un">
-      <div class="body">
-        <p class="mono">UN agencies · Motion</p>
-        <h3>Motion graphics for annual meetings</h3>
-        <div class="card-intel">
-          <p>Video series for two UN organisations and motion-graphics animation for annual
-            meetings, produced alongside the publication work.</p>
-          </div>
-        <div class="foot mono"><span>Animation</span><span>Editorial</span></div>
-      </div>
-    </article>
-
-    <article class="card" tabindex="0" data-cat="industry">
-      <div class="body">
-        <p class="mono">Rotel · Industry</p>
-        <h3>Packaging for a new product line</h3>
-        <div class="card-intel">
-          <p>Packaging design across a new product range.</p>
-          </div>
-        <div class="foot mono"><span>Packaging</span><span>Print</span></div>
-      </div>
-    </article>
-
-    <article class="card" tabindex="0" data-cat="product">
-      <div class="body">
-        <p class="mono">Pizza Brothers · Product</p>
-        <h3>Live ETA and WhatsApp ordering</h3>
-        <div class="card-intel">
-          <p>Mobile app, live ETA software and WhatsApp-based ordering — one small pizzeria,
-            digital from first tap to the kitchen.</p>
-          </div>
-        <div class="foot mono"><span>Live ETA</span><span>WhatsApp</span></div>
-      </div>
-    </article>
-
-  </div>
-
-  <p class="mono" style="margin-block:2.5rem .75rem">Archive · recovered contact sheet</p>
-  <div class="sheet" id="sheet">
-    <a href="#work" aria-label="3D work"><img src="assets/portfolio/3d_02.jpg" width="130" height="130" loading="lazy" alt="3D work"></a>
-    <a href="#work" aria-label="3D work"><img src="assets/portfolio/3d_05.jpg" width="130" height="130" loading="lazy" alt="3D work"></a>
-    <a href="#work" aria-label="3D work"><img src="assets/portfolio/3d_09.jpg" width="130" height="130" loading="lazy" alt="3D work"></a>
-    <a href="#work" aria-label="3D work"><img src="assets/portfolio/3d_13.jpg" width="130" height="130" loading="lazy" alt="3D work"></a>
-    <a href="#work" aria-label="Web work"><img src="assets/portfolio/web_01.jpg" width="130" height="130" loading="lazy" alt="Web work"></a>
-    <a href="#work" aria-label="Web work"><img src="assets/portfolio/web_04.jpg" width="130" height="130" loading="lazy" alt="Web work"></a>
-    <a href="#work" aria-label="Web work"><img src="assets/portfolio/web_10.jpg" width="130" height="130" loading="lazy" alt="Web work"></a>
-    <a href="#work" aria-label="Web work"><img src="assets/portfolio/web_16.jpg" width="130" height="130" loading="lazy" alt="Web work"></a>
-    <a href="#work" aria-label="Production work"><img src="assets/portfolio/production_02.jpg" width="130" height="130" loading="lazy" alt="Production work"></a>
-    <a href="#work" aria-label="Production work"><img src="assets/portfolio/production_06.jpg" width="130" height="130" loading="lazy" alt="Production work"></a>
-    <a href="#work" aria-label="Publication"><img src="assets/portfolio/publications_01.jpg" width="130" height="130" loading="lazy" alt="Publication"></a>
-    <a href="#work" aria-label="Publication"><img src="assets/portfolio/publications_05.jpg" width="130" height="130" loading="lazy" alt="Publication"></a>
-    <a href="#work" aria-label="Branding"><img src="assets/portfolio/branding_03.jpg" width="130" height="130" loading="lazy" alt="Branding"></a>
-    <a href="#work" aria-label="Branding"><img src="assets/portfolio/branding_07.jpg" width="130" height="130" loading="lazy" alt="Branding"></a>
-    <a href="#work" aria-label="Illustration"><img src="assets/portfolio/illustration_02.jpg" width="130" height="130" loading="lazy" alt="Illustration"></a>
-    <a href="#work" aria-label="Video"><img src="assets/portfolio/video_01.jpg" width="130" height="130" loading="lazy" alt="Video"></a>
-    <a href="#work" aria-label="Mobile"><img src="assets/portfolio/mobile_02.jpg" width="130" height="130" loading="lazy" alt="Mobile"></a>
-    <a href="#work" aria-label="IT"><img src="assets/portfolio/it_01.jpg" width="130" height="130" loading="lazy" alt="IT"></a>
-  </div>
-  <p class="instr-cap" style="margin-block-start:.9rem">Eighteen of the 78 pieces recovered
-    from the site's own archive at their original 130 px. Full-resolution originals are
-    held in studio and replace these on request.</p>
-</section>
-
-<!-- ================= RECORD ================= -->
-<section class="wrap" id="record">
-  <div class="sec-head">
-    <i class="sec-rule" aria-hidden="true"></i>
-    <p class="mono">06 — Record</p>
-    <div>
-      <h2>2005 to now, with dates that can be checked.</h2>
-      <p class="lede">Every entry below is anchored to a published date or an archived
-        capture of this domain.</p>
-    </div>
-  </div>
-  <ul class="tl">
-    <li><time datetime="2002-08">2002</time><div><h4>elysium.cc goes live</h4>
-      <p>First capture of the domain in the Internet Archive, 3 August 2002.</p></div></li>
-    <li><time datetime="2005">2005</time><div><h4>Elysium Sàrl founded in Geneva</h4>
-      <p>Software and design consulting, incorporated in the canton of Geneva.</p></div></li>
-    <li><time datetime="2007">2007</time><div><h4>Caterpillar dealer toolbox</h4>
-      <p>Dealer toolbox, scorecard, catmaps and dealer locator served from elysium.cc,
-        the start of a mandate that ran across multiple generations.</p></div></li>
-    <li><time datetime="2021-06">2021</time><div><h4>Portraits of Giants, Geneva</h4>
-      <p>Technical support for the organisers of an artistic, scientific and cultural
-        conference programme through the first half of 2021.</p></div></li>
-    <li><time datetime="2022-03">2022</time><div><h4>EMR pilot, PMCH Hospital, Freetown</h4>
-      <p>Medical software launched with CUAMM — Doctors with Africa, after more than three
-        weeks on site in Sierra Leone.</p></div></li>
-    <li><time datetime="2023-05">2023</time><div><h4>UNICEF Special Care Baby Units</h4>
-      <p>Tooling implemented for UNICEF across SCBU sites in Sierra Leone, with CUAMM and
-        local authorities.</p></div></li>
-    <li><time datetime="2024-01">2024</time><div><h4>WIPO Global Awards</h4>
-      <p>Consulting engagement for the WIPO awards programme for SMEs and startups, run on
-        the Award Force platform.</p></div></li>
-    <li><time datetime="2026">2026</time><div><h4>Private LLM infrastructure</h4>
-      <p>Open-weight deployment on client-controlled hardware offered as a standing
-        practice.</p></div></li>
-  </ul>
-</section>
-
-<!-- ================= CITIES ================= -->
-<section class="wrap" id="cities">
-  <div class="sec-head">
-    <i class="sec-rule" aria-hidden="true"></i>
-    <p class="mono">07 — Delivery</p>
-    <div>
-      <h2>Three cities, one delivery model.</h2>
-      <p class="lede">Fewer than twelve people. Mandate and governance sit in Geneva;
-        production sits in Buenos Aires and research in Zurich.</p>
-    </div>
-  </div>
-  <div class="cities">
-    <article>
-      <h3>Geneva</h3><p class="co mono">Switzerland · Headquarters</p>
-      <p>Client mandate, governance, contracting and delivery management. Registered in
-        the canton of Geneva since 2005, at Avenue Cardinal-Mermillod 36 in Carouge.</p>
-    </article>
-    <article>
-      <h3>Buenos Aires</h3><p class="co mono">Argentina · Studio</p>
-      <p>3D, visualisation and motion production: interactive maps, 3D environments,
-        device simulation and the animation work.</p>
-    </article>
-    <article>
-      <h3>Zurich</h3><p class="co mono">Switzerland · Elysium Labs <span class="todo" title="Listed as Zurich on the 2026 site and as Mumbai in 2024. Confirm before launch.">[confirm]</span></p>
-      <p>Applied research: segmentation models, retrieval pipelines, agentic systems and
-        the evaluation work that decides what reaches client production.</p>
-    </article>
   </div>
 </section>
 
-<!-- ================= TRUST + CONTACT ================= -->
-<section class="wrap" id="contact">
-  <div class="sec-head">
-    <i class="sec-rule" aria-hidden="true"></i>
-    <p class="mono">08 — Working together</p>
-    <div>
-      <h2>What procurement asks for, and how to start.</h2>
-      <p class="lede">Elysium takes a small number of mandates at a time. Tell us the
-        constraint and we will say quickly whether we are the right firm.</p>
-    </div>
+<!-- ================================ 8 WORK ================================ -->
+<section class="sec" id="work" aria-labelledby="h-work">
+  <div class="wrap"><div class="sec-rule" aria-hidden="true"></div></div>
+  <div class="wrap cols sec-head">
+    <p class="label idx">07 / Work</p>
+    <h2 id="h-work">Five mandates, four of them on screen.</h2>
+    <p class="lede">WIPO’s awards programme and IP Assessment tool, GIA’s diamond-origin platform, the Striker app, and a business-automation workflow on n8n.</p>
   </div>
-
-  <div class="two">
-    <div>
-      <p class="mono" style="margin-block-end:1rem">Compliance posture</p>
-      <div class="trust-list">
-        <div><h4>Data residency</h4><p>Swiss or EU hosting on request, named per engagement,
-          with the region and retention written into the contract.</p></div>
-        <div><h4>nLPD &amp; GDPR</h4><p>Data processing agreement available before kick-off.
-          Subprocessor list supplied on request.</p></div>
-        <div><h4>Certifications</h4><p><span class="todo" title="Supply the current certification list, or state plainly that none is held.">To be supplied</span> — this line stays
-          empty until it is true.</p></div>
-        <div><h4>Security contact</h4><p><a href="mailto:info@elysium.cc">info@elysium.cc</a>,
-          and a security.txt served at /.well-known/security.txt.</p></div>
-        <div><h4>Legal entity</h4><p>Elysium Sàrl, Avenue Cardinal-Mermillod 36, Carouge,
-          canton of Geneva, Switzerland. CHE number
-          <span class="todo" title="Retrieve from zefix.ch and insert. Never publish a guessed registration number.">to be inserted</span>.</p></div>
+  <div class="wrap cases">
+    <article class="case noshot" id="case-wipo-ga">
+      <div class="case-text">
+        <p class="label case-meta">WIPO · Award Force · 2024 · API dashboards</p>
+        <h3>WIPO Global Awards: technical partner, and dashboards on the Award Force API</h3>
+        <p>Elysium is the technical partner of the WIPO Global Awards. In January 2024 it consulted for the programme on Award Force and built API dashboards over it.</p>
       </div>
-    </div>
-
-    <div>
-      <p class="mono" style="margin-block-end:1rem">Start a mandate</p>
-      <form id="contact-form" novalidate>
-        <div class="fields" style="display:grid;gap:1rem">
-          <div class="f2">
-            <div class="field"><label for="n">Name</label><input id="n" name="name" required autocomplete="name"></div>
-            <div class="field"><label for="o">Organisation</label><input id="o" name="org" required autocomplete="organization"></div>
-          </div>
-          <div class="f2">
-            <div class="field"><label for="e">Email</label><input id="e" name="email" type="email" required autocomplete="email"></div>
-            <div class="field"><label for="t">Mandate type</label>
-              <select id="t" name="type">
-                <option>Digital healthcare</option>
-                <option>Private LLM infrastructure</option>
-                <option>Data &amp; business intelligence</option>
-                <option>3D &amp; visualisation</option>
-                <option>Web or mobile product</option>
-                <option>Something else</option>
-              </select></div>
-          </div>
-          <div class="field"><label for="c">The binding constraint</label>
-            <textarea id="c" name="constraint" required placeholder="Regulation, uptime, data residency, languages, deadline — whatever decides the design."></textarea>
-            <span class="hint">Posts to a Swiss-hosted endpoint. <span class="todo" title="Wire to the Swiss-hosted form endpoint before launch; the form currently only validates.">Endpoint to be wired</span>.</span>
-          </div>
-          <div><button class="btn" type="submit">Send
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5"/></svg></button>
-            <a class="btn ghost" href="mailto:info@elysium.cc" style="margin-inline-start:.5rem">info@elysium.cc</a></div>
+    </article>
+    <article class="case" id="case-wipo-ip">
+      <div class="case-text">
+        <p class="label case-meta">WIPO · IP Assessment tool · Data-driven application</p>
+        <h3>The WIPO IP Assessment tool, from admin panel to assessment</h3>
+        <p>One of the IT tools Elysium builds for WIPO, beside WIPO Data Matrix and distance-learning support. Left, the admin panel that tracks each assessment session; right, one assessment in view mode.</p>
+      </div>
+      <div class="frame duo">
+        <div class="bar"><i></i><i></i><i></i><span class="label">IP Diagnostic Tool</span></div>
+        <div class="shot"><picture><source type="image/avif" srcset="assets/work/wipo-assess-720.avif 720w, assets/work/wipo-assess-1400.avif 1400w" sizes="(min-width:900px) 34vw, 60vw"><source type="image/webp" srcset="assets/work/wipo-assess-720.webp 720w, assets/work/wipo-assess-1400.webp 1400w" sizes="(min-width:900px) 34vw, 60vw"><img src="assets/work/wipo-assess-720.jpg" srcset="assets/work/wipo-assess-720.jpg 720w, assets/work/wipo-assess-1400.jpg 1400w" sizes="(min-width:900px) 34vw, 60vw" width="1400" height="792" loading="lazy" decoding="async" alt="IP Diagnostic Tool admin panel: session counts, a searchable list of assessment sessions with status and progress, and admin tools."></picture></div>
+        <div class="shot"><picture><source type="image/avif" srcset="assets/work/wipo-assess-2-720.avif 720w, assets/work/wipo-assess-2-1400.avif 1400w" sizes="(min-width:900px) 23vw, 40vw"><source type="image/webp" srcset="assets/work/wipo-assess-2-720.webp 720w, assets/work/wipo-assess-2-1400.webp 1400w" sizes="(min-width:900px) 23vw, 40vw"><img src="assets/work/wipo-assess-2-720.jpg" srcset="assets/work/wipo-assess-2-720.jpg 720w, assets/work/wipo-assess-2-1400.jpg 1400w" sizes="(min-width:900px) 23vw, 40vw" width="1400" height="1393" loading="lazy" decoding="async" alt="An IP diagnostic assessment in view mode: session information, uploaded files and the answered questions."></picture></div>
+      </div>
+    </article>
+    <article class="case" id="case-gia">
+      <div class="case-text">
+        <p class="label case-meta">GIA · Mobile · Publication platform</p>
+        <h3>GIA: the mobile app and the software behind diamond origin</h3>
+        <p>Elysium built GIA’s mobile app and the diamond-origin software and publication platform behind it. The screen shown is the entry point: a GIA report number.</p>
+      </div>
+      <div class="frame">
+        <div class="bar"><i></i><i></i><i></i><span class="label">GIA</span></div>
+        <div class="phones"><div class="shot"><picture><source type="image/avif" srcset="assets/work/gia-home-400.avif 400w, assets/work/gia-home-788.avif 788w" sizes="260px"><source type="image/webp" srcset="assets/work/gia-home-400.webp 400w, assets/work/gia-home-788.webp 788w" sizes="260px"><img src="assets/work/gia-home-400.jpg" srcset="assets/work/gia-home-400.jpg 400w, assets/work/gia-home-788.jpg 788w" sizes="260px" width="788" height="1400" loading="lazy" decoding="async" alt="GIA home screen with the GIA seal, a diamond, and a field to enter a report number."></picture></div></div>
+      </div>
+    </article>
+    <article class="case" id="case-striker">
+      <div class="case-text">
+        <p class="label case-meta">Striker · Mobile</p>
+        <h3>Striker: 7-on-7 football in Geneva and Zürich, booked from a phone</h3>
+        <p>Three screens from the Striker app: the games, the summer programme, and a match ticket with its address and teams.</p>
+      </div>
+      <div class="frame">
+        <div class="bar"><i></i><i></i><i></i><span class="label">Striker</span></div>
+        <div class="phones">
+          <div class="shot"><picture><source type="image/avif" srcset="assets/work/striker_1_v2-324.avif 324w, assets/work/striker_1_v2-647.avif 647w" sizes="(min-width:900px) 17vw, 30vw"><source type="image/webp" srcset="assets/work/striker_1_v2-324.webp 324w, assets/work/striker_1_v2-647.webp 647w" sizes="(min-width:900px) 17vw, 30vw"><img src="assets/work/striker_1_v2-324.jpg" srcset="assets/work/striker_1_v2-324.jpg 324w, assets/work/striker_1_v2-647.jpg 647w" sizes="(min-width:900px) 17vw, 30vw" width="647" height="1400" loading="lazy" decoding="async" alt="Striker: a match ticket on a phone, captioned “Wanna play soccer in Geneva or Zurich?”."></picture></div>
+          <div class="shot"><picture><source type="image/avif" srcset="assets/work/striker_2_v2-324.avif 324w, assets/work/striker_2_v2-647.avif 647w" sizes="(min-width:900px) 17vw, 30vw"><source type="image/webp" srcset="assets/work/striker_2_v2-324.webp 324w, assets/work/striker_2_v2-647.webp 647w" sizes="(min-width:900px) 17vw, 30vw"><img src="assets/work/striker_2_v2-324.jpg" srcset="assets/work/striker_2_v2-324.jpg 324w, assets/work/striker_2_v2-647.jpg 647w" sizes="(min-width:900px) 17vw, 30vw" width="647" height="1400" loading="lazy" decoding="async" alt="Striker: “7 on 7 games all summer!”."></picture></div>
+          <div class="shot"><picture><source type="image/avif" srcset="assets/work/striker_3_v2-324.avif 324w, assets/work/striker_3_v2-647.avif 647w" sizes="(min-width:900px) 17vw, 30vw"><source type="image/webp" srcset="assets/work/striker_3_v2-324.webp 324w, assets/work/striker_3_v2-647.webp 647w" sizes="(min-width:900px) 17vw, 30vw"><img src="assets/work/striker_3_v2-324.jpg" srcset="assets/work/striker_3_v2-324.jpg 324w, assets/work/striker_3_v2-647.jpg 647w" sizes="(min-width:900px) 17vw, 30vw" width="647" height="1400" loading="lazy" decoding="async" alt="Striker: the list of upcoming games, captioned “Grab your spot and come have fun!”."></picture></div>
         </div>
-        <p class="ok" role="status">Received. Elysium replies from Geneva within two working days.</p>
+      </div>
+    </article>
+    <article class="case" id="case-n8n">
+      <div class="case-text">
+        <p class="label case-meta">Business automation · n8n</p>
+        <h3>An n8n workflow that prepares media and publishes it to Instagram</h3>
+        <p>Business automation runs on n8n: here, a workflow that starts from an input form and carries media through each step to publication on Instagram.</p>
+      </div>
+      <div class="frame">
+        <div class="bar"><i></i><i></i><i></i><span class="label">n8n</span></div>
+        <div class="shot"><picture><source type="image/avif" srcset="assets/work/n8n-720.avif 720w, assets/work/n8n-1400.avif 1400w" sizes="(min-width:900px) 58vw, 92vw"><source type="image/webp" srcset="assets/work/n8n-720.webp 720w, assets/work/n8n-1400.webp 1400w" sizes="(min-width:900px) 58vw, 92vw"><img src="assets/work/n8n-720.jpg" srcset="assets/work/n8n-720.jpg 720w, assets/work/n8n-1400.jpg 1400w" sizes="(min-width:900px) 58vw, 92vw" width="1400" height="770" loading="lazy" decoding="async" alt="The n8n editor showing a workflow titled Publish to Instagram, with dozens of connected nodes."></picture></div>
+      </div>
+    </article>
+  </div>
+  <div class="wrap cols">
+    <div class="span-r">
+      <p class="label sheet-head">From the archive</p>
+      <div class="sheet">
+        <picture><source type="image/avif" srcset="assets/portfolio/3d_02.avif"><source type="image/webp" srcset="assets/portfolio/3d_02.webp"><img src="assets/portfolio/3d_02.jpg" width="130" height="130" loading="lazy" decoding="async" alt="Archive piece, 3D"></picture>
+        <picture><source type="image/avif" srcset="assets/portfolio/3d_05.avif"><source type="image/webp" srcset="assets/portfolio/3d_05.webp"><img src="assets/portfolio/3d_05.jpg" width="130" height="130" loading="lazy" decoding="async" alt="Archive piece, 3D"></picture>
+        <picture><source type="image/avif" srcset="assets/portfolio/3d_09.avif"><source type="image/webp" srcset="assets/portfolio/3d_09.webp"><img src="assets/portfolio/3d_09.jpg" width="130" height="130" loading="lazy" decoding="async" alt="Archive piece, 3D"></picture>
+        <picture><source type="image/avif" srcset="assets/portfolio/3d_13.avif"><source type="image/webp" srcset="assets/portfolio/3d_13.webp"><img src="assets/portfolio/3d_13.jpg" width="130" height="130" loading="lazy" decoding="async" alt="Archive piece, 3D"></picture>
+        <picture><source type="image/avif" srcset="assets/portfolio/web_01.avif"><source type="image/webp" srcset="assets/portfolio/web_01.webp"><img src="assets/portfolio/web_01.jpg" width="130" height="130" loading="lazy" decoding="async" alt="Archive piece, web"></picture>
+        <picture><source type="image/avif" srcset="assets/portfolio/web_04.avif"><source type="image/webp" srcset="assets/portfolio/web_04.webp"><img src="assets/portfolio/web_04.jpg" width="130" height="130" loading="lazy" decoding="async" alt="Archive piece, web"></picture>
+        <picture><source type="image/avif" srcset="assets/portfolio/web_10.avif"><source type="image/webp" srcset="assets/portfolio/web_10.webp"><img src="assets/portfolio/web_10.jpg" width="130" height="130" loading="lazy" decoding="async" alt="Archive piece, web"></picture>
+        <picture><source type="image/avif" srcset="assets/portfolio/web_16.avif"><source type="image/webp" srcset="assets/portfolio/web_16.webp"><img src="assets/portfolio/web_16.jpg" width="130" height="130" loading="lazy" decoding="async" alt="Archive piece, web"></picture>
+        <picture><source type="image/avif" srcset="assets/portfolio/branding_03.avif"><source type="image/webp" srcset="assets/portfolio/branding_03.webp"><img src="assets/portfolio/branding_03.jpg" width="130" height="130" loading="lazy" decoding="async" alt="Archive piece, branding"></picture>
+        <picture><source type="image/avif" srcset="assets/portfolio/branding_07.avif"><source type="image/webp" srcset="assets/portfolio/branding_07.webp"><img src="assets/portfolio/branding_07.jpg" width="130" height="130" loading="lazy" decoding="async" alt="Archive piece, branding"></picture>
+        <picture><source type="image/avif" srcset="assets/portfolio/production_02.avif"><source type="image/webp" srcset="assets/portfolio/production_02.webp"><img src="assets/portfolio/production_02.jpg" width="130" height="130" loading="lazy" decoding="async" alt="Archive piece, production"></picture>
+        <picture><source type="image/avif" srcset="assets/portfolio/production_06.avif"><source type="image/webp" srcset="assets/portfolio/production_06.webp"><img src="assets/portfolio/production_06.jpg" width="130" height="130" loading="lazy" decoding="async" alt="Archive piece, production"></picture>
+        <picture><source type="image/avif" srcset="assets/portfolio/illustration_02.avif"><source type="image/webp" srcset="assets/portfolio/illustration_02.webp"><img src="assets/portfolio/illustration_02.jpg" width="130" height="130" loading="lazy" decoding="async" alt="Archive piece, illustration"></picture>
+        <picture><source type="image/avif" srcset="assets/portfolio/publications_01.avif"><source type="image/webp" srcset="assets/portfolio/publications_01.webp"><img src="assets/portfolio/publications_01.jpg" width="130" height="130" loading="lazy" decoding="async" alt="Archive piece, publication"></picture>
+        <picture><source type="image/avif" srcset="assets/portfolio/publications_05.avif"><source type="image/webp" srcset="assets/portfolio/publications_05.webp"><img src="assets/portfolio/publications_05.jpg" width="130" height="130" loading="lazy" decoding="async" alt="Archive piece, publication"></picture>
+        <picture><source type="image/avif" srcset="assets/portfolio/mobile_02.avif"><source type="image/webp" srcset="assets/portfolio/mobile_02.webp"><img src="assets/portfolio/mobile_02.jpg" width="130" height="130" loading="lazy" decoding="async" alt="Archive piece, mobile"></picture>
+        <picture><source type="image/avif" srcset="assets/portfolio/video_01.avif"><source type="image/webp" srcset="assets/portfolio/video_01.webp"><img src="assets/portfolio/video_01.jpg" width="130" height="130" loading="lazy" decoding="async" alt="Archive piece, video"></picture>
+        <picture><source type="image/avif" srcset="assets/portfolio/it_01.avif"><source type="image/webp" srcset="assets/portfolio/it_01.webp"><img src="assets/portfolio/it_01.jpg" width="130" height="130" loading="lazy" decoding="async" alt="Archive piece, IT"></picture>
+      </div>
+      <p class="sheet-note">18 of the 69 pieces archived from elysium.cc, at their original 130 px.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================================ 8 CITIES ================================ -->
+<section class="sec" id="cities" aria-labelledby="h-cities">
+  <div class="wrap"><div class="sec-rule" aria-hidden="true"></div></div>
+  <div class="wrap cols sec-head">
+    <p class="label idx">08 / Cities</p>
+    <h2 id="h-cities">Two Swiss offices, and a 3D studio in Buenos Aires.</h2>
+    <p class="lede">Headquarters in Carouge, canton of Geneva; Elysium Labs in Zürich; 3D production in Buenos Aires.</p>
+  </div>
+  <div class="wrap cols cities">
+    <figure class="ch">
+      <svg viewBox="-24 -24 648 428" role="img" aria-labelledby="ch-t">
+        <title id="ch-t">Outline of Switzerland with Geneva in the south-west and Zürich in the north.</title>
+        <path class="outline" d="M475.3,49.2L479.1,51.6L488.8,60.4L486.8,75.0L475.8,98.7L470.0,117.7L469.5,132.6L470.5,139.4L472.4,139.4L483.0,140.4L488.3,140.4L504.7,144.2L518.1,149.9L521.0,156.4L522.5,163.8L538.4,174.0L556.7,180.5L562.9,178.4L585.6,154.3L594.7,158.4L600.0,171.3L599.5,177.7L593.3,203.2L592.3,217.1L597.6,225.9L598.1,233.0L596.6,239.5L587.5,240.2L575.4,236.4L565.3,225.6L557.1,226.9L550.4,229.6L547.0,240.2L544.1,252.4L545.1,259.5L549.9,264.6L553.8,276.1L556.2,290.7L558.6,297.5L556.2,300.2L549.9,302.2L544.6,300.5L535.0,282.9L530.7,276.1L523.4,275.1L510.4,279.2L490.7,289.0L482.5,289.0L475.8,287.0L469.5,278.8L464.2,262.9L462.3,252.7L458.4,253.1L445.9,250.0L440.1,254.1L440.1,270.4L438.7,291.0L432.4,303.9L414.6,327.0L408.3,336.8L405.5,344.0L405.0,350.1L407.9,360.9L411.2,371.1L408.3,377.2L399.2,380.3L392.5,373.8L390.0,363.0L375.6,347.7L381.9,335.1L380.9,331.8L357.3,325.3L347.2,315.8L332.7,298.8L329.9,291.7L330.8,268.3L329.9,262.6L327.9,259.8L321.2,259.8L311.6,268.0L302.4,280.2L284.1,294.1L282.2,296.8L288.4,310.4L288.0,315.5L273.5,336.8L270.6,344.0L251.8,357.2L243.2,362.3L217.2,352.4L210.0,351.1L197.9,357.9L181.5,364.0L155.1,370.4L144.9,365.7L140.6,361.3L138.2,354.8L131.5,343.6L123.8,336.8L118.5,329.4L111.7,321.2L107.4,314.8L113.2,293.1L108.8,285.6L106.4,274.8L107.9,267.3L105.5,265.6L81.4,261.5L61.2,262.9L47.2,270.0L35.2,281.9L33.7,284.6L34.7,286.6L40.4,297.5L30.8,309.4L15.4,318.2L4.8,319.2L0.0,317.5L0.0,305.0L8.7,300.5L16.9,292.4L19.3,280.9L20.2,273.1L12.0,263.2L13.0,257.5L18.3,245.9L21.2,236.1L25.5,227.6L41.9,213.4L58.7,199.5L61.2,184.2L62.6,165.9L65.0,161.5L87.6,150.6L92.9,146.2L95.8,140.1L113.6,119.7L131.5,99.4L134.8,92.6L137.7,88.5L137.7,85.1L135.8,82.8L127.1,81.1L124.2,74.6L133.4,63.1L144.9,56.0L156.0,56.0L160.4,59.0L159.9,62.8L164.7,66.8L173.4,68.2L183.5,66.8L194.1,62.4L200.3,52.2L203.7,44.4L220.1,35.6L231.1,40.0L261.5,41.4L284.1,39.0L298.1,32.9L315.4,32.9L327.0,36.3L328.9,36.0L332.3,34.9L335.2,31.9L346.2,29.5L347.7,26.8L347.2,24.1L345.3,22.7L331.8,24.1L326.5,22.0L325.5,17.0L329.9,8.5L339.5,1.7L348.2,0.0L353.9,1.7L368.9,14.6L372.2,15.3L374.6,12.9L377.5,11.5L382.8,13.9L388.1,22.0L389.1,23.4L422.3,20.4L429.5,20.4L452.2,34.6L475.3,49.2Z"/>
+        <circle class="halo" cx="22.7" cy="307.8" r="11"/><circle class="pt" cx="22.7" cy="307.8" r="5"/>
+        <circle class="halo" cx="343.7" cy="79.2" r="11"/><circle class="pt" cx="343.7" cy="79.2" r="5"/>
+        <text x="44" y="337">GENEVA · HQ</text>
+        <text x="364" y="74">ZÜRICH · LABS</text>
+      </svg>
+      <figcaption class="label">Switzerland · Natural Earth 1:50m</figcaption>
+    </figure>
+    <ul class="city-list">
+      <li><h3>Geneva</h3><time data-clock data-tz="Europe/Zurich"></time><p class="label role">Headquarters</p>
+        <address>Avenue Cardinal-Mermillod 36, 1227 Carouge GE, Switzerland</address><p class="label geo">46.20° N · 6.14° E</p></li>
+      <li><h3>Zürich</h3><time data-clock data-tz="Europe/Zurich"></time><p class="label role">Elysium Labs · R&amp;D</p>
+        <address>Schaffhauserstrasse 449, 8052 Zürich, Switzerland</address><p class="label geo">47.37° N · 8.54° E</p></li>
+      <li><h3>Buenos Aires</h3><time data-clock data-tz="America/Argentina/Buenos_Aires"></time><p class="label role">3D studio</p>
+        <p class="label geo">34.60° S · 58.38° W</p></li>
+    </ul>
+  </div>
+</section>
+
+<!-- ================================ 9 CONTACT ================================ -->
+<section class="sec" id="contact" aria-labelledby="h-contact">
+  <div class="wrap"><div class="sec-rule" aria-hidden="true"></div></div>
+  <div class="wrap cols sec-head">
+    <p class="label idx">09 / Contact</p>
+    <h2 id="h-contact">Write to Geneva in French, German or English.</h2>
+    <p class="lede">Describe the project, the organisation behind it and the date it has to work by, and choose FR, DE or EN for the reply.</p>
+  </div>
+  <div class="wrap cols contact">
+    <div class="form-col">
+      <form class="form" id="contact-form" novalidate data-err-name="Enter your name." data-err-email="Enter your email address." data-err-format="Enter an address such as name@example.ch." data-err-msg="Tell us about the project." data-not-sent="Not sent: this form is not connected yet. Your message is still in the form; please email it to info@elysium.cc.">
+        <div class="f2">
+          <div class="field"><label class="label" for="f-name">Name</label><input id="f-name" name="name" autocomplete="name" required aria-describedby="e-name"><p class="err" id="e-name" aria-live="polite"></p></div>
+          <div class="field"><label class="label" for="f-org">Organisation</label><input id="f-org" name="organisation" autocomplete="organization"><p class="err" id="e-org"></p></div>
+        </div>
+        <div class="field"><label class="label" for="f-email">Email</label><input id="f-email" name="email" type="email" autocomplete="email" required aria-describedby="e-email"><p class="err" id="e-email" aria-live="polite"></p></div>
+        <div class="field"><label class="label" for="f-msg">Message</label><textarea id="f-msg" name="message" required aria-describedby="e-msg"></textarea><p class="err" id="e-msg" aria-live="polite"></p></div>
+        <fieldset>
+          <legend class="label">Preferred language</legend>
+          <div class="langs">
+            <input type="radio" name="lang" id="l-fr" value="fr"><label for="l-fr">FR</label>
+            <input type="radio" name="lang" id="l-de" value="de"><label for="l-de">DE</label>
+            <input type="radio" name="lang" id="l-en" value="en" checked><label for="l-en">EN</label>
+          </div>
+        </fieldset>
+        <div class="form-foot">
+          <button class="pill-btn primary" type="submit">Send <span class="arr" aria-hidden="true">→</span></button>
+          <p class="wire">This form is not connected yet. Until it is, write to <a class="link" href="mailto:info@elysium.cc">info@elysium.cc</a>.</p>
+        </div>
+        <p class="ok" role="status"></p>
       </form>
     </div>
+    <div class="direct">
+      <div><p class="label">Email</p><a class="big" href="mailto:info@elysium.cc">info@elysium.cc</a></div>
+      <div><p class="label">Phone</p><a class="big" href="tel:+41445053900">+41 44 505 39 00</a></div>
+      <div><p class="label">Geneva · local time</p><p class="big mono"><time data-clock data-tz="Europe/Zurich"></time></p></div>
+    </div>
   </div>
 </section>
+
 </main>
 
-<footer class="wrap">
-  <div class="f-grid">
-    <div><h4>Elysium Sàrl</h4>
-      <p>Avenue Cardinal-Mermillod 36<br>Carouge, canton of Geneva<br>Switzerland</p></div>
-    <div><h4>Contact</h4>
-      <a href="mailto:info@elysium.cc">info@elysium.cc</a>
-      <a href="#contact">Start a mandate</a></div>
-    <div><h4>Sections</h4>
-      <a href="#care">Digital healthcare</a><a href="#llm">Private LLM infrastructure</a>
-      <a href="#work">Selected mandates</a><a href="#record">Record</a></div>
-    <div><h4>Legal</h4>
-      <a href="/privacy/">Privacy policy</a><a href="/legal/">Legal notice</a>
-      <a href="/.well-known/security.txt">Security</a></div>
-    <div><h4>Language</h4>
-      <a href="/" aria-current="page">English</a><a href="/fr/">Français</a><a href="/de/">Deutsch</a></div>
+<footer>
+  <div class="wrap cols foot">
+    <div><h4>Elysium Sàrl</h4><p>Elysium Sàrl · Carouge GE · Switzerland</p><p>Design and technology. Since 2005.</p></div>
+    <div><h4>Offices</h4>
+      <address>Avenue Cardinal-Mermillod 36<br>1227 Carouge GE, Switzerland</address>
+      <address>Schaffhauserstrasse 449<br>8052 Zürich, Switzerland</address></div>
+    <div><h4>Contact</h4><p><a href="mailto:info@elysium.cc">info@elysium.cc</a><br><a href="tel:+41445053900">+41 44 505 39 00</a></p>
+      <p class="label"><a href="/fr/" lang="fr" hreflang="fr">FR</a> · <a href="/de/" lang="de" hreflang="de">DE</a> · <a href="/" lang="en" hreflang="en" aria-current="true">EN</a></p></div>
+    <div><h4>Legal</h4><p><a href="/privacy/">Privacy</a><br><a href="/legal/">Legal notice</a></p>
+      <p>CHE number <span class="slot"><span class="sr-only">not yet published</span></span><br>
+        Hosting <span class="slot"><span class="sr-only">not yet confirmed</span></span><br>
+        nLPD <span class="slot"><span class="sr-only">not yet confirmed</span></span><br>
+        Swiss Made Software <span class="slot"><span class="sr-only">not yet confirmed</span></span></p></div>
   </div>
-  <div class="f-bot mono">
-    <span>Design and technology</span>
-    <span>Founded Geneva 2005</span>
-    <span class="sp">© 2026 Elysium Sàrl</span>
-  </div>
+  <div class="wrap foot-base"><p class="label">© 2026 Elysium Sàrl</p><p class="label">Geneva · Zürich · Buenos Aires</p></div>
 </footer>
 
-<script src="assets/vendor/motion.js" defer></script>
-<script src="assets/vendor/anime.js" defer></script>
-<script src="main.js" defer></script>
+<script src="assets/vendor/lenis.min.js" defer></script>
+<script type="module" src="main.js"></script>
 </body>
 </html>

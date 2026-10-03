@@ -1,724 +1,672 @@
 /* Elysium — motion.
-   Built on Motion (motion.dev) and anime.js v4, both vendored under
-   assets/vendor so the page makes no external request at runtime.
+   anime.js 4 and Lenis, advanced on one clock. Every word and every number is
+   already in the HTML at its final value; this file only enhances. Each
+   animation carries one line saying what it shows. */
+import { animate, createTimeline, stagger, onScroll, spring, svg, utils, splitText, engine, cubicBezier, steps } from './assets/vendor/anime.esm.min.js';
 
-   One rule throughout: every animation states something — it reveals
-   structure, shows state, or makes a number readable. Nothing decorates.
-   All content is present and correct with this file absent. */
-(() => {
-'use strict';
-
-const M = window.Motion, A = window.anime;
+const root = document.documentElement;
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-const $  = (s, r = document) => r.querySelector(s);
+const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
-const LOC = () => document.documentElement.lang || 'en-GB';
-const num = (n, d = 0) => n.toLocaleString(LOC(), { minimumFractionDigits: d, maximumFractionDigits: d });
+root.classList.add('js');
+if (!reduce) root.classList.add('js-motion');
 
-/* Authored springs. Named by intent, tuned once, reused everywhere — the
-   motion equivalent of the easing tokens in the stylesheet. */
-const SETTLE = { type: 'spring', stiffness: 190, damping: 26, mass: 0.9 };  // arrives and stops
-const GATE   = { type: 'spring', stiffness: 320, damping: 34, mass: 0.7 };  // decisive open/close
-const DRIFT  = { type: 'spring', stiffness: 90,  damping: 22, mass: 1.1 };  // slow, weighty
+/* ---- tokens: read from the stylesheet, never restated ---- */
+const css = getComputedStyle(root);
+const tok = n => css.getPropertyValue(n).trim();
+const nums = n => (tok(n).match(/-?\d*\.?\d+/g) || []).map(Number);
+const T = {
+  spring: Object.fromEntries(['snap', 'glide', 'float'].map(k => { const [stiffness, damping] = nums(`--spring-${k}`); return [k, { stiffness, damping }]; })),
+  ease: { enter: cubicBezier(...nums('--ease-enter')), scrub: cubicBezier(...nums('--ease-scrub')), sync: t => t },
+  t: Object.fromEntries(['tick', 'move', 'reveal', 'draw'].map(k => [k, parseFloat(tok(`--t-${k}`))])),
+};
+const sp = k => spring(T.spring[k]);
+const clamp01 = v => v < 0 ? 0 : v > 1 ? 1 : v;
 
-/* A reveal keyed on a tall container firing at 10% of that container means the
-   block animates a screen and a half below the fold and is already at rest by
-   the time it is read — the motion is spent where nobody is looking. Pulling
-   the observation root up off the bottom edge fires it where the eye is, and
-   unlike raising `amount` it behaves the same whether the container is a third
-   of a screen tall or three screens. */
-const IN = { amount: 0.1, margin: '0px 0px -18% 0px' };
-
-/* Siblings need to arrive far enough apart to read as a cascade rather than one
-   block fading. Measured house range is 150-300ms for a handful of elements and
-   40-90ms for a large grid, so the step comes down as the count goes up while
-   the whole group still resolves inside about two-thirds of a second. */
-const cascade = n => Math.max(0.045, Math.min(0.11, 0.6 / n));
-
-if (!M) return;                       // no library, no motion — content stands on its own
-
-/* Anything we hide in order to animate it back in gets registered here.
-   If an observer never fires — element never intersects, IO throws, a later
-   script errors — the net reveals it anyway. Content is never lost to motion. */
-const hidden = new Set();
-const hide = el => { el.style.opacity = '0'; hidden.add(el); };
-const shown = els => { for (const el of [].concat(els)) hidden.delete(el); };
-setTimeout(() => { for (const el of hidden) el.style.opacity = ''; hidden.clear(); }, 2500);
-
-/* ---- 1. Reveals ---------------------------------------------------------
-   inView + stagger. The stagger step is derived from item count so a
-   collection of six and a collection of sixty both resolve in one beat. */
-(() => {
-  if (reduce) return;
-  // .roster li, .spec article and .sheet a are waves — see §17
-  const groups = [
-    '.card', '.tl li', '.cities article',
-    '.llm-points > div', '.stat-row > div', '.care-list > div',
-    '.trust-list > div', '.totals tbody tr'
-  ];
-  const solo = ['.case', '.calc', '#contact-form', '.instr-cap', '.lab-fig'];
-  const show = (els, opts) => M.animate(els, { opacity: [0, 1], y: [16, 0] }, opts);
-
-  for (const sel of groups) {
-    const els = $$(sel);
-    if (!els.length) continue;
-    els.forEach(hide);
-    M.inView(els[0].parentElement, () => {
-      shown(els);
-      show(els, { ...SETTLE, delay: M.stagger(cascade(els.length)) });
-      return false;                   // fire once
-    }, IN);
-  }
-  for (const sel of solo) for (const el of $$(sel)) {
-    hide(el);
-    M.inView(el, () => { shown(el); show(el, SETTLE); return false; }, IN);
-  }
-})();
-
-/* ---- 2. Counters --------------------------------------------------------
-   The correct value is already in the HTML and is what a crawler, a screen
-   reader and a no-JS visitor get. This only replays the approach to it. */
-(() => {
-  if (reduce) return;
-  for (const el of $$('[data-count]')) {
-    const end = +el.dataset.count;
-    M.inView(el, () => {
-      M.animate(0, end, {
-        duration: 1.1, ease: [0.22, 0.61, 0.24, 1],
-        onUpdate: v => { el.textContent = num(Math.round(v)); },
-        onComplete: () => { el.textContent = num(end); }
-      });
-      return false;
-    }, { amount: 0.6 });
-  }
-})();
-
-/* ---- 3. The studio card -------------------------------------------------
-   The printed face is what the card shows. The contact face is stacked on
-   top of it and masked to a soft circle that tracks the pointer, so moving
-   the light across the card reads as lighting one object rather than
-   crossfading two pictures. The pointer also tilts the slab a few degrees,
-   which is what sells it as a thing with thickness.
-
-   The mask is a CSS radial-gradient, not a canvas repainted and re-encoded
-   to a data URL every frame: identical falloff, one style write, and no
-   per-frame allocation. The loop only runs while the hero is on screen. */
-(() => {
-  const stage = $('#bcard'); if (!stage) return;
-  const plate = $('.bc-plate', stage), reveal = $('.bc-reveal', stage);
-  if (!plate || !reveal || reduce) return;
-
-  // no hover means no spotlight: a tap shows the whole contact face
-  if (matchMedia('(hover: none)').matches) {
-    stage.addEventListener('click', () => {
-      const on = reveal.classList.toggle('shown');
-      stage.setAttribute('aria-pressed', String(on));
-    });
-    return;
-  }
-
-  const EASE = 0.1;
-  let mx = null, my = 0, sx = 0, sy = 0, raf = 0, seeded = false;
-
-  addEventListener('pointermove', e => { mx = e.clientX; my = e.clientY; }, { passive: true });
-
-  const frame = () => {
-    const b = plate.getBoundingClientRect();
-    const cx = b.left + b.width / 2, cy = b.top + b.height / 2;
-
-    // the light rests on the contact stack, so the card opens already
-    // showing the thing worth finding rather than an empty board
-    const hx = b.left + b.width * 0.38, hy = b.top + b.height * 0.33;
-    if (!seeded) { sx = hx; sy = hy; seeded = true; }
-
-    sx += ((mx === null ? hx : mx) - sx) * EASE;
-    sy += ((mx === null ? hy : my) - sy) * EASE;
-
-    // the spotlight is a third of the card, not a fixed pixel radius — at
-    // 260px it covered the whole thing and both faces just muddied together
-    const R = Math.max(104, b.width * 0.30);
-    const m = `radial-gradient(circle ${R.toFixed(0)}px at ${(sx - b.left).toFixed(1)}px ${(sy - b.top).toFixed(1)}px,`
-      + 'rgba(0,0,0,1) 0%,rgba(0,0,0,1) 62%,rgba(0,0,0,.55) 74%,'
-      + 'rgba(0,0,0,.18) 86%,rgba(0,0,0,0) 100%)';
-    reveal.style.webkitMaskImage = m;
-    reveal.style.maskImage = m;
-
-    plate.style.transform =
-      `rotateX(${(((sy - cy) / innerHeight) * -13).toFixed(2)}deg) ` +
-      `rotateY(${(((sx - cx) / innerWidth) * 17).toFixed(2)}deg)`;
-
-    raf = requestAnimationFrame(frame);
-  };
-
-  reveal.classList.add('lit');
-  new IntersectionObserver(([e]) => {
-    if (e.isIntersecting && !raf) raf = requestAnimationFrame(frame);
-    else if (!e.isIntersecting && raf) { cancelAnimationFrame(raf); raf = 0; }
-  }).observe(stage);
-})();
-
-/* ---- 4. Applied research: the segmentation contour ----------------------
-   Drawn once with anime's drawable, then held. The shape is the measured
-   output — it is not redrawn on a loop, which would read as decoration. */
-(() => {
-  const trace = $('#trace'); if (!trace || !A) return;
-  if (reduce) { trace.style.opacity = '1'; return; }
-  M.inView(trace.closest('.lab-fig') || trace, () => {
-    try {
-      A.animate(A.svg.createDrawable(trace),
-        { draw: ['0 0', '0 1'], duration: 1400, ease: 'inOut(3)' });
-    } catch { /* leave the contour drawn */ }
-    M.animate(trace, { opacity: [0, 1] }, { duration: 0.3 });
-    return false;
-  }, { amount: 0.4 });
-})();
-
-/* ---- 5. Header ----------------------------------------------------------
-   The rule under the header firms up once the page has left the hero, so
-   the bar reads as pinned rather than floating. */
-(() => {
-  const hdr = $('.hdr'), hero = $('.hero');
-  if (!hdr || !hero) return;
-  const plate = () => hdr.classList.toggle('off-plate',
-    hero.getBoundingClientRect().bottom <= hdr.offsetHeight + 8);
-  plate();
-  addEventListener('scroll', plate, { passive: true });
-  addEventListener('resize', plate, { passive: true });
-  if (reduce || !M.scroll) return;
-  M.scroll(p => {
-    hdr.style.borderBottomColor =
-      `color-mix(in srgb, var(--ink) ${(Math.min(p * 2, 1) * 46).toFixed(0)}%, var(--rule))`;
-  }, { target: hero, offset: ['start start', 'end start'] });
-})();
-
-/* ---- 6. Portfolio filter ------------------------------------------------
-   FLIP: measure, change, invert, play. Cards that stay travel to their new
-   position instead of jumping, so the filter reads as a rearrangement. */
-(() => {
-  const grid = $('#grid'); if (!grid) return;
-  const cards = $$('.card', grid), btns = $$('.filters button');
-
-  const apply = f => {
-    const before = new Map(cards.map(c => [c, c.getBoundingClientRect()]));
-    const keep = [];
-    for (const c of cards) {
-      const on = f === 'all' || c.dataset.cat.split(' ').includes(f);
-      c.hidden = !on;
-      if (on) keep.push(c);
-    }
-    if (reduce) return;
-    for (const c of keep) {
-      const a = before.get(c), b = c.getBoundingClientRect();
-      if (a && a.width) {
-        const dx = a.left - b.left, dy = a.top - b.top;
-        if (dx || dy) M.animate(c, { x: [dx, 0], y: [dy, 0] }, GATE);
-      } else {
-        M.animate(c, { opacity: [0, 1], scale: [0.97, 1] }, { ...GATE, delay: 0.04 });
-      }
-    }
-  };
-
-  btns.forEach(b => b.addEventListener('click', () => {
-    btns.forEach(x => x.setAttribute('aria-pressed', String(x === b)));
-    apply(b.dataset.f);
-  }));
-})();
-
-/* ---- 7. Cost model ------------------------------------------------------
-   Every figure below is arithmetic on the visitor's own four inputs. The
-   bars are springs so a drag reads as continuous rather than stepped. */
-(() => {
-  const vol = $('#i-vol'), api = $('#i-api'), gpu = $('#i-gpu'), set = $('#i-set');
-  if (!vol) return;
-  const out = id => $('#' + id);
-  const money = n => '$' + num(Math.round(n)).replace(/[,  ]/g, ' ');
-  const bA = $('#bar-api'), bS = $('#bar-self');
-  const wA = M.motionValue(0), wS = M.motionValue(0);
-  wA.on('change', v => { bA.style.width = v.toFixed(2) + '%'; });
-  wS.on('change', v => { bS.style.width = v.toFixed(2) + '%'; });
-
-  const draw = () => {
-    const V = +vol.value;              // million tokens per month
-    const P = +api.value / 100;        // $ per million tokens
-    const G = +gpu.value;              // $ per month, GPU + operation
-    const S = +set.value;              // $ one-off deployment
-
-    const apiMonth = V * P, selfMonth = G;
-    const apiY1 = apiMonth * 12, selfY1 = selfMonth * 12 + S;
-    const d1 = apiY1 - selfY1;                        // positive = private is cheaper
-    const monthlyGap = apiMonth - selfMonth;
-    const breakEven = P > 0 ? G / P : Infinity;       // M tokens where the monthly costs meet
-    const payback = monthlyGap > 0 ? S / monthlyGap : null;
-
-    out('o-vol').textContent = num(V) + (LOC().startsWith('de') ? ' Mio. Token' : ' M tokens');
-    out('o-api').textContent = '$' + num(P, 2) + (LOC().startsWith('de') ? ' / Mio. Token' : ' / M tokens');
-    out('o-gpu').textContent = money(G);
-    out('o-set').textContent = money(S);
-
-    out('t-am').textContent = money(apiMonth);
-    out('t-sm').textContent = money(selfMonth);
-    out('t-a1').textContent = money(apiY1);
-    out('t-s1').textContent = money(selfY1);
-    out('t-a2').textContent = money(apiY1);
-    out('t-s2').textContent = money(selfMonth * 12);
-
-    const d = out('t-d1');
-    d.textContent = (d1 >= 0 ? money(d1) + ' ' + d.dataset.saved : money(-d1) + ' ' + d.dataset.extra);
-    d.classList.toggle('good', d1 >= 0);
-
-    const be = out('t-be');
-    be.textContent = isFinite(breakEven)
-      ? (breakEven >= 1000 ? num(breakEven / 1000, 2) + ' ' + be.dataset.b
-                           : num(Math.round(breakEven)) + ' ' + be.dataset.m)
-      : '—';
-
-    const pb = out('t-pb');
-    pb.textContent = payback === null ? pb.dataset.never
-      : pb.dataset.month.replace('{n}', num(Math.ceil(payback)));
-    pb.classList.toggle('good', payback !== null && payback <= 12);
-
-    const max = Math.max(apiMonth, selfMonth, 1);
-    const anim = reduce ? { duration: 0 } : DRIFT;
-    const pA = (apiMonth / max) * 100, pS = (selfMonth / max) * 100;
-    M.animate(wA, pA, anim);
-    M.animate(wS, pS, anim);
-    $('#lab-api').textContent = money(apiMonth);
-    $('#lab-self').textContent = money(selfMonth);
-    bA.classList.add('on'); bS.classList.add('on');
-    bA.classList.toggle('out', pA < 34);
-    bS.classList.toggle('out', pS < 34);
-
-    const c = $('#crossover'), F = c.dataset;
-    const bev = breakEven >= 1000 ? num(breakEven / 1000, 2) + ' ' + F.b : num(Math.round(breakEven)) + ' ' + F.m;
-    c.innerHTML = F.lead.replace('{p}', '$' + num(P, 2)) + ' <b>' + bev + '</b> ' + F.tail
-      + ' ' + (monthlyGap > 0 ? F.under : F.over);
-  };
-
-  [vol, api, gpu, set].forEach(i => i.addEventListener('input', draw));
-  addEventListener('elysium:lang', draw);
-  draw();
-})();
-
-/* ---- 8. Contact form ----------------------------------------------------
-   Validates and reports. The endpoint is not wired yet and the page says so
-   rather than pretending to send. */
-(() => {
-  const f = $('#contact-form'); if (!f) return;
-  f.addEventListener('submit', e => {
-    e.preventDefault();
-    const bad = [...f.elements].find(el => el.required && !el.value.trim());
-    if (bad) {
-      bad.focus();
-      bad.style.borderColor = 'var(--red)';
-      if (!reduce) M.animate(bad, { x: [0, -5, 4, -2, 0] }, { duration: 0.32 });
-      return;
-    }
-    f.classList.add('sent');
-    if (!reduce) M.animate($('.ok', f), { opacity: [0, 1], y: [8, 0] }, SETTLE);
+/* ---- one clock: Lenis, anime and the per-frame jobs advance in the same frame ---- */
+let lenis = null;
+const tickers = new Set();
+if (!reduce && window.Lenis) {
+  lenis = new Lenis({ autoRaf: false });
+  engine.useDefaultMainLoop = false;
+}
+{
+  let last = performance.now();
+  requestAnimationFrame(function raf(t) {
+    const dt = Math.min(64, t - last); last = t;
+    if (lenis) { lenis.raf(t); engine.update(); }
+    for (const f of tickers) f(dt);
+    requestAnimationFrame(raf);
   });
-  $$('#contact-form input,#contact-form textarea').forEach(el =>
-    el.addEventListener('input', () => { el.style.borderColor = ''; }));
-})();
+}
+const scrollTop = () => lenis ? lenis.scroll : scrollY;
+const scrollFns = new Set();
+const runScroll = () => { for (const f of scrollFns) f(); };
+if (lenis) lenis.on('scroll', runScroll); else addEventListener('scroll', runScroll, { passive: true });
 
-/* ---- 9. Headline masks --------------------------------------------------
-   A headline rises out of its own measure, word by word. The wrapping is
-   built at runtime and can be undone: the served markup stays one clean
-   sentence, which is what a crawler reads and what the language build
-   looks up. elysiumText lets the preview's language switch put the
-   sentence back, translate it, and re-wrap it. */
-const splits = [];
+/* Layout is read only here — on load, on resize, when fonts land — never inside a scroll handler. */
+const measures = new Set();
+const remeasure = () => { for (const m of measures) m(); runScroll(); };
+new ResizeObserver(remeasure).observe(document.body);
+const docTop = el => el.getBoundingClientRect().top + scrollTop();
+const belowFold = el => el.getBoundingClientRect().top > innerHeight;
+const once = (target, enter, fn) => {
+  let done = false;
+  onScroll({ target, enter, onEnter: () => { if (!done) { done = true; fn(); } } });
+};
 
-function makeSplit(el) {
-  const texts = [];
-  (function walk(n) {
-    for (const c of n.childNodes) {
-      if (c.nodeType === 3 && c.nodeValue.trim()) texts.push(c);
-      else if (c.nodeType === 1) walk(c);
-    }
-  })(el);
-
-  const rec = { el, on: false, revealed: false, words: [],
-                parts: texts.map(t => ({ text: t, nodes: null })) };
-
-  rec.apply = () => {
-    if (rec.on) return rec.words;
-    rec.words = [];
-    for (const p of rec.parts) {
-      const frag = document.createDocumentFragment();
-      for (const part of p.text.nodeValue.split(/(\s+)/)) {
-        if (!part) continue;
-        if (!part.trim()) { frag.append(part); continue; }
-        const wm = document.createElement('span'); wm.className = 'wm';
-        const w = document.createElement('i'); w.textContent = part;
-        if (!rec.revealed) w.style.transform = 'translateY(110%)';
-        wm.append(w); frag.append(wm); rec.words.push(w);
-      }
-      p.nodes = [...frag.childNodes];
-      p.text.replaceWith(frag);
-    }
-    rec.on = true;
-    return rec.words;
-  };
-
-  rec.restore = () => {                    // the original Text nodes go back in,
-    if (!rec.on) return;                   // so anything holding a reference to
-    for (const p of rec.parts) {           // them keeps working
-      p.nodes[0].replaceWith(p.text);
-      for (const n of p.nodes.slice(1)) n.remove();
-      p.nodes = null;
-    }
-    rec.on = false;
-  };
-
-  splits.push(rec);
-  return rec;
+/* ---- clocks: the time where each office is ---- */
+{
+  const fmts = new Map();
+  const fmt = tz => fmts.get(tz) || fmts.set(tz, new Intl.DateTimeFormat('fr-CH', { timeZone: tz, hour: '2-digit', minute: '2-digit', hourCycle: 'h23' })).get(tz);
+  (function tick() {
+    const d = new Date();
+    for (const el of $$('[data-clock]')) { el.textContent = fmt(el.dataset.tz || 'Europe/Zurich').format(d); el.dateTime = d.toISOString(); }
+    setTimeout(tick, 60000 - d.getTime() % 60000 + 20);
+  })();
 }
 
-const WORD_STEP = 0.08;                  // per-word stagger; the house measure
+/* ---- nav: steps aside while reading down, back on the first scroll up ---- */
+const nav = $('#nav');
+let navHoldUntil = 120;                 // the flag docks into the nav, so the nav stays put until it lands
+if (!reduce) {
+  let last = 0, hidden = false;
+  scrollFns.add(() => {
+    const y = scrollTop(), d = y - last;
+    if (Math.abs(d) < 4) return;
+    last = y;
+    const hide = d > 0 && y > navHoldUntil && !nav.contains(document.activeElement);
+    if (hide === hidden) return;
+    hidden = hide;
+    // the bar slides out of the reading area and returns when the reader turns back
+    animate(nav, { y: hide ? '-100%' : '0%', duration: T.t.move, ease: T.ease.enter });
+  });
+}
 
-const rise = (rec, delay = 0) => {
-  const words = rec.apply();
-  rec.revealed = true;
-  M.animate(words, { transform: ['translateY(110%)', 'translateY(0%)'] },
-    { ...SETTLE, delay: M.stagger(WORD_STEP, { startDelay: delay }) });
-  // per-headline net: if that animation never ran, the words are still put back.
-  // It has to clear the last word's own start, or a long headline gets its tail
-  // snapped into place while the line is still rising.
-  const net = (delay + WORD_STEP * words.length) * 1000 + 900;
-  setTimeout(() => { for (const w of words)
-    if (w.style.transform.includes('110')) w.style.transform = ''; }, net);
-  return words;
+/* ---- active section: one pill travels between the nav links ---- */
+{
+  const ul = $('.links'), pill = $('.links .pill'), links = $$('.links a');
+  let current = null;
+  const clipFor = a => {
+    const u = ul.getBoundingClientRect(), r = a.getBoundingClientRect();
+    return `inset(0px ${(u.right - r.right).toFixed(1)}px 0px ${(r.left - u.left).toFixed(1)}px round 999px)`;
+  };
+  const hide = 'inset(0px 100% 0px 0px round 999px)';
+  const setActive = id => {
+    const a = links.find(l => l.hash === '#' + id) || null;
+    if (a === current) return;
+    links.forEach(l => l === a ? l.setAttribute('aria-current', 'true') : l.removeAttribute('aria-current'));
+    const was = current; current = a;
+    if (!ul.offsetParent) return;
+    if (!a) { utils.set(pill, { clipPath: hide }); return; }
+    // the pill slides to the section being read (FLIP through clip-path, no width animation)
+    if (!was || reduce) utils.set(pill, { clipPath: clipFor(a) });
+    else animate(pill, { clipPath: clipFor(a), ease: sp('snap') });
+  };
+  const io = new IntersectionObserver(es => es.forEach(e => e.isIntersecting && setActive(e.target.id)), { rootMargin: '-45% 0px -54% 0px' });
+  $$('main > section[id]').forEach(s => io.observe(s));
+  measures.add(() => { if (current && ul.offsetParent) utils.set(pill, { clipPath: clipFor(current) }); });
+}
+
+/* ---- ground: --raised fades in over 30vh as a raised section arrives, and out as it leaves ---- */
+if (!reduce) {
+  const ground = $('.ground'), secs = $$('[data-ground="raised"]');
+  let spans = [];
+  measures.add(() => { spans = secs.map(s => { const t = docTop(s); return [t, t + s.offsetHeight]; }); });
+  scrollFns.add(() => {
+    const vh = innerHeight, k = vh * .3, edge = scrollTop() + vh * .85;
+    const p = v => clamp01((edge - v) / k);
+    let o = 0;
+    for (const [a, b] of spans) o = Math.max(o, p(a) - p(b));
+    ground.style.opacity = o.toFixed(3);            // scroll-synced, linear, exactly reversible
+  });
+  root.classList.add('ground-live');
+}
+
+/* ---- hero: the slogan rises out of its line box; the entrance resolves inside 1.1 s ---- */
+if (!reduce) {
+  // characters on wide screens; words on phones, where per-character boxes lose kerning and the slogan would wrap
+  const sp1 = innerWidth >= 768 ? splitText($('.hero h1'), { chars: { wrap: 'clip' } }).chars : splitText($('.hero h1'), { words: { wrap: 'clip' } }).words;
+  const chars = sp1;
+  createTimeline()
+    .add($('.hero .eyebrow'), { opacity: [0, 1], duration: T.t.move, ease: T.ease.enter }, 0)
+    .add(chars, { y: ['105%', '0%'], duration: 700, ease: T.ease.enter, delay: stagger(16) }, 60)
+    .add($$('.hero .lede, .hero .ctas, .hero .hero-new'), { opacity: [0, 1], y: [12, 0], duration: T.t.move, ease: T.ease.enter, delay: stagger(80) }, 560);
+}
+
+/* ---- the flag: built cell by cell, then docked into the nav as the hero leaves ---- */
+{
+  const fig = $('.flag'), fb = $('#flag-build'), cellsG = $('.cells', fb), solid = $('.solid', fb);
+  const navMark = $('.brand .mark');
+  const live = !reduce && innerWidth >= 768;
+  if (!live) {
+    // static flag; the nav mark appears with a plain fade once the hero flag is off screen
+    new IntersectionObserver(([e]) => animate(navMark, { opacity: e.isIntersecting ? 0 : 1, duration: T.t.tick, ease: 'linear' })).observe(fig);
+  } else {
+    const N = 32, c = 15.5;
+    const inCross = (x, y) => (x >= 13 && x < 19 && y >= 6 && y < 26) || (y >= 13 && y < 19 && x >= 6 && x < 26);
+    // field cells sit in 16 concentric rings so the release can be scrubbed with 16 writes a frame
+    const rings = Array.from({ length: 16 }, (_, r) => `<g data-r="${r}">`);
+    let crossHtml = '';
+    for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
+      const cell = `<rect x="${x}" y="${y}" width="1" height="1" data-i="${y * N + x}"`;
+      if (inCross(x, y)) crossHtml += `${cell} fill="#FFFFFF"/>`;
+      else rings[Math.floor(Math.max(Math.abs(x - c), Math.abs(y - c)))] += `${cell} fill="#DA291C"/>`;
+    }
+    cellsG.innerHTML = rings.map(r => r + '</g>').join('') + `<g class="cross">${crossHtml}</g>`;
+    const ringGs = $$('[data-r]', cellsG);
+    const cells = $$('rect', cellsG).sort((a, b) => a.dataset.i - b.dataset.i);
+    const d = stagger(1, { grid: [N, N], from: 'center' });
+    const dist = cells.map((el, i) => d(el, i, cells));
+    const cross = [], field = [], cd = [], fd = [];
+    cells.forEach((el, i) => el.getAttribute('fill') === '#FFFFFF' ? (cross.push(el), cd.push(dist[i])) : (field.push(el), fd.push(dist[i])));
+    const norm = (ds, span) => { const lo = Math.min(...ds), hi = Math.max(...ds); return ds.map(v => (v - lo) / (hi - lo) * span); };
+    const cD = norm(cd, 600 - T.t.tick), fD = norm(fd, 700 - T.t.tick);
+    solid.style.opacity = 0;
+    utils.set(cells, { opacity: 0 });
+    navMark.style.opacity = 0;
+    root.classList.add('dock-live');
+    createTimeline({ delay: 250 })
+      // the cross assembles in white, outward from the centre; it is never red
+      .add(cross, { opacity: [0, 1], duration: T.t.tick, ease: 'linear', delay: (_, i) => cD[i] }, 0)
+      // the red field closes in around the finished cross
+      .add(field, { opacity: [0, 1], duration: T.t.tick, ease: 'linear', delay: (_, i) => fD[i] }, 600);
+
+    // dock: tilt ≤ 12°, field cells release outermost first, the white cross condenses into the 16 px nav mark
+    let top = 0, h = 1, cx = 0, cy = 0, size = 1, mx = 0, my = 0;
+    measures.add(() => {
+      const saved = fb.style.transform; fb.style.transform = 'none';
+      const r = fb.getBoundingClientRect(), m = navMark.getBoundingClientRect();
+      fb.style.transform = saved;
+      const hero = $('.hero'); top = docTop(hero); h = hero.offsetHeight; navHoldUntil = Math.max(120, top + h * .8 + 240);
+      cx = r.left + r.width / 2; cy = r.top + scrollTop() + r.height / 2; size = r.width;
+      mx = m.left + m.width / 2; my = m.top + m.height / 2;
+    });
+    const navY = () => { const t = nav.style.transform.match(/-?[\d.]+%/); return t ? parseFloat(t[0]) / 100 * nav.offsetHeight : 0; };
+    scrollFns.add(() => {
+      const p = clamp01((scrollTop() - top) / (h * .8));
+      const rel = clamp01((p - .1) / .45), q = T.ease.scrub(clamp01((p - .5) / .5));
+      ringGs.forEach((g, r) => { g.style.opacity = clamp01(1 - (rel * 17 - (15 - r))).toFixed(3); });
+      // the flag rides just under the nav once it reaches it, then shrinks and slides into the mark
+      const s = 1 + (16 / size - 1) * q, natY = cy - scrollTop(), half = size * s / 2;
+      const minY = (nav.offsetHeight + half + 16) * (1 - q) + (my + navY()) * q;
+      const dx = (mx - cx) * q, dy = Math.max(natY, minY) - natY;
+      fb.style.transform = `translate(${dx.toFixed(1)}px,${dy.toFixed(1)}px) scale(${s.toFixed(4)}) rotateX(${(12 * clamp01(p / .5) * (1 - q)).toFixed(2)}deg)`;
+      fb.style.opacity = q > .92 ? (1 - (q - .92) / .08).toFixed(3) : 1;
+      navMark.style.opacity = clamp01((q - .9) / .1).toFixed(3);
+    });
+  }
+}
+
+/* ---- section overture: rule draws, index types, heading rises word by word, body follows ---- */
+const overture = sec => {
+  const rule = $('.sec-rule', sec), idx = $('.idx', sec), h2 = $('h2', sec), body = $$('.sec-head .lede', sec);
+  if (!rule || !idx || !h2) return;
+  const words = splitText(h2, { words: { wrap: 'clip' } }).words;
+  const n = idx.textContent.length;
+  const play = () => createTimeline()
+    // the top hairline draws left to right: a new section starts here
+    .add(rule, { clipPath: ['inset(0% 100% 0% 0%)', 'inset(0% 0% 0% 0%)'], duration: 600, ease: T.ease.enter }, 0)
+    // the index label types in, one character per 18 ms
+    .add(idx, { clipPath: ['inset(0% 100% 0% 0%)', 'inset(0% 0% 0% 0%)'], duration: n * 18, ease: steps(n) }, 200)
+    // the heading rises out of its own measure, 40 ms per word
+    .add(words, { y: ['105%', '0%'], duration: T.t.reveal, ease: T.ease.enter, delay: stagger(40) }, 360)
+    // the body follows once the heading has landed
+    .add(body, { opacity: [0, 1], y: [12, 0], duration: T.t.reveal, ease: T.ease.enter }, 360 + words.length * 40 + 120);
+  if (!belowFold(sec)) return;
+  utils.set([rule, idx], { clipPath: 'inset(0% 100% 0% 0%)' });
+  utils.set(words, { y: '105%' });
+  utils.set(body, { opacity: 0 });
+  once(sec, '85% top', play);
 };
+if (!reduce) $$('.sec').forEach(overture);
 
-window.elysiumText = {                     // used by the preview language switch
-  unsplit: () => { for (const r of splits) r.restore(); },
-  resplit: () => { for (const r of splits) r.apply(); }
-};
+/* ---- figures: each digit column rolls like an odometer, once the figure is on screen ---- */
+if (!reduce) for (const b of $$('.fig b')) {
+  const final = b.textContent.trim();
+  once(b, '92% top', () => {
+    const sr = document.createElement('span'); sr.className = 'sr-only'; sr.textContent = final;
+    const odo = document.createElement('span'); odo.className = 'odo'; odo.setAttribute('aria-hidden', 'true');
+    const strips = [...final].map(ch => {
+      const col = document.createElement('span'); col.className = 'odo-col';
+      const strip = document.createElement('span'); strip.className = 'odo-strip';
+      strip.innerHTML = '<i>0</i><i>1</i><i>2</i><i>3</i><i>4</i><i>5</i><i>6</i><i>7</i><i>8</i><i>9</i>';
+      col.append(strip); odo.append(col);
+      return [strip, +ch];
+    });
+    b.replaceChildren(sr, odo);
+    strips.forEach(([s, dg], i) => animate(s, { translateY: ['0em', `${-dg}em`], ease: sp('glide'), delay: 120 * i }));
+  });
+}
 
-/* The section overture. Every section opens the same way and in the same
-   order: the rule draws left to right with a blue segment riding its growing
-   end, then the index, then the headline out of its own measure, then the
-   lede. One observer per section, so the four beats cannot drift apart — and
-   the repetition is what makes eight sections read as one document. */
-(() => {
-  if (reduce) return;
-  for (const head of $$('.sec-head')) {
-    const rule = $('.sec-rule', head);
-    const idx  = $(':scope > .mono', head);
-    const h2   = $('h2', head);
-    const lede = $('.lede', head);
+/* ---- roster: two rows drift in opposite directions, speed coupled to scroll velocity ---- */
+{
+  const readout = $('.readout');
+  const rest = readout.innerHTML;
+  const show = btn => {
+    if (!btn) { readout.innerHTML = rest; return; }
+    const name = btn.firstChild.textContent;
+    readout.textContent = '';
+    const b = document.createElement('b'); b.textContent = name;
+    readout.append(b, ` · ${btn.dataset.m}`);
+  };
+  $$('.mq').forEach((mq, i) => {
+    const track = $('.mq-track', mq);
+    const set = btn => { $$('button', track).forEach(x => x.classList.toggle('on', x === btn)); show(btn); };
+    track.addEventListener('pointerover', e => { const b = e.target.closest('button'); if (b) { hold = true; set(b); } });
+    track.addEventListener('pointerleave', () => { hold = mq.contains(document.activeElement); if (!hold) set(null); });
+    track.addEventListener('focusin', e => { hold = true; set(e.target.closest('button')); if (!reduce) centre(e.target.closest('li')); });
+    track.addEventListener('focusout', e => { if (!track.contains(e.relatedTarget)) { hold = false; set(null); } });
+    mq.addEventListener('scroll', () => { mq.scrollLeft = 0; });       // focus must not scroll the clipped row
+    let hold = false;
+    if (reduce) return;
+    // clones close the loop without a visible jump; they are inert and hidden from assistive tech
+    const clones = [...track.children].map(li => { const c = li.cloneNode(true); c.setAttribute('aria-hidden', 'true'); c.inert = true; return c; });
+    track.append(...clones);
+    const dir = i % 2 ? 1 : -1, base = .045;                            // px per ms at rest
+    let half = 1, x = 0, s = 1, v = 0, on = false;
+    measures.add(() => { half = track.scrollWidth / 2; if (dir > 0 && x === 0) x = -half; });
+    const centre = li => { x = -(li.offsetLeft - mq.clientWidth / 2 + li.offsetWidth / 2); };
+    new IntersectionObserver(([e]) => { on = e.isIntersecting; }).observe(mq);
+    const { stiffness: k, damping: c } = T.spring.float;
+    tickers.add(dt => {
+      if (!on) return;
+      const target = hold ? 0 : 1 + Math.min(5, Math.abs(lenis ? lenis.velocity : 0) * .12);
+      // the row's speed follows scroll velocity through the float spring, and eases to a stop under the pointer
+      const a = k * (target - s) - c * v; v += a * dt / 1000; s += v * dt / 1000;
+      x += dir * base * s * dt;
+      if (x <= -half) x += half; else if (x > 0) x -= half;
+      track.style.transform = `translate3d(${x.toFixed(2)}px,0,0)`;
+    });
+  });
+}
 
-    if (rule) rule.style.width = '0%';
-    for (const el of [idx, lede]) if (el) hide(el);
-    const rec = h2 ? makeSplit(h2) : null;
+/* ---- expertise: the sticky column counts the practice being read ---- */
+{
+  const side = $('.xp-side'), items = $$('.xp-item');
+  if (side && items.length) {
+    const nEl = $('.xp-count .n', side), now = $('.xp-now', side), where = $('.xp-where', side);
+    const titles = items.map(li => $('h3', li).textContent), places = items.map(li => li.dataset.where || '');
+    // two digit columns, so the counter ticks like a meter
+    nEl.innerHTML = '<span class="odo"><span class="odo-col"><span class="odo-strip">' + '0123456789'.split('').map(d => `<i>${d}</i>`).join('') +
+      '</span></span><span class="odo-col"><span class="odo-strip">' + '0123456789'.split('').map(d => `<i>${d}</i>`).join('') + '</span></span></span>';
+    const [s1, s2] = $$('.odo-strip', nEl);
+    let cur = -1;
+    const setTo = i => {
+      if (i === cur) return;
+      const first = cur < 0; cur = i;
+      const n = String(i + 1).padStart(2, '0');
+      const opts = first || reduce ? { duration: 0 } : { ease: sp('snap') };
+      // the counter digits roll to the practice in view
+      animate(s1, { translateY: `${-n[0]}em`, ...opts });
+      animate(s2, { translateY: `${-n[1]}em`, ...opts });
+      if (first) { now.textContent = titles[i]; where.textContent = places[i]; return; }
+      // the practice name crossfades in place
+      animate([now, where], { opacity: 0, duration: T.t.tick, ease: 'linear', onComplete: () => {
+        now.textContent = titles[i]; where.textContent = places[i];
+        animate([now, where], { opacity: 1, duration: T.t.tick, ease: 'linear' });
+      } });
+    };
+    setTo(0);
+    const io = new IntersectionObserver(es => es.forEach(e => e.isIntersecting && setTo(items.indexOf(e.target))), { rootMargin: '-40% 0px -59% 0px' });
+    items.forEach(li => io.observe(li));
+  }
+}
 
-    M.inView(head, () => {
-      if (rule) {
-        rule.classList.add('drawing');
-        M.animate(rule, { width: ['0%', '100%'] },
-          { duration: 0.7, ease: [0.35, 0, 0.15, 1] })
-          .finished.then(() => rule.classList.remove('drawing')).catch(() => {});
+/* ---- Chart A: bars, values and axis all derive from one spring-driven state ---- */
+{
+  const host = $('#chart-a'), svgEl = $('svg', host), tip = $('.tip', host), L = host.dataset;
+  const pct = new Intl.NumberFormat(root.lang, { style: 'percent', minimumFractionDigits: 1, maximumFractionDigits: 1 });
+  const sets = $$('table[data-set]', host).map(t => ({
+    table: t, wrap: t.parentElement, title: t.dataset.title, unit: t.dataset.unit, source: t.dataset.source,
+    rows: $$('tbody tr', t).map(tr => { const td = $$('td', tr); return { label: $('th', tr).textContent.trim(), v: +td[0].textContent, names: td[1]?.textContent || '' }; }),
+  }));
+  const rows = $$('.row', svgEl).map((el, i) => ({
+    el, bar: $('.bar', el), hi: $('.hi', el), val: $('.val', el), labs: $$('.lab', el),
+    y: 28 + i * 44, on: true, p: { v: sets[0].rows[i].v, to: sets[0].rows[i].v },
+  }));
+  const nice = max => { const step = [1, 2, 5, 10, 20, 50].find(s => max / s <= 4); return { step, max: Math.ceil(max / step) * step }; };
+  const tickSet = set => { const { step, max } = nice(Math.max(...set.rows.map(r => r.v))); return Array.from({ length: max / step + 1 }, (_, i) => i * step); };
+  const D = { v: 15, to: 15 };
+  let cur = 0, act = null;
+
+  // ticks move by transform from here on: zero their percentage attributes
+  const tickG = $('.ticks', svgEl), ticks = new Map($$('.tick', tickG).map(g => [+g.dataset.t, g]));
+  for (const g of ticks.values()) { for (const l of $$('line', g)) { l.setAttribute('x1', 0); l.setAttribute('x2', 0); } $('text', g).setAttribute('x', 0); }
+  const tickFor = t => {
+    if (!ticks.has(t)) {
+      const g = ticks.get(0).cloneNode(true); g.dataset.t = t; $('text', g).textContent = t; utils.set(g, { opacity: 0 });
+      tickG.append(g); ticks.set(t, g);
+    }
+    return ticks.get(t);
+  };
+  const totalEl = $('[data-total]', host);
+  const render = () => {
+    let sum = 0;
+    for (const r of rows) {
+      r.bar.style.transform = `scaleX(${(r.p.v / D.v).toFixed(4)})`;
+      const n = Math.round(r.p.v); sum += n;
+      r.val.textContent = r.on || n ? n : '';
+    }
+    for (const [t, g] of ticks) g.style.transform = `translateX(${(t / D.v * 100).toFixed(3)}%)`;
+    totalEl.textContent = sum;                                   // the total is the sum of the bars, every frame
+  };
+  render();
+
+  if (!reduce) {
+    if (belowFold(svgEl)) rows.forEach(r => { r.bar.style.transform = 'scaleX(0)'; });   // bars only; the numbers stay final until seen
+    once(svgEl, 'bottom 40%', () => {
+      for (const r of rows) r.p.v = 0;
+      render();
+      createTimeline()
+        // axis first: gridlines draw top to bottom
+        .add(svg.createDrawable($$('.tick line', svgEl)), { draw: ['0 0', '0 1'], duration: 300, ease: 'linear' }, 0)
+        // then bars grow from the baseline on the glide spring, 50 ms apart, values counting in step
+        .add(rows.map(r => r.p), { v: p => p.to, ease: sp('glide'), delay: stagger(50), onUpdate: render }, 300);
+    });
+  }
+
+  // hover / focus: the bar brightens, the rest dim to 40%, crosshair and tooltip spring to it
+  const xh = $('.xhair', svgEl), xv = $('.xv', svgEl), xhl = $('.xh', svgEl);
+  const move = () => reduce ? { duration: 0 } : { ease: sp('snap') };
+  const activate = r => {
+    if (r === act) return;
+    act = r;
+    for (const x of rows) {
+      animate(x.el, { opacity: !x.on ? 0 : !r || x === r ? 1 : .4, duration: T.t.tick, ease: 'linear' });
+      animate(x.hi, { opacity: x === r ? 1 : 0, duration: T.t.tick, ease: 'linear' });
+    }
+    if (!r) { animate([tip, xh], { opacity: 0, duration: T.t.tick, ease: 'linear' }); return; }
+    const set = sets[cur], i = rows.indexOf(r), d = set.rows[i], total = set.rows.reduce((s, x) => s + x.v, 0);
+    $('b', tip).textContent = d.label;
+    $('.mono', tip).textContent = `${d.v} ${set.unit} · ${pct.format(d.v / total)} ${L.of} ${total}`;
+    $('.n', tip).textContent = d.names;
+    const w = svgEl.clientWidth, x = d.v / D.to * w, flip = x + tip.offsetWidth + 16 > w;
+    animate(tip, { x: flip ? x - tip.offsetWidth - 12 : x + 12, y: r.y + 40, opacity: 1, ...move() });
+    animate(xv, { x: `${(d.v / D.to * 100).toFixed(3)}%`, ...move() });
+    animate(xhl, { y: r.y + 28, ...move() });
+    animate(xh, { opacity: 1, duration: T.t.tick, ease: 'linear' });
+  };
+  for (const r of rows) {
+    r.el.addEventListener('focus', () => activate(r));
+    r.el.addEventListener('pointerenter', () => r.on && activate(r));
+  }
+  svgEl.addEventListener('pointerleave', () => { if (!svgEl.contains(document.activeElement)) activate(null); });
+  svgEl.addEventListener('focusout', e => { if (!svgEl.contains(e.relatedTarget)) activate(null); });
+  svgEl.addEventListener('keydown', e => {
+    const vis = rows.filter(r => r.on), i = vis.indexOf(act);
+    const k = { ArrowDown: 1, ArrowRight: 1, ArrowUp: -1, ArrowLeft: -1, Home: -99, End: 99 }[e.key];
+    if (k === undefined) return;
+    e.preventDefault();
+    vis[utils.clamp(i + k, 0, vis.length - 1)].el.focus();
+  });
+
+  // toggle: the bars morph into the other dataset and the axis rescales on the same spring
+  const seg = $('.seg', host), segBtns = $$('button', seg), segPill = $('.seg-pill', seg);
+  const pillTo = b => `inset(0px ${(seg.clientWidth - 8 - b.offsetLeft - b.offsetWidth + 4).toFixed(1)}px 0px ${(b.offsetLeft - 4).toFixed(1)}px round 999px)`;
+  measures.add(() => utils.set(segPill, { clipPath: pillTo(segBtns[cur]) }));
+  const show = k => {
+    if (k === cur) return;
+    cur = k;
+    const set = sets[k], fade = reduce ? T.t.tick : T.t.move;
+    segBtns.forEach((b, j) => b.setAttribute('aria-pressed', String(j === k)));
+    // the selection pill slides to the pressed button
+    animate(segPill, { clipPath: pillTo(segBtns[k]), ...move() });
+    activate(null);
+    const want = new Set(tickSet(set));
+    D.to = Math.max(...want);
+    rows.forEach((r, i) => {
+      const d = set.rows[i];
+      r.on = !!d; r.p.to = d ? d.v : 0;
+      r.el.tabIndex = d ? 0 : -1;
+      d ? r.el.removeAttribute('aria-hidden') : r.el.setAttribute('aria-hidden', 'true');
+      r.el.setAttribute('aria-label', d ? `${d.label}: ${d.v} ${set.unit}` : '');
+      r.labs[k].textContent = d ? d.label : '';
+      // labels crossfade in place while the bar under them morphs
+      animate(r.labs[1 - k], { opacity: 0, duration: fade, ease: 'linear' });
+      animate(r.labs[k], { opacity: d ? 1 : 0, duration: fade, ease: 'linear' });
+      animate(r.el, { opacity: d ? 1 : 0, duration: fade, ease: 'linear' });
+      r.el.style.pointerEvents = d ? '' : 'none';
+    });
+    for (const t of new Set([...ticks.keys(), ...want])) animate(tickFor(t), { opacity: want.has(t) ? 1 : 0, duration: fade, ease: 'linear' });
+    for (const [t, g] of ticks) $('text', g).setAttribute('text-anchor', t === 0 ? 'start' : t === D.to ? 'end' : 'middle');
+    if (reduce) { for (const r of rows) r.p.v = r.p.to; D.v = D.to; render(); }
+    else animate([...rows.map(r => r.p), D], { v: o => o.to, ease: sp('glide'), onUpdate: render });
+    $('#ca-t').textContent = `${set.title}: ${set.rows.reduce((s, x) => s + x.v, 0)} ${set.unit}`;
+    $('#ca-d').textContent = `${L.bars} ` + set.rows.map(r => `${r.label} ${r.v}`).join(', ') + '.';
+    $('.unit-out', host).textContent = set.unit;
+    $('[data-src]', host).textContent = `${L.sourceLabel} ${set.source}.`;
+    sets.forEach((s, j) => { s.wrap.hidden = j !== k; });
+  };
+  segBtns.forEach((b, k) => b.addEventListener('click', () => show(k)));
+
+  const tv = $('.view-table', host), fig = $('.chart-fig', host);
+  tv.addEventListener('click', () => {
+    const on = tv.getAttribute('aria-pressed') !== 'true';
+    tv.setAttribute('aria-pressed', String(on));
+    tv.textContent = on ? L.viewChart : L.viewTable;
+    fig.hidden = on;
+    sets.forEach(s => { s.wrap.classList.toggle('sr-only', !on); s.wrap.classList.toggle('fade-x', on); });
+  });
+}
+
+/* ---- Chart B: a playhead scrubs 2002 → 2026; ticks draw and events drop in as it passes ---- */
+{
+  const tl = $('#timeline');
+  if (tl && !reduce && innerWidth >= 900) {
+    tl.classList.add('tl-live');
+    const pin = $('.tl-pin', tl), axis = $('.tl-axis', tl), yr = $('.tl-yr', tl), items = $$('.tl-list li', tl);
+    items.forEach(li => li.style.setProperty('--x', li.dataset.x));
+    const NS = 'http://www.w3.org/2000/svg';
+    const line = (cls, x, y1, y2) => { const l = document.createElementNS(NS, 'line'); l.setAttribute('class', cls); l.setAttribute('x1', x); l.setAttribute('x2', x); l.setAttribute('y1', y1); l.setAttribute('y2', y2); axis.append(l); return l; };
+    const base = document.createElementNS(NS, 'line');
+    base.setAttribute('class', 'base'); base.setAttribute('x1', '0'); base.setAttribute('x2', '100%'); base.setAttribute('y1', 12); base.setAttribute('y2', 12); axis.append(base);
+    const yticks = Array.from({ length: 25 }, (_, i) => line('yt', `${(i / 24 * 100).toFixed(3)}%`, i % 5 ? 8 : 2, 16));
+    const ph = line('ph', '0', -160, 180); ph.style.transformBox = 'view-box'; ph.style.transformOrigin = '0 0';
+    let top = 0, len = 1, shownTicks = -1;
+    const state = items.map(() => null);
+    measures.add(() => { top = docTop(pin); len = Math.max(1, pin.offsetHeight - innerHeight); });
+    utils.set(yticks, { scaleY: 0 }); utils.set(items, { opacity: 0 });
+    scrollFns.add(() => {
+      const p = clamp01((scrollTop() - top) / len);
+      // the playhead tracks scroll linearly, so the scrub is exactly reversible
+      ph.style.transform = `translateX(${(p * 100).toFixed(3)}%)`;
+      yr.textContent = Math.min(2026, Math.floor(2002 + p * 24 + 1e-6));
+      const t = Math.floor(p * 24 + 1e-6);
+      if (t !== shownTicks) {
+        // year ticks draw up to the playhead
+        yticks.forEach((l, i) => { const on = i <= t; if ((i <= shownTicks) !== on) animate(l, { scaleY: on ? 1 : 0, duration: T.t.tick, ease: T.ease.enter }); });
+        shownTicks = t;
       }
-      if (idx)  { shown(idx);  M.animate(idx,  { opacity: [0, 1], x: [-10, 0] }, { ...SETTLE, delay: 0.18 }); }
-      if (rec)  rise(rec, 0.32);
-      if (lede) { shown(lede); M.animate(lede, { opacity: [0, 1], y: [14, 0] }, { ...SETTLE, delay: 0.62 }); }
-      return false;
-    }, { amount: 0.3 });
-  }
-})();
-
-/* ---- 11. Scroll, read continuously --------------------------------------
-   The reading position tracks the scroll rather than firing at a threshold,
-   so there is something moving under the finger the whole way down. */
-(() => {
-  if (reduce || !M.scroll) return;
-
-  const hdr = $('.hdr');
-  if (hdr) {
-    const prog = document.createElement('span');
-    prog.className = 'hdr-prog';
-    prog.setAttribute('aria-hidden', 'true');
-    hdr.append(prog);
-    const w = M.motionValue(0);
-    w.on('change', v => { prog.style.transform = `scaleX(${v.toFixed(4)})`; });
-    M.scroll(p => w.set(p));
-  }
-
-})();
-
-/* ---- 12. Pointer ---------------------------------------------------------
-   Spring on the way in, settle on the way out. Colour and background stay
-   in the stylesheet; only the displacement is animated, so a hover reads as
-   the element answering rather than as a repaint. */
-(() => {
-  if (reduce) return;
-  const lift = (sel, to, raise) => {
-    for (const el of $$(sel)) {
-      el.addEventListener('pointerenter', () => {
-        if (raise) el.style.zIndex = '2';
-        M.animate(el, to, GATE);
+      items.forEach((li, i) => {
+        const on = p + 1e-6 >= +li.dataset.x;
+        if (state[i] === on) return;
+        state[i] = on;
+        // each event drops in as the playhead passes it, and lifts out if the reader scrolls back
+        animate(li, { opacity: on ? 1 : 0, duration: T.t.move, ease: 'linear' });
+        animate([...li.children], { translateY: on ? [-10, 0] : -10, duration: T.t.move, ease: T.ease.enter });
       });
-      el.addEventListener('pointerleave', () => {
-        M.animate(el, { y: 0, x: 0, scale: 1 }, SETTLE)
-          .finished.then(() => { if (raise) el.style.zIndex = ''; }).catch(() => {});
+    });
+  }
+}
+
+/* ---- healthcare: the arc draws from Geneva to Freetown ---- */
+{
+  const arc = $('.hc-map .arc'), dates = $$('.hc-map text.d'), map = $('.hc-map svg');
+  if (arc && !reduce) {
+    const [drawable] = svg.createDrawable(arc);
+    if (belowFold(map)) { utils.set(drawable, { draw: '0 0' }); utils.set(dates, { opacity: 0 }); }
+    once(map, '75% top', () => createTimeline()
+      // the route of the 2022 pilot, drawn from Geneva to Freetown
+      .add(drawable, { draw: ['0 0', '0 1'], duration: T.t.draw, ease: T.ease.enter }, 0)
+      // the dates settle onto the arc once it reaches them
+      .add(dates, { opacity: [0, 1], duration: T.t.move, ease: 'linear', delay: stagger(240) }, 700));
+  }
+}
+
+/* ---- Elysium Labs: the contour draws, then morphs between the two measured frames ---- */
+{
+  const frame = $('.ex-frame'), live = $('#c-live'), c00 = $('#c00'), c15 = $('#c15');
+  const f15 = $('.f15', frame), rFrame = $('[data-r=frame]'), rArea = $('[data-r=area]'), rState = $('[data-r=state]'), RL = $('.ex-read').dataset;
+  if (frame && !reduce) {
+    live.setAttribute('d', c00.getAttribute('d'));
+    const morph = animate(live, { d: svg.morphTo(c15), duration: 1000, ease: 'linear', autoplay: false });
+    let top = 0, h = 1, drawn = false, lastKey = '';
+    measures.add(() => { top = docTop(frame); h = frame.offsetHeight; });
+    const [dr] = svg.createDrawable(live);
+    utils.set(dr, { draw: '0 0' });
+    once(frame, '70% top', () => {
+      // the boundary is traced once, as computed from the pixels
+      animate(dr, { draw: ['0 0', '0 1'], duration: T.t.draw, ease: T.ease.enter, onComplete: () => { drawn = true; runScroll(); } });
+    });
+    scrollFns.add(() => {
+      if (!drawn) return;
+      const vh = innerHeight, p = clamp01((scrollTop() + vh * .7 - (top + h * .5)) / (vh * .5));
+      // scroll moves the shape between frame 00 and frame 15, both measured; between them it is interpolated
+      morph.seek(p * 1000);
+      f15.style.opacity = p.toFixed(3);
+      const key = p <= .001 ? '00' : p >= .999 ? '15' : 'mid';
+      if (key === lastKey) return;
+      lastKey = key;
+      rFrame.textContent = key === 'mid' ? '—' : key;
+      rArea.textContent = key === '00' ? RL.a00 : key === '15' ? RL.a15 : '—';
+      rState.textContent = key === 'mid' ? RL.interp : RL.measured;
+    });
+    rFrame.textContent = '00'; rArea.textContent = RL.a00;
+  }
+}
+
+/* ---- private AI: the perimeter draws, then the flow inside it, then the closed route out ---- */
+{
+  const diag = $('.pai-diag');
+  if (diag && !reduce) {
+    const [edge] = svg.createDrawable($('.pai-edge rect', diag));
+    const nodes = $$('.pai-node, .pai-org-l', diag), arrows = $$('.pai-arrow', diag), down = $('.pai-down', diag), x = $('.pai-x', diag), out = $('.pai-out', diag);
+    if (belowFold(diag)) { utils.set(edge, { draw: '0 0' }); utils.set(nodes, { opacity: 0 }); utils.set(arrows, { scaleX: 0 }); utils.set(down, { scaleY: 0 }); utils.set([x, out], { opacity: 0 }); }
+    once(diag, '75% top', () => createTimeline()
+      // the organisation's perimeter is traced first: everything that follows happens inside it
+      .add(edge, { draw: ['0 0', '0 1'], duration: T.t.draw, ease: T.ease.enter }, 0)
+      // documents, server and team appear in reading order
+      .add(nodes, { opacity: [0, 1], translateY: [12, 0], duration: T.t.reveal, ease: T.ease.enter, delay: stagger(120) }, 400)
+      // the data path draws from documents to server to team
+      .add(arrows, { scaleX: [0, 1], duration: T.t.move, ease: T.ease.enter, delay: stagger(180) }, 800)
+      // the route out to public providers draws, and stops at the perimeter
+      .add(down, { scaleY: [0, 1], duration: T.t.move, ease: T.ease.enter }, 1200)
+      .add([x, out], { opacity: [0, 1], duration: T.t.tick, ease: 'linear' }, 1560));
+  }
+  // "Register interest" starts the message for the visitor
+  for (const a of $$('[data-topic]')) a.addEventListener('click', () => {
+    const msg = $('#f-msg');
+    if (msg && !msg.value.trim()) msg.value = a.dataset.topic.trim() + ' ';
+  });
+}
+
+/* ---- work: screenshots unmask, drift inside their frames, and cases stack as the next arrives ---- */
+{
+  const cases = $$('.case'), shots = $$('.case .shot');
+  if (!reduce) {
+    for (const s of shots) {
+      if (belowFold(s)) utils.set(s, { clipPath: 'inset(100% 0% 0% 0%)' });
+      // the screenshot is revealed bottom-up, like a screen being drawn
+      once(s, '90% top', () => animate(s, { clipPath: ['inset(100% 0% 0% 0%)', 'inset(0% 0% 0% 0%)'], duration: T.t.reveal, ease: T.ease.enter }));
+    }
+    const imgs = shots.map(s => $('img', s));
+    utils.set(imgs, { scale: 1.08 });
+    let tops = [];
+    const stack = innerWidth >= 900;
+    if (stack) root.classList.add('stack-live');
+    measures.add(() => {
+      // natural positions: sticky cases are measured from their flow order, not their stuck position
+      const list = cases[0].parentElement, gap = parseFloat(getComputedStyle(list).rowGap) || 0;
+      let y = docTop(list); tops = cases.map(c => { const t = y; y += c.offsetHeight + gap; return [t, c.offsetHeight]; });
+    });
+    scrollFns.add(() => {
+      const st = scrollTop(), vh = innerHeight;
+      cases.forEach((c, i) => {
+        const [t, h] = tops[i] || [0, 1];
+        // the image drifts at most 40 px inside its frame while the case is on screen
+        const p = clamp01((st + vh - t) / (vh + h));
+        for (const img of $$('img', c)) img.style.transform = `translateY(${((p - .5) * 40).toFixed(1)}px) scale(1.08)`;
+        if (!stack || i === cases.length - 1) return;
+        // the case steps back to .94 as the next one arrives over it
+        const [tn] = tops[i + 1] || [0];
+        const q = clamp01((st + vh - tn) / (vh - 80));
+        c.style.transform = `scale(${(1 - .06 * q).toFixed(4)})`;
       });
-    }
-  };
-  lift('.card',                { y: -5 });
-  lift('.spec article',        { y: -4 });
-  lift('.roster li',           { y: -3 });
-  lift('.tl li',               { x: 6 });
-  lift('.sheet a',             { scale: 1.075 }, true);
-  lift('.cities article',      { y: -4 });
-})();
-
-/* ---- 12b. The mandate readout -------------------------------------------
-   The card grid is an index; this strip is the readout it feeds. The detail
-   cannot live in the card — measured at four columns, the card is 324x323 and
-   the longest detail 315, so it would either double every card's height or
-   cover the row below — so it is written here instead, in a region that is
-   always present. Nothing moves and nothing is covered.
-
-   The strip reserves the tallest detail up front rather than resizing per card:
-   a strip that grew and shrank as the pointer crossed the grid would move the
-   grid under the pointer, which is the thing this placement exists to avoid.
-   The height is measured from the real strings, so a translation that runs
-   longer than the English is accounted for on its own terms. */
-(() => {
-  const strip = $('#readout'), body = $('.readout-body', strip || document);
-  const grid = $('#grid');
-  if (!strip || !body || !grid || !matchMedia('(hover: hover) and (pointer: fine)').matches) return;
-
-  const cards = $$('.card', grid);
-  const fill = card => {
-    const intel = $('.card-intel', card);
-    if (!intel) return;
-    body.replaceChildren(...[...intel.cloneNode(true).childNodes]);
-    strip.classList.add('live');
-  };
-  const clear = () => strip.classList.remove('live');
-
-  const measure = () => {
-    strip.style.minHeight = '';
-    const prev = body.innerHTML, vis = strip.classList.contains('live');
-    let tallest = 0;
-    for (const c of cards) {
-      const intel = $('.card-intel', c);
-      if (!intel) continue;
-      body.replaceChildren(...[...intel.cloneNode(true).childNodes]);
-      tallest = Math.max(tallest, body.scrollHeight);
-    }
-    body.innerHTML = prev;
-    if (!vis) clear();
-    // the strip's own box is one line of resting text; the body is out of flow,
-    // so the reserved height has to be stated explicitly
-    if (tallest) strip.style.minHeight = (tallest + 46) + 'px';
-  };
-
-  for (const c of cards) {
-    c.addEventListener('pointerenter', () => fill(c));
-    c.addEventListener('focusin', () => fill(c));
+    });
   }
-  grid.addEventListener('pointerleave', clear);
-  grid.addEventListener('focusout', e => {
-    if (!grid.contains(e.relatedTarget)) clear();
-  });
+}
 
-  measure();
-  addEventListener('resize', measure);
-  addEventListener('elysium:lang', measure);      // the preview's language switch
-  if (document.fonts) document.fonts.ready.then(measure).catch(() => {});
-})();
-
-/* ---- 13. Filter state, travelling ---------------------------------------
-   The pressed state is one element that moves between the buttons, so the
-   filter reads as a single selection changing position rather than two
-   buttons repainting at once. */
-(() => {
-  const bar = $('.filters'); if (!bar || reduce) return;
-  const ind = document.createElement('span');
-  ind.className = 'f-ind';
-  ind.setAttribute('aria-hidden', 'true');
-  bar.prepend(ind);
-
-  const place = (b, animate) => {
-    const r = b.getBoundingClientRect(), p = bar.getBoundingClientRect();
-    const to = { x: r.left - p.left, y: r.top - p.top, width: r.width + 'px', height: r.height + 'px' };
-    if (!animate) { Object.assign(ind.style, { width: to.width, height: to.height,
-      transform: `translate(${to.x}px,${to.y}px)` }); return; }
-    M.animate(ind, to, GATE);
-  };
-
-  const current = () => bar.querySelector('button[aria-pressed=true]') || bar.querySelector('button');
-  place(current(), false);
-  bar.addEventListener('click', e => {
-    const b = e.target.closest('button');
-    if (b) requestAnimationFrame(() => place(b, true));
-  });
-  addEventListener('resize', () => place(current(), false));
-})();
-
-/* ---- 14. The rail --------------------------------------------------------
-   The page is long and every section is numbered, so the margin carries a
-   chart recorder: a tick per section, a run that fills behind the needle,
-   and the section's own label set vertically beside it. The needle is a
-   follower rather than a direct readout — it lags the scroll and settles,
-   the way a pen arm does. That lag is the whole point: it makes the scroll
-   feel like it is driving something with mass. */
-(() => {
-  if (reduce || innerWidth < 1180) return;
-  const secs = $$('.sec-head').map(h => ({
-    el: h.closest('section'),
-    label: (h.querySelector('.mono')?.textContent || '').replace(/\s+/g, ' ').trim()
-  })).filter(s => s.el);
-  if (secs.length < 3) return;
-
-  const rail = document.createElement('div');
-  rail.className = 'rail';
-  rail.setAttribute('aria-hidden', 'true');
-  const run = document.createElement('span'); run.className = 'rail-run';
-  const cur = document.createElement('span'); cur.className = 'rail-cur';
-  const bar = document.createElement('i'), lab = document.createElement('b');
-  cur.append(bar, lab);
-  rail.append(run);
-  for (const s of secs) {
-    s.tick = document.createElement('span');
-    s.tick.className = 'rail-tick';
-    rail.append(s.tick);
+/* ---- cities: Switzerland's outline is traced, then the two offices light up ---- */
+{
+  const ch = $('.ch svg');
+  if (ch && !reduce) {
+    const [o] = svg.createDrawable($('.outline', ch));
+    const pts = $$('circle, text', ch);
+    if (belowFold(ch)) { utils.set(o, { draw: '0 0' }); utils.set(pts, { opacity: 0 }); }
+    once(ch, '75% top', () => createTimeline()
+      // the border of Switzerland, drawn from Natural Earth's outline
+      .add(o, { draw: ['0 0', '0 1'], duration: T.t.draw, ease: T.ease.enter }, 0)
+      // Geneva, then Zürich, at their true coordinates
+      .add(pts, { opacity: [0, 1], duration: T.t.move, ease: 'linear', delay: stagger(90) }, 900));
   }
-  rail.append(cur);
-  document.body.append(rail);
+}
 
-  let H = 1, railH = 1;
-  const measure = () => {
-    H = Math.max(1, document.documentElement.scrollHeight - innerHeight);
-    railH = rail.clientHeight;
-    for (const s of secs) {
-      // where in the scroll a section is actually being read, not where its
-      // box starts: the two differ by most of a viewport, which is the
-      // difference between the needle naming 05 and naming 06
-      s.at = Math.min(1, Math.max(0, (s.el.offsetTop - innerHeight * 0.35) / H));
-      s.tick.style.top = (s.at * railH).toFixed(1) + 'px';
-    }
+/* ---- contact form: validates inline, and says plainly that it is not connected ---- */
+{
+  const f = $('#contact-form'), E = f.dataset;
+  const rules = {
+    'f-name': el => el.value.trim() ? '' : E.errName,
+    'f-email': el => !el.value.trim() ? E.errEmail : el.validity.typeMismatch ? E.errFormat : '',
+    'f-msg': el => el.value.trim() ? '' : E.errMsg,
   };
-  measure();
-  addEventListener('resize', measure);
-  addEventListener('load', measure);
-  if (document.fonts) document.fonts.ready.then(measure).catch(() => {});
-
-  /* the needle: a first-order follower, so a fast scroll throws it and it
-     catches up. One rAF loop, and only while it is actually moving. */
-  let target = 0, pos = 0, running = false, active = -1;
-  const step = () => {
-    const d = target - pos;
-    pos += d * 0.16;
-    if (Math.abs(d) < 0.0002) { pos = target; running = false; }
-    else requestAnimationFrame(step);
-    cur.style.transform = `translateY(${(pos * railH).toFixed(2)}px)`;
-    run.style.transform = `scaleY(${pos.toFixed(4)})`;
-
-    let now = -1;
-    for (let i = 0; i < secs.length; i++) if (pos >= secs[i].at) now = i;
-    if (now !== active) {
-      active = now;
-      secs.forEach((s, i) => {
-        s.tick.classList.toggle('past', i < now);
-        s.tick.classList.toggle('now', i === now);
-      });
-      lab.style.opacity = '0';
-      setTimeout(() => {
-        lab.textContent = now >= 0 ? secs[now].label : '';
-        lab.style.opacity = '1';
-      }, 130);
-    }
+  const check = el => {
+    const msg = rules[el.id]?.(el) ?? '';
+    el.setAttribute('aria-invalid', String(!!msg));
+    const err = $('#e-' + el.id.slice(2));
+    if (err) err.textContent = msg;
+    return !msg;
   };
-  M.scroll(p => {
-    target = p;
-    if (!running) { running = true; requestAnimationFrame(step); }
-  });
-})();
-
-/* ---- 15. The record, drawn as it is read ---------------------------------
-   A line runs down the date column and fills as the section is read; a date
-   turns from grey to red once the fill has passed it. Without this file the
-   dates are simply all red, which is the correct static state. */
-(() => {
-  const tl = $('.tl'); if (!tl || reduce || !M.scroll) return;
-  const line = document.createElement('span'); line.className = 'tl-line';
-  const fill = document.createElement('span'); fill.className = 'tl-fill';
-  line.append(fill); tl.append(line); tl.classList.add('live');
-
-  const items = $$('li', tl);
-  const f = M.motionValue(0);
-  f.on('change', v => {
-    fill.style.transform = `scaleY(${v.toFixed(4)})`;
-    const h = tl.clientHeight;
-    for (const li of items) li.classList.toggle('past', li.offsetTop + li.offsetHeight * 0.5 <= v * h);
-  });
-  M.scroll(p => f.set(p), { target: tl, offset: ['start 78%', 'end 62%'] });
-})();
-
-/* ---- 16. The contact sheet develops --------------------------------------
-   Eighteen unattributed pieces out of the domain's own history. Colour
-   returns to whichever of them is under the middle of the screen, so the
-   sheet reads as being passed over rather than displayed all at once. */
-(() => {
-  const sheet = $('#sheet'); if (!sheet || reduce) return;
-  const imgs = $$('img', sheet);
-  let hover = null;
-
-  // Rects are read live rather than cached. A cache taken at load describes a
-  // page a few hundred pixels shorter than the one being scrolled — the fonts
-  // have not landed yet — and every thumbnail then sits outside its own reach.
-  const paint = () => {
-    const eye = innerHeight / 2, reach = innerHeight * 0.52;
-    for (const img of imgs) {
-      const r = img.getBoundingClientRect();
-      const t = img === hover ? 1 : Math.max(0, 1 - Math.abs(r.top + r.height / 2 - eye) / reach);
-      const e = t * t * (3 - 2 * t);                       // ease the falloff
-      // filter only: the reveal in §17 owns opacity, and two writers on one
-      // property is how an element ends up stuck half-visible
-      img.style.filter = `grayscale(${(1 - e).toFixed(3)}) contrast(${(0.95 + e * 0.06).toFixed(3)}) ` +
-                         `brightness(${(0.93 + e * 0.07).toFixed(3)})`;
-    }
-  };
-  let queued = false;
-  const tick = () => {
-    if (queued) return;
-    queued = true;
-    requestAnimationFrame(() => { queued = false; paint(); });
-  };
-  addEventListener('scroll', tick, { passive: true });
-  addEventListener('resize', tick, { passive: true });
-  for (const a of $$('a', sheet)) {
-    a.addEventListener('pointerenter', () => { hover = a.querySelector('img'); paint(); });
-    a.addEventListener('pointerleave', () => { hover = null; paint(); });
+  let tried = false;
+  for (const id of Object.keys(rules)) {
+    const el = $('#' + id);
+    el.addEventListener('blur', () => { if (tried || el.value) check(el); });
+    el.addEventListener('input', () => { if (el.getAttribute('aria-invalid') === 'true') check(el); });
   }
-  paint();
-})();
+  f.addEventListener('submit', e => {
+    e.preventDefault();
+    tried = true;
+    const bad = Object.keys(rules).map(id => $('#' + id)).filter(el => !check(el));
+    const ok = $('.ok', f);
+    if (bad.length) { bad[0].focus(); ok.textContent = ''; return; }
+    ok.textContent = E.notSent;
+  });
+}
 
-/* ---- 17. Grids arrive on the diagonal ------------------------------------
-   A uniform stagger reads as a list being dealt out. Keying the delay to
-   the cell's own position instead lets a grid resolve as a wave across it,
-   which is the shape the eye is already scanning in. */
-(() => {
-  if (reduce) return;
-  const wave = (sel, k = 0.00055) => {
-    const els = $$(sel); if (els.length < 4) return;
-    const box = els[0].parentElement.getBoundingClientRect();
-    const d = els.map(el => { const r = el.getBoundingClientRect();
-      return ((r.left - box.left) + (r.top - box.top) * 0.75) * k; });
-    els.forEach(hide);
-    M.inView(els[0].parentElement, () => {
-      shown(els);
-      els.forEach((el, i) => M.animate(el,
-        { opacity: [0, 1], y: [18, 0] }, { ...SETTLE, delay: d[i] }));
-      return false;
-    }, IN);
-  };
-  wave('.roster li');
-  wave('.sheet a', 0.0011);
-  wave('.spec article', 0.0009);
-})();
+/* ---- pills: press answers on snap; primary pills lean toward the pointer, 6 px at most ---- */
+if (!reduce) for (const b of $$('.pill-btn')) {
+  b.addEventListener('pointerdown', () => animate(b, { scale: .97, ease: sp('snap') }));
+  const up = () => animate(b, { scale: 1, ease: sp('snap') });
+  b.addEventListener('pointerup', up);
+  b.addEventListener('pointerleave', up);
+  if (!b.classList.contains('primary') || !matchMedia('(hover: hover)').matches) continue;
+  let box = null;
+  b.addEventListener('pointerenter', () => { box = b.getBoundingClientRect(); });
+  b.addEventListener('pointermove', e => {
+    if (!box) return;
+    const nx = (e.clientX - box.left - box.width / 2) / (box.width / 2), ny = (e.clientY - box.top - box.height / 2) / (box.height / 2);
+    animate(b, { x: utils.clamp(nx * 6, -6, 6), y: utils.clamp(ny * 6, -6, 6), ease: sp('snap') });
+  });
+  b.addEventListener('pointerleave', () => { box = null; animate(b, { x: 0, y: 0, ease: sp('float') }); });
+}
 
-})();
+/* in-page links go through Lenis so anchor jumps share the same clock */
+if (lenis) for (const a of $$('a[href^="#"]')) a.addEventListener('click', e => {
+  const id = a.getAttribute('href'); if (id.length < 2) return;
+  const t = $(id); if (!t) return;
+  e.preventDefault(); lenis.scrollTo(t, { offset: id === '#top' ? 0 : -8 }); history.replaceState(null, '', id);
+});
+
+remeasure();
+if (document.fonts) document.fonts.ready.then(remeasure);
+addEventListener('load', remeasure);

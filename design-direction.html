@@ -1,0 +1,1030 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Elysium design direction</title>
+<meta name="description" content="Step 1 of the elysium.cc rebuild: palette with measured ratios, type, grid, motion tokens, flag construction and Chart A.">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preload" href="assets/fonts/geist-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/geist-mono-400.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+@font-face{font-family:"Geist";src:url("assets/fonts/geist-var.woff2") format("woff2");font-weight:100 900;font-style:normal;font-display:swap}
+@font-face{font-family:"Geist Mono";src:url("assets/fonts/geist-mono-400.woff2") format("woff2");font-weight:400;font-style:normal;font-display:swap}
+
+/* ---- tokens: the one source; main.js reads these, it never restates them ---- */
+:root{
+  color-scheme:dark;
+  --void:#050607; --raised:#0B0D10; --fill-2:#15181D;
+  --line:rgba(255,255,255,.08); --node:rgba(255,255,255,.22);
+  --text:#F2F4F7; --text-2:#A3A9B3; --text-3:#7A818C;
+  --accent:#9FC4FF; --accent-fill:#1F4FD8; --swiss:#DA291C;
+  --ramp-1:#1F4FD8; --ramp-2:#4977E4; --ramp-3:#749BEF; --ramp-4:#A1BEF8; --ramp-5:#CFE0FF;
+
+  --spring-snap:380 30; --spring-glide:120 20; --spring-float:60 14;   /* stiffness damping */
+  --ease-enter:cubic-bezier(.16,1,.3,1); --ease-scrub:cubic-bezier(.65,0,.35,1); --ease-sync:linear;
+  --t-tick:160ms; --t-move:420ms; --t-reveal:900ms; --t-draw:1400ms;
+
+  --maxw:1440px; --gut:clamp(16px,4vw,64px); --pad:clamp(12px,1.5vw,24px);
+  --fs-display:clamp(3rem,8.5vw,8.5rem); --fs-h2:clamp(2rem,4.6vw,4.25rem); --fs-h3:clamp(1.25rem,1.6vw,1.5rem);
+  --fs-body:clamp(17px,16px + .25vw,18px); --fs-label:12px;
+  --nav-h:56px;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+html.lenis,html.lenis body{height:auto}
+body{margin:0;background:var(--void);color:var(--text);font:400 var(--fs-body)/1.6 "Geist",system-ui,sans-serif;
+  -webkit-font-smoothing:antialiased;font-variant-numeric:tabular-nums}
+img,svg{display:block;max-width:100%}
+h1,h2,h3,p,ul,ol,figure{margin:0}
+ul,ol{padding:0;list-style:none}
+button,input{font:inherit;color:inherit}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.skip{position:absolute;left:var(--gut);top:-120px;z-index:20;background:var(--text);color:var(--void);padding:12px 16px;border-radius:999px}
+.skip:focus{top:8px}
+
+.wrap{max-width:var(--maxw);margin-inline:auto;padding-inline:var(--gut)}
+.cols{display:grid;grid-template-columns:repeat(12,minmax(0,1fr))}
+.cols>*{grid-column:1/-1;padding-inline:var(--pad)}
+.label{font:400 var(--fs-label)/1.5 "Geist Mono",ui-monospace,monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--text-3)}
+.mono{font-family:"Geist Mono",ui-monospace,monospace}
+.lede{color:var(--text-2);max-width:64ch}
+h2{font-size:var(--fs-h2);font-weight:600;letter-spacing:-.035em;line-height:1}
+h3{font-size:var(--fs-h3);font-weight:500;letter-spacing:-.02em;line-height:1.15}
+.fade-x{--fade:min(48px,calc(var(--gut) + var(--pad)));overflow-x:auto;scrollbar-width:none;
+  margin-inline:calc(-1 * var(--fade));padding-inline:var(--fade);
+  -webkit-mask-image:linear-gradient(to right,transparent,#000 var(--fade),#000 calc(100% - var(--fade)),transparent);
+          mask-image:linear-gradient(to right,transparent,#000 var(--fade),#000 calc(100% - var(--fade)),transparent)}
+.fade-x::-webkit-scrollbar{display:none}
+
+/* ---- the visible grid ---- */
+.ground{position:fixed;inset:0;z-index:0;background:var(--raised);opacity:0;pointer-events:none}
+.grid-bg{position:fixed;inset:0;z-index:1;pointer-events:none}
+.grid-bg>div{height:100%;max-width:var(--maxw);margin-inline:auto;padding-inline:var(--gut)}
+.grid-bg>div>div{height:100%;box-shadow:inset -1px 0 var(--line);
+  background:repeating-linear-gradient(to right,var(--line) 0 1px,transparent 1px calc(100% / 12))}
+main,footer{position:relative;z-index:2}
+[data-ground=raised]{background:var(--raised)}
+.ground-live [data-ground=raised]{background:none}
+
+.sec{position:relative;padding-block:clamp(88px,11vw,168px) clamp(56px,8vw,120px)}
+/* rule = hairline + a node dot on every column edge + hatched corners where the section starts */
+.sec-rule{position:relative;height:7px;margin-inline:-3px;padding-inline:3px;
+  background:
+    linear-gradient(var(--line),var(--line)) 0 50%/100% 1px no-repeat content-box,
+    radial-gradient(circle at 0 50%,var(--node) 0 1.75px,transparent 2.25px) 0 0/calc(100% / 12) 100% repeat-x content-box border-box,
+    radial-gradient(circle at 100% 50%,var(--node) 0 1.75px,transparent 2.25px) 0 0/calc(100% / 12) 100% repeat-x content-box border-box}
+.sec-rule::before,.sec-rule::after{content:"";position:absolute;top:7px;width:14px;height:14px;
+  background:repeating-linear-gradient(135deg,var(--node) 0 1px,transparent 1px 4px)}
+.sec-rule::before{left:4px}.sec-rule::after{right:4px}
+.sec-head{row-gap:20px;margin-block:clamp(28px,4vw,48px) clamp(40px,6vw,80px)}
+.blk{margin-top:clamp(32px,4vw,56px)}
+@media (min-width:900px){
+  .sec-head .idx{grid-column:1/4;grid-row:1/3;padding-top:.6em}
+  .sec-head h2,.sec-head .lede{grid-column:4/13}
+  .span-r{grid-column:4/13}
+  .span-l6{grid-column:1/7}.span-r6{grid-column:7/13}
+}
+@media (max-width:767px){
+  .grid-bg>div>div{background:repeating-linear-gradient(to right,var(--line) 0 1px,transparent 1px calc(100% / 4))}
+  .sec-rule{background:
+    linear-gradient(var(--line),var(--line)) 0 50%/100% 1px no-repeat content-box,
+    radial-gradient(circle at 0 50%,var(--node) 0 1.75px,transparent 2.25px) 0 0/calc(100% / 4) 100% repeat-x content-box border-box,
+    radial-gradient(circle at 100% 50%,var(--node) 0 1.75px,transparent 2.25px) 0 0/calc(100% / 4) 100% repeat-x content-box border-box}
+}
+
+/* ---- nav ---- */
+.nav{position:fixed;inset:0 0 auto;z-index:10;height:var(--nav-h);background:var(--void);box-shadow:inset 0 -1px var(--line)}
+.nav-in{height:100%;display:flex;align-items:center;gap:clamp(10px,2vw,28px)}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;flex:none;border-radius:999px}
+.wm-plate{display:block;background:var(--text);border-radius:999px;padding:7px 12px}
+.wm-plate img{height:18px;width:auto}
+.mark{width:16px;height:16px;flex:none}
+.links{position:relative;display:flex;margin-inline-start:auto}
+.links a{position:relative;z-index:1;display:flex;align-items:center;min-height:44px;padding:0 12px;text-decoration:none;color:var(--text-2);border-radius:999px}
+.links a[aria-current]{color:var(--text)}
+.links .pill{position:absolute;inset:6px 0;background:var(--fill-2);border-radius:999px;clip-path:inset(0 100% 0 0 round 999px)}
+.clock{flex:none;color:var(--text-2);white-space:nowrap}
+.clock time{color:var(--text)}
+.lang{display:flex;gap:2px;flex:none;color:var(--text-3)}
+.lang a{display:flex;align-items:center;min-height:44px;min-width:28px;justify-content:center;text-decoration:none;border-radius:4px}
+.lang a[aria-current]{color:var(--text)}
+@media (max-width:1100px){.links{display:none}.clock{margin-inline-start:auto}}
+@media (max-width:420px){.wm-plate img{height:15px}.wm-plate{padding:6px 10px}.nav-in{gap:8px}.lang a{min-width:24px}}
+
+/* ---- hero ---- */
+.hero{padding-top:calc(var(--nav-h) + clamp(56px,9vw,128px));padding-bottom:clamp(56px,8vw,112px)}
+.eyebrow{display:flex;align-items:center;gap:10px;color:var(--text-2)}
+.display{font-size:var(--fs-display);font-weight:600;letter-spacing:-.045em;line-height:.95;margin-block:28px 32px}
+.display .t2{color:var(--text-3);display:block}
+.display [data-word],.display [data-char],.sec h2 [data-word]{display:inline-block}
+.display span[style*=overflow],.sec h2 span[style*=overflow]{display:inline-block;padding-block:.08em .16em;margin-block:-.08em -.16em}
+.hero .lede{font-size:clamp(18px,1.4vw,21px)}
+
+/* ---- palette ---- */
+.swatches{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:28px 0}
+.swatches li{padding-right:var(--pad)}
+.chip-c{height:64px;border-radius:6px;margin-bottom:12px}
+.chip-c.edge{box-shadow:inset 0 0 0 1px var(--line)}
+.swatches b{display:block;font-weight:500}
+.swatches .mono{font-size:13px;color:var(--text-2)}
+.swatches p:last-child{font-size:14px;color:var(--text-3);line-height:1.45;margin-top:4px}
+table.ratios{border-collapse:collapse;width:100%;min-width:640px;font-size:15px}
+.ratios th,.ratios td{text-align:left;padding:12px 16px 12px 0;border-bottom:1px solid var(--line);vertical-align:baseline}
+.ratios thead th{font:400 var(--fs-label)/1.4 "Geist Mono",monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--text-3)}
+.ratios td[data-fg]{font-family:"Geist Mono",monospace;white-space:nowrap}
+.ratios .ok{color:var(--text-3);font-size:12px;letter-spacing:.08em}
+.ratios .no{color:var(--text);font-size:12px;letter-spacing:.08em;text-decoration:underline;text-decoration-color:var(--swiss);text-underline-offset:3px}
+.ratios .sw{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:8px;vertical-align:baseline}
+.ramp{display:grid;grid-template-columns:repeat(5,minmax(0,1fr))}
+.ramp li{padding-right:8px}
+.ramp .chip-c{height:48px}
+.ramp p{font-size:13px;color:var(--text-2);line-height:1.5}
+.note{font-size:15px;color:var(--text-2);max-width:72ch}
+.note+.note{margin-top:10px}
+
+/* ---- type ---- */
+.specimens li{display:grid;gap:8px 0;padding-block:28px;border-bottom:1px solid var(--line)}
+.specimens li:first-child{border-top:1px solid var(--line)}
+@media (min-width:900px){.specimens li{grid-template-columns:3fr 9fr}}
+.specimens .label{padding-top:.4em}
+.sp-display{font-size:var(--fs-display);font-weight:600;letter-spacing:-.045em;line-height:.95}
+.sp-display span{color:var(--text-3);display:block}
+.sp-h2{font-size:var(--fs-h2);font-weight:600;letter-spacing:-.035em;line-height:1}
+.sp-num{font:400 clamp(2.5rem,6vw,5rem)/1 "Geist Mono",monospace;letter-spacing:-.02em}
+.glyphs{font-size:clamp(1.25rem,2vw,1.75rem);color:var(--text-2);letter-spacing:.02em}
+
+/* ---- grid demo ---- */
+.names{display:flex;gap:40px;padding-block:20px;white-space:nowrap;font-size:clamp(1.25rem,2.2vw,2rem);font-weight:500;letter-spacing:-.02em}
+.names li:nth-child(even){color:var(--text-3)}
+
+/* ---- motion ---- */
+.demo{display:grid;gap:8px}
+.demo-head{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-bottom:12px;border-bottom:1px solid var(--line)}
+.tok-list li{display:grid;grid-template-columns:1fr;gap:10px 24px;align-items:center;padding-block:18px;border-bottom:1px solid var(--line)}
+@media (min-width:900px){.tok-list li{grid-template-columns:3fr 2.4fr 4fr 2.6fr}}
+.tok-list .use{font-size:14px;color:var(--text-3);margin-top:2px}
+.curve{width:100%;max-width:240px;height:auto;overflow:visible}
+.curve .base{stroke:var(--line);fill:none}
+.curve .ln{stroke:var(--accent);stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.track{position:relative;height:16px}
+.track::before{content:"";position:absolute;inset:7.5px 0 auto;height:1px;background:var(--line)}
+.dot{position:absolute;left:0;top:2px;width:12px;height:12px;border-radius:50%;background:var(--accent)}
+.fillbar{position:absolute;left:0;top:4px;height:8px;width:100%;border-radius:0 4px 4px 0;background:var(--accent-fill);transform-origin:0 50%}
+.meta{font-size:13px;color:var(--text-2);white-space:pre-line}
+.scrub{display:flex;align-items:center;gap:16px;padding-top:12px}
+.scrub input{flex:1;accent-color:var(--accent);min-height:44px}
+.chip{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 18px;border:0;border-radius:999px;background:var(--fill-2);color:var(--text);cursor:pointer;font-size:15px}
+.pill-btn{display:inline-flex;align-items:center;gap:10px;min-height:52px;padding:0 26px;border:0;border-radius:999px;font-size:17px;font-weight:500;cursor:pointer;text-decoration:none}
+.pill-btn.primary{background:#FFFFFF;color:var(--void)}
+.pill-btn.secondary{background:var(--fill-2);color:var(--text)}
+.pill-btn .arr{display:inline-block;transition:transform var(--t-tick) var(--ease-enter)}
+.pill-btn:hover .arr{transform:translateX(3px)}
+.btn-row{display:flex;flex-wrap:wrap;gap:12px;padding-block:24px}
+
+/* ---- flag ---- */
+.flag-fig svg{width:min(448px,100%);height:auto;margin-bottom:16px}
+.flag-fig figcaption{display:flex;flex-wrap:wrap;align-items:center;gap:12px 20px}
+#flag-build .cells rect{opacity:0}
+.con .dim{stroke:var(--text-3);stroke-width:.08;fill:none}
+.con text{fill:var(--text-2);font:1.6px "Geist Mono",monospace;letter-spacing:.05px}
+.con .unit{stroke:rgba(0,0,0,.22);stroke-width:.05;fill:none}
+.strip{display:flex;gap:12px;padding-block:16px}
+.strip figure{flex:none;text-align:center}
+.strip canvas{width:64px;height:64px;image-rendering:pixelated;display:block;margin-bottom:6px}
+.strip figcaption{font:11px "Geist Mono",monospace;color:var(--text-3)}
+.check{font-size:15px;color:var(--text-2)}
+.check b{color:var(--text);font-weight:500}
+
+/* ---- chart A ---- */
+.chart-tools{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;margin-bottom:28px}
+.seg{position:relative;display:inline-flex;padding:4px;border-radius:999px;background:var(--fill-2)}
+.seg button{position:relative;z-index:1;min-height:44px;padding:0 18px;border:0;border-radius:999px;background:none;color:var(--text-2);cursor:pointer;font-size:15px}
+.seg button[aria-pressed=true]{color:var(--void)}
+.seg-pill{position:absolute;inset:4px;border-radius:999px;background:var(--text);clip-path:inset(0 50% 0 0 round 999px)}
+.js .seg button[aria-pressed=true]{transition:color var(--t-tick) linear}
+.chart-fig{position:relative}
+.chart-fig svg{overflow:visible;font-family:"Geist",sans-serif}
+.chart-fig .lab{fill:var(--text-2);font-size:15px}
+.chart-fig .val{fill:var(--text);font:14px "Geist Mono",monospace}
+.chart-fig .tick text{fill:var(--text-3);font:12px "Geist Mono",monospace}
+.chart-fig .tick line{stroke:var(--line)}
+.chart-fig .tick,.chart-fig .bar,.chart-fig .xv,.chart-fig .xh{transform-box:view-box;transform-origin:0 0}
+.chart-fig .b{fill:var(--accent-fill)}
+.chart-fig .hi{fill:var(--accent)}
+.chart-fig .hit{fill:transparent}
+.chart-fig .row{outline:none}
+.chart-fig .row:focus-visible .hit{stroke:var(--accent);stroke-width:2}
+.chart-fig .xhair line{stroke:var(--text-3);stroke-width:1}
+.tip{position:absolute;left:0;top:0;z-index:3;pointer-events:none;opacity:0;padding:10px 14px;border-radius:10px;background:var(--fill-2);
+  font-size:14px;line-height:1.45;max-width:300px;box-shadow:0 8px 24px rgba(0,0,0,.5)}
+.tip b{display:block;font-weight:500}
+.tip .mono{color:var(--text);font-size:13px}
+.tip .n{display:block;color:var(--text-2);font-size:13px}
+.total{display:flex;align-items:baseline;gap:12px;padding-top:20px;margin-top:8px;border-top:1px solid var(--line)}
+.total .mono{font-size:28px}
+.src{font-size:14px;color:var(--text-3);margin-top:8px}
+table.data{border-collapse:collapse;width:100%;font-size:15px}
+.data caption{text-align:left;color:var(--text-2);padding-bottom:12px}
+.data th,.data td{text-align:left;padding:10px 16px 10px 0;border-bottom:1px solid var(--line);vertical-align:baseline}
+.data td:nth-child(2){font-family:"Geist Mono",monospace}
+.data thead th{font:400 var(--fs-label)/1.4 "Geist Mono",monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--text-3)}
+
+/* ---- decisions ---- */
+.dec li{display:grid;gap:12px 0;padding-block:28px;border-bottom:1px solid var(--line)}
+.dec li:first-child{border-top:1px solid var(--line)}
+@media (min-width:900px){.dec li{grid-template-columns:3fr 9fr}}
+.dec p{color:var(--text-2);max-width:68ch}
+.dec p+p{margin-top:10px}
+.wm-opts{display:flex;flex-wrap:wrap;gap:28px 40px;align-items:center;margin-top:16px}
+.wm-opts figure{display:grid;gap:10px}
+.wm-opts .wm-plate img{height:22px}
+.wm-inv{height:22px;width:auto;filter:invert(1)}
+
+footer{padding-block:48px 64px;box-shadow:inset 0 1px var(--line)}
+footer .cols{row-gap:8px}
+
+@media (prefers-reduced-motion:reduce){
+  .pill-btn .arr{transition:none}
+  .pill-btn:hover .arr{transform:none}
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<div class="ground" aria-hidden="true"></div>
+<div class="grid-bg" aria-hidden="true"><div><div></div></div></div>
+
+<header class="nav" id="nav">
+  <div class="wrap nav-in">
+    <a class="brand" href="#top" aria-label="Elysium, back to top">
+      <span class="wm-plate"><img src="assets/wordmark.png" width="320" height="63" alt=""></span>
+      <svg class="mark" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" fill="#DA291C"/><path d="M13 6h6v7h7v6h-7v7h-6v-7H6v-6h7z" fill="#FFFFFF"/></svg>
+    </a>
+    <nav aria-label="Sections">
+      <ul class="links label">
+        <li><a href="#palette">Palette</a></li>
+        <li><a href="#type">Type</a></li>
+        <li><a href="#grid">Grid</a></li>
+        <li><a href="#motion">Motion</a></li>
+        <li><a href="#flag">Flag</a></li>
+        <li><a href="#chart">Chart</a></li>
+        <li><a href="#decisions">Decisions</a></li>
+        <li class="pill" aria-hidden="true"></li>
+      </ul>
+    </nav>
+    <p class="label clock">GENÈVE <time data-clock></time></p>
+    <ul class="label lang" aria-label="Language">
+      <li><a href="#top" lang="fr" hreflang="fr">FR</a></li>
+      <li><a href="#top" lang="de" hreflang="de">DE</a></li>
+      <li><a href="#top" lang="en" hreflang="en" aria-current="true">EN</a></li>
+    </ul>
+  </div>
+</header>
+
+<main id="main">
+
+<section class="hero wrap cols" id="top">
+  <p class="label eyebrow"><svg class="mark" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" fill="#DA291C"/><path d="M13 6h6v7h7v6h-7v7h-6v-7H6v-6h7z" fill="#FFFFFF"/></svg>ELYSIUM SÀRL · GENEVA · ZÜRICH · SINCE 2005</p>
+  <h1 class="display"><span class="t1">Design</span> <span class="t2">and technology.</span></h1>
+  <p class="lede">Design direction for the elysium.cc rebuild, step 1 of the brief of 3 October 2026. Every value on this page is live: ratios are measured from this stylesheet at load, springs run on anime.js 4.5.0, and Chart A reads the §8 figures from its own tables.</p>
+</section>
+
+<!-- ============================== 01 PALETTE ============================== -->
+<section class="sec" id="palette" aria-labelledby="h-palette">
+  <div class="wrap"><div class="sec-rule" aria-hidden="true"></div></div>
+  <div class="wrap cols sec-head">
+    <p class="label idx">01 / Palette</p>
+    <h2 id="h-palette">One ground, one accent, and red kept for the flag.</h2>
+    <p class="lede">Dark from the nav to the footer. The accent is the blue printed on Elysium’s business card, #1F4FD8, lifted to #9FC4FF wherever it sets text. #DA291C appears in one place only: the field behind the white cross.</p>
+  </div>
+
+  <div class="wrap cols">
+    <ul class="swatches span-r">
+      <li><div class="chip-c edge" style="background:#050607"></div><b>--void</b><p class="mono">#050607</p><p>Page ground</p></li>
+      <li><div class="chip-c edge" style="background:#0B0D10"></div><b>--raised</b><p class="mono">#0B0D10</p><p>Alternate ground, frames</p></li>
+      <li><div class="chip-c edge" style="background:#15181D"></div><b>--fill-2</b><p class="mono">#15181D</p><p>Secondary pill, tooltip</p></li>
+      <li><div class="chip-c" style="background:#F2F4F7"></div><b>--text</b><p class="mono">#F2F4F7</p><p>Headings, body</p></li>
+      <li><div class="chip-c" style="background:#A3A9B3"></div><b>--text-2</b><p class="mono">#A3A9B3</p><p>Body, secondary</p></li>
+      <li><div class="chip-c" style="background:#7A818C"></div><b>--text-3</b><p class="mono">#7A818C</p><p>Labels; the dimmest text allowed</p></li>
+      <li><div class="chip-c" style="background:#9FC4FF"></div><b>--accent</b><p class="mono">#9FC4FF</p><p>Links, focus, active data</p></li>
+      <li><div class="chip-c" style="background:#1F4FD8"></div><b>--accent-fill</b><p class="mono">#1F4FD8</p><p>Bars and fills; never text</p></li>
+      <li><div class="chip-c" style="background:#DA291C"></div><b>--swiss</b><p class="mono">#DA291C</p><p>Flag field; nothing else</p></li>
+      <li><div class="chip-c edge" style="background:rgba(255,255,255,.08)"></div><b>--line</b><p class="mono">white 8%</p><p>Hairlines</p></li>
+      <li><div class="chip-c edge" style="background:rgba(255,255,255,.22)"></div><b>--node</b><p class="mono">white 22%</p><p>Grid intersection dots</p></li>
+    </ul>
+  </div>
+
+  <div class="wrap cols">
+    <div class="blk span-r">
+      <h3 class="label" style="margin-bottom:16px">Measured ratios · WCAG 2.2</h3>
+      <div class="fade-x" tabindex="0" role="region" aria-label="Contrast ratios, scrollable">
+        <table class="ratios">
+          <thead><tr><th scope="col">Token</th><th scope="col">Used for</th><th scope="col">Needs</th><th scope="col">on --void</th><th scope="col">on --raised</th><th scope="col">on --fill-2</th></tr></thead>
+          <tbody>
+            <tr><th scope="row"><i class="sw" style="background:#F2F4F7"></i>--text</th><td>Text</td><td>4.5</td><td data-fg="--text" data-bg="--void" data-min="4.5"><span class="r">18.40</span> <span class="ok">AA</span></td><td data-fg="--text" data-bg="--raised" data-min="4.5"><span class="r">17.66</span> <span class="ok">AA</span></td><td data-fg="--text" data-bg="--fill-2" data-min="4.5"><span class="r">16.15</span> <span class="ok">AA</span></td></tr>
+            <tr><th scope="row"><i class="sw" style="background:#A3A9B3"></i>--text-2</th><td>Text</td><td>4.5</td><td data-fg="--text-2" data-bg="--void" data-min="4.5"><span class="r">8.58</span> <span class="ok">AA</span></td><td data-fg="--text-2" data-bg="--raised" data-min="4.5"><span class="r">8.23</span> <span class="ok">AA</span></td><td data-fg="--text-2" data-bg="--fill-2" data-min="4.5"><span class="r">7.53</span> <span class="ok">AA</span></td></tr>
+            <tr><th scope="row"><i class="sw" style="background:#7A818C"></i>--text-3</th><td>Labels, 12 px</td><td>4.5</td><td data-fg="--text-3" data-bg="--void" data-min="4.5"><span class="r">5.16</span> <span class="ok">AA</span></td><td data-fg="--text-3" data-bg="--raised" data-min="4.5"><span class="r">4.95</span> <span class="ok">AA</span></td><td data-fg="--text-3" data-bg="--fill-2" data-min="4.5"><span class="r">4.53</span> <span class="ok">AA</span></td></tr>
+            <tr><th scope="row"><i class="sw" style="background:#9FC4FF"></i>--accent</th><td>Text, focus ring</td><td>4.5</td><td data-fg="--accent" data-bg="--void" data-min="4.5"><span class="r">11.41</span> <span class="ok">AA</span></td><td data-fg="--accent" data-bg="--raised" data-min="4.5"><span class="r">10.95</span> <span class="ok">AA</span></td><td data-fg="--accent" data-bg="--fill-2" data-min="4.5"><span class="r">10.01</span> <span class="ok">AA</span></td></tr>
+            <tr><th scope="row"><i class="sw" style="background:#1F4FD8"></i>--accent-fill</th><td>Bars, fills</td><td>3.0</td><td data-fg="--accent-fill" data-bg="--void" data-min="3"><span class="r">3.06</span> <span class="ok">AA</span></td><td data-fg="--accent-fill" data-bg="--raised" data-min="3"><span class="r">2.94</span> <span class="no">below</span></td><td data-fg="--accent-fill" data-bg="--fill-2" data-min="3"><span class="r">2.68</span> <span class="no">below</span></td></tr>
+            <tr><th scope="row"><i class="sw" style="background:#DA291C"></i>--swiss</th><td>Flag field vs ground</td><td>3.0</td><td data-fg="--swiss" data-bg="--void" data-min="3"><span class="r">4.17</span> <span class="ok">AA</span></td><td data-fg="--swiss" data-bg="--raised" data-min="3"><span class="r">4.00</span> <span class="ok">AA</span></td><td data-fg="--swiss" data-bg="--fill-2" data-min="3"><span class="r">3.66</span> <span class="ok">AA</span></td></tr>
+            <tr><th scope="row"><i class="sw" style="background:#FFFFFF"></i>#FFFFFF on --swiss</th><td>The cross</td><td>3.0</td><td data-fg="#FFFFFF" data-bg="--swiss" data-min="3" colspan="3"><span class="r">4.87</span> <span class="ok">AA</span></td></tr>
+            <tr><th scope="row"><i class="sw" style="background:#050607"></i>--void on #FFFFFF</th><td>Primary pill label</td><td>4.5</td><td data-fg="--void" data-bg="#FFFFFF" data-min="4.5" colspan="3"><span class="r">20.28</span> <span class="ok">AA</span></td></tr>
+            <tr><th scope="row"><i class="sw" style="background:rgba(255,255,255,.22)"></i>--node</th><td>Decoration only</td><td>none</td><td data-fg="--node" data-bg="--void"><span class="r">1.86</span></td><td data-fg="--node" data-bg="--raised"><span class="r">1.94</span></td><td data-fg="--node" data-bg="--fill-2"><span class="r">2.03</span></td></tr>
+            <tr><th scope="row"><i class="sw" style="background:rgba(255,255,255,.08)"></i>--line</th><td>Decoration only</td><td>none</td><td data-fg="--line" data-bg="--void"><span class="r">1.16</span></td><td data-fg="--line" data-bg="--raised"><span class="r">1.20</span></td><td data-fg="--line" data-bg="--fill-2"><span class="r">1.24</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="note" style="margin-top:20px">--accent-fill measures 2.94:1 on --raised, under the 3:1 floor for graphics. Every chart sits on --void. --line and --node carry no information, so WCAG 1.4.11 sets them no floor.</p>
+    </div>
+  </div>
+
+  <div class="wrap cols">
+    <div class="blk span-r">
+      <h3 class="label" style="margin-bottom:16px">Chart ramp · 5 steps, interpolated in OKLab</h3>
+      <ol class="ramp">
+        <li><div class="chip-c" style="background:#1F4FD8"></div><p class="mono">#1F4FD8</p><p>3.06:1</p></li>
+        <li><div class="chip-c" style="background:#4977E4"></div><p class="mono">#4977E4</p><p>4.87:1</p></li>
+        <li><div class="chip-c" style="background:#749BEF"></div><p class="mono">#749BEF</p><p>7.41:1</p></li>
+        <li><div class="chip-c" style="background:#A1BEF8"></div><p class="mono">#A1BEF8</p><p>10.85:1</p></li>
+        <li><div class="chip-c" style="background:#CFE0FF"></div><p class="mono">#CFE0FF</p><p>15.22:1</p></li>
+      </ol>
+      <p class="note" style="margin-top:20px">Adjacent steps differ by OKLab ΔE 11.2, 11.1, 11.3 and 11.1 (×100; 8 is the floor for telling neighbours apart). Lightness rises monotonically, every gap clears ΔL 0.06, hue spread is 2°, and the darkest step clears 3:1 on --void. Checked on 3 October 2026 with the data-visualisation palette validator.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================== 02 TYPE ============================== -->
+<section class="sec" id="type" aria-labelledby="h-type">
+  <div class="wrap"><div class="sec-rule" aria-hidden="true"></div></div>
+  <div class="wrap cols sec-head">
+    <p class="label idx">02 / Type</p>
+    <h2 id="h-type">Geist 600 for the slogan, Geist Mono for every figure.</h2>
+    <p class="lede">Two families, both under OFL 1.1, self-hosted as Latin, Latin-1 and Latin Extended-A subsets: Geist variable at 29.5 KB and Geist Mono 400 at 16.2 KB. Those two files are the only preloads, and no request leaves the domain for type.</p>
+  </div>
+  <div class="wrap cols">
+    <ul class="specimens span-r">
+      <li><p class="label">Display · 600 · −0.045em · 0.95<br>clamp(3rem, 8.5vw, 8.5rem)</p><p class="sp-display">Design <span>and technology.</span></p></li>
+      <li><p class="label">H2 · 600 · −0.035em · 1.0<br>clamp(2rem, 4.6vw, 4.25rem)</p><p class="sp-h2">256 projects for 82 clients.</p></li>
+      <li><p class="label">H3 · 500 · −0.02em · 1.15</p><p class="sp-h3" style="font-size:var(--fs-h3);font-weight:500;letter-spacing:-.02em;line-height:1.15">EMR pilot, PMCH Hospital, Freetown, March 2022</p></li>
+      <li><p class="label">Body · 400 · 17–18 px / 1.6 · 64ch</p><p class="lede">Elysium Sàrl was founded in Geneva in 2005. The R&amp;D team, Elysium Labs, works from Schaffhauserstrasse 449 in Zürich, and the 3D studio works from Buenos Aires.</p></li>
+      <li><p class="label">Label · Geist Mono 12 px · .14em</p><p class="label">Geneva · Zürich · since 2005</p></li>
+      <li><p class="label">Data · Geist Mono · tabular-nums</p><p class="sp-num">21&nbsp;&nbsp;82&nbsp;&nbsp;256</p></li>
+      <li><p class="label">Coverage</p><p class="glyphs">é è à ç ü ö ä ß Ç É È À Ü Ö Ä · – — ’ “ ” → −</p></li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============================== 03 GRID ============================== -->
+<section class="sec" id="grid" aria-labelledby="h-grid">
+  <div class="wrap"><div class="sec-rule" aria-hidden="true"></div></div>
+  <div class="wrap cols sec-head">
+    <p class="label idx">03 / Grid</p>
+    <h2 id="h-grid">12 columns to 1440 px, drawn on the page.</h2>
+    <p class="lede">Gutters run clamp(16px, 4vw, 64px). Hairlines sit on the column edges (every third one below 768 px), node dots mark where a section rule crosses them, and hatched corners mark where each section starts. No element on the site is boxed: groups are made with space and hairlines, and scrolling regions fade at their edges through mask-image.</p>
+  </div>
+  <div class="wrap cols">
+    <div class="span-r">
+      <p class="label">Scrolling region · mask-image fade · 22 names from the roster</p>
+      <div class="fade-x" tabindex="0" role="region" aria-label="Client names, scrollable">
+        <ul class="names">
+          <li>UBS</li><li>Nestlé</li><li>UEFA</li><li>Caterpillar</li><li>Becton Dickinson</li><li>Medtronic</li><li>Rotel</li>
+          <li>WHO</li><li>WIPO</li><li>WTO</li><li>UNICEF</li><li>ILO</li><li>CUAMM</li><li>GIA</li><li>Award Force</li>
+          <li>BLU Healthcare</li><li>LetsMed</li><li>Faro Investors</li><li>Minga RUNNER</li><li>Striker</li><li>Geneva Guide Association</li><li>Pizza Brothers</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================== 04 MOTION ============================== -->
+<section class="sec" id="motion" data-ground="raised" aria-labelledby="h-motion">
+  <div class="wrap"><div class="sec-rule" aria-hidden="true"></div></div>
+  <div class="wrap cols sec-head">
+    <p class="label idx">04 / Motion</p>
+    <h2 id="h-motion">3 springs, 3 curves, 4 durations, one clock.</h2>
+    <p class="lede">anime.js 4.5.0 runs every tween and Lenis 1.3.26 runs the scroll, both advanced inside one requestAnimationFrame loop. The page ground just turned --raised over 30vh of scroll, and turns back the same way. With reduced motion, Lenis is off and every demo below rests at its end state.</p>
+  </div>
+  <div class="wrap cols">
+    <div class="demo span-r" id="springs">
+      <div class="demo-head"><h3>Springs</h3><button class="chip" type="button" data-run="springs">Run all three</button></div>
+      <ul class="tok-list">
+        <li data-spring="snap"><div><p class="label">snap · 380 / 30</p><p class="use">Press, toggles</p></div><svg class="curve" viewBox="0 0 240 96" aria-hidden="true"><path class="base" d="M0 84H240M0 20H240"/><path class="ln"/></svg><div class="track"><i class="dot"></i></div><p class="mono meta">stiffness 380 · damping 30</p></li>
+        <li data-spring="glide"><div><p class="label">glide · 120 / 20</p><p class="use">Chart morphs, layout</p></div><svg class="curve" viewBox="0 0 240 96" aria-hidden="true"><path class="base" d="M0 84H240M0 20H240"/><path class="ln"/></svg><div class="track"><i class="dot"></i></div><p class="mono meta">stiffness 120 · damping 20</p></li>
+        <li data-spring="float"><div><p class="label">float · 60 / 14</p><p class="use">Velocity coupling</p></div><svg class="curve" viewBox="0 0 240 96" aria-hidden="true"><path class="base" d="M0 84H240M0 20H240"/><path class="ln"/></svg><div class="track"><i class="dot"></i></div><p class="mono meta">stiffness 60 · damping 14</p></li>
+      </ul>
+    </div>
+
+    <div class="demo blk span-r" id="eases">
+      <div class="demo-head"><h3>Curves</h3></div>
+      <ul class="tok-list">
+        <li data-ease="enter"><div><p class="label">entrance</p><p class="use">cubic-bezier(.16, 1, .3, 1)</p></div><svg class="curve" viewBox="0 0 240 96" aria-hidden="true"><path class="base" d="M0 84H240M0 20H240"/><path class="ln"/></svg><div class="track"><i class="dot"></i></div><p class="mono meta">reveals, overtures</p></li>
+        <li data-ease="scrub"><div><p class="label">scrubbed</p><p class="use">cubic-bezier(.65, 0, .35, 1)</p></div><svg class="curve" viewBox="0 0 240 96" aria-hidden="true"><path class="base" d="M0 84H240M0 20H240"/><path class="ln"/></svg><div class="track"><i class="dot"></i></div><p class="mono meta">scroll-scrubbed tweens</p></li>
+        <li data-ease="sync"><div><p class="label">scroll-synced</p><p class="use">linear</p></div><svg class="curve" viewBox="0 0 240 96" aria-hidden="true"><path class="base" d="M0 84H240M0 20H240"/><path class="ln"/></svg><div class="track"><i class="dot"></i></div><p class="mono meta">ground, playheads</p></li>
+      </ul>
+      <div class="scrub"><label class="label" for="scrub">Scrub</label><input id="scrub" type="range" min="0" max="1000" value="1000"></div>
+    </div>
+
+    <div class="demo blk span-r" id="durs">
+      <div class="demo-head"><h3>Durations</h3><button class="chip" type="button" data-run="durs">Run all four</button></div>
+      <ul class="tok-list">
+        <li data-dur="tick"><div><p class="label">tick · 160 ms</p><p class="use">Hover, focus, tooltips</p></div><span></span><div class="track"><i class="fillbar"></i></div><span></span></li>
+        <li data-dur="move"><div><p class="label">move · 420 ms</p><p class="use">Nav, state changes</p></div><span></span><div class="track"><i class="fillbar"></i></div><span></span></li>
+        <li data-dur="reveal"><div><p class="label">reveal · 900 ms</p><p class="use">Entrances</p></div><span></span><div class="track"><i class="fillbar"></i></div><span></span></li>
+        <li data-dur="draw"><div><p class="label">draw · 1400 ms</p><p class="use">SVG drawing, contours</p></div><span></span><div class="track"><i class="fillbar"></i></div><span></span></li>
+      </ul>
+    </div>
+
+    <div class="demo blk span-r">
+      <div class="demo-head"><h3>Pills</h3><button class="chip" type="button" data-replay="motion">Replay this section’s overture</button></div>
+      <div class="btn-row">
+        <button class="pill-btn primary" type="button">Start a project <span class="arr" aria-hidden="true">→</span></button>
+        <button class="pill-btn secondary" type="button">See the work <span class="arr" aria-hidden="true">→</span></button>
+      </div>
+      <p class="note">Press scales to .97 on snap. The arrow moves 3 px on hover. Only the primary pill pulls toward the pointer, by 6 px at most.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================== 05 FLAG ============================== -->
+<section class="sec" id="flag" aria-labelledby="h-flag">
+  <div class="wrap"><div class="sec-rule" aria-hidden="true"></div></div>
+  <div class="wrap cols sec-head">
+    <p class="label idx">05 / Flag</p>
+    <h2 id="h-flag">A white cross on a red square, built on 32 units.</h2>
+    <p class="lede">Arms 6 units wide and 7 long, a 20-unit span, a 6-unit margin, red #DA291C (Pantone 485 C). Flag form only: the shield belongs to the Confederation under SR 232.21, and a red cross on a light ground is the emblem protected by SR 232.22. In the build, cross cells only ever turn white and field cells only ever turn red.</p>
+  </div>
+  <div class="wrap cols">
+    <figure class="flag-fig span-l6">
+      <svg class="con" viewBox="-9 -9 50 50" role="img" aria-labelledby="con-t">
+        <title id="con-t">Construction of the flag on a 32-unit grid: 6-unit margin, arms 7 units long and 6 wide, cross spanning 20 units.</title>
+        <defs><pattern id="unit" width="1" height="1" patternUnits="userSpaceOnUse"><path class="unit" d="M1 0H0V1"/></pattern></defs>
+        <rect width="32" height="32" fill="#DA291C"/>
+        <path d="M13 6h6v7h7v6h-7v7h-6v-7H6v-6h7z" fill="#FFFFFF"/>
+        <rect width="32" height="32" fill="url(#unit)"/>
+        <path class="dim" d="M0 -4H32M0 -5.2V-2.8M6 -5.2V-2.8M13 -5.2V-2.8M19 -5.2V-2.8M26 -5.2V-2.8M32 -5.2V-2.8"/>
+        <text x="3" y="-5.8" text-anchor="middle">6</text><text x="9.5" y="-5.8" text-anchor="middle">7</text><text x="16" y="-5.8" text-anchor="middle">6</text><text x="22.5" y="-5.8" text-anchor="middle">7</text><text x="29" y="-5.8" text-anchor="middle">6</text>
+        <path class="dim" d="M-4 0V32M-5.2 0H-2.8M-5.2 6H-2.8M-5.2 13H-2.8M-5.2 19H-2.8M-5.2 26H-2.8M-5.2 32H-2.8"/>
+        <text x="-5.8" y="3.55" text-anchor="end">6</text><text x="-5.8" y="10.05" text-anchor="end">7</text><text x="-5.8" y="16.55" text-anchor="end">6</text><text x="-5.8" y="23.05" text-anchor="end">7</text><text x="-5.8" y="29.55" text-anchor="end">6</text>
+        <path class="dim" d="M6 35.5H26M6 34.3V36.7M26 34.3V36.7"/>
+        <text x="16" y="39" text-anchor="middle">20 · cross span</text>
+        <path class="dim" d="M35.5 0V32M34.3 0H36.7M34.3 32H36.7"/>
+        <text x="37" y="16.55">32</text>
+      </svg>
+      <figcaption class="label">Construction · 32 × 32 units</figcaption>
+    </figure>
+    <figure class="flag-fig span-r6">
+      <svg id="flag-build" viewBox="0 0 32 32" role="img" aria-labelledby="fb-t" shape-rendering="crispEdges">
+        <title id="fb-t">The finished flag: white cross on a red square, over the 32-unit node grid.</title>
+        <defs><pattern id="nodes" width="1" height="1" patternUnits="userSpaceOnUse"><path d="M1 0H0V1" fill="none" stroke="rgba(255,255,255,.08)" stroke-width=".04"/><circle r=".08" fill="rgba(255,255,255,.22)" shape-rendering="geometricPrecision"/></pattern></defs>
+        <rect width="32" height="32" fill="url(#nodes)"/>
+        <path d="M32 0V32H0" fill="none" stroke="rgba(255,255,255,.08)" stroke-width=".04"/>
+        <g class="cells"></g>
+        <g class="solid"><rect width="32" height="32" fill="#DA291C"/><path d="M13 6h6v7h7v6h-7v7h-6v-7H6v-6h7z" fill="#FFFFFF"/></g>
+      </svg>
+      <figcaption><span class="label">Build · cross 600 ms, then field 700 ms</span><button class="chip" type="button" data-replay="flag">Replay build</button></figcaption>
+    </figure>
+  </div>
+  <div class="wrap cols">
+    <div class="blk span-r">
+      <p class="label">20 frames sampled from the build timeline</p>
+      <div class="strip fade-x" id="filmstrip" tabindex="0" role="region" aria-label="Sampled frames of the flag build"></div>
+      <p class="check" id="flag-check">Frame check runs when scripts load.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================== 06 CHART A ============================== -->
+<section class="sec" id="chart" aria-labelledby="h-chart">
+  <div class="wrap"><div class="sec-rule" aria-hidden="true"></div></div>
+  <div class="wrap cols sec-head">
+    <p class="label idx">06 / Chart A</p>
+    <h2 id="h-chart">69 archive pieces and 22 named clients, counted bar by bar.</h2>
+    <p class="lede">Bars grow from the baseline on the glide spring, 50 ms apart, and their values count with them. The toggle morphs one dataset into the other and rescales the axis on the same spring. Tab reaches every bar, arrow keys move between bars, and the tooltip follows focus.</p>
+  </div>
+  <div class="wrap cols">
+    <div class="span-r" id="chart-a">
+      <div class="chart-tools">
+        <div class="seg" role="group" aria-label="Dataset">
+          <span class="seg-pill" aria-hidden="true"></span>
+          <button type="button" aria-pressed="true">Archive by discipline</button>
+          <button type="button" aria-pressed="false">Clients by sector</button>
+        </div>
+        <button class="chip view-table" type="button" aria-pressed="false">View as table</button>
+      </div>
+
+      <figure class="chart-fig">
+        <svg width="100%" height="424" tabindex="-1" role="group" aria-labelledby="ca-t" aria-describedby="ca-d">
+          <title id="ca-t">Archive by discipline: 69 pieces</title>
+          <desc id="ca-d">Horizontal bars. 3D 15, Web 14, Branding 9, Production 9, Illustration 7, Publications 5, Mobile 4, Video 3, IT 3.</desc>
+          <g class="ticks" aria-hidden="true">
+            <g class="tick" data-t="0" style="transform:translateX(0%)"><line y1="20" y2="424"/><text y="12" text-anchor="start">0</text></g>
+            <g class="tick" data-t="5" style="transform:translateX(33.333%)"><line y1="20" y2="424"/><text y="12" text-anchor="middle">5</text></g>
+            <g class="tick" data-t="10" style="transform:translateX(66.667%)"><line y1="20" y2="424"/><text y="12" text-anchor="middle">10</text></g>
+            <g class="tick" data-t="15" style="transform:translateX(100%)"><line y1="20" y2="424"/><text y="12" text-anchor="end">15</text></g>
+          </g>
+          <g class="xhair" aria-hidden="true" opacity="0"><line class="xv" y1="20" y2="424"/><line class="xh" x1="0" x2="100%"/></g>
+          <g class="row" tabindex="0" role="img" aria-label="3D: 15 pieces" transform="translate(0 28)"><rect class="hit" y="-4" width="100%" height="44" rx="6"/><text class="lab" y="14">3D</text><text class="lab" y="14" opacity="0"></text><text class="val" x="100%" y="14" text-anchor="end">15</text><g class="bar" style="transform:scaleX(1)"><rect class="b" y="22" width="100%" height="12"/><rect class="hi" y="22" width="100%" height="12" opacity="0"/></g></g>
+          <g class="row" tabindex="0" role="img" aria-label="Web: 14 pieces" transform="translate(0 72)"><rect class="hit" y="-4" width="100%" height="44" rx="6"/><text class="lab" y="14">Web</text><text class="lab" y="14" opacity="0"></text><text class="val" x="100%" y="14" text-anchor="end">14</text><g class="bar" style="transform:scaleX(.9333)"><rect class="b" y="22" width="100%" height="12"/><rect class="hi" y="22" width="100%" height="12" opacity="0"/></g></g>
+          <g class="row" tabindex="0" role="img" aria-label="Branding: 9 pieces" transform="translate(0 116)"><rect class="hit" y="-4" width="100%" height="44" rx="6"/><text class="lab" y="14">Branding</text><text class="lab" y="14" opacity="0"></text><text class="val" x="100%" y="14" text-anchor="end">9</text><g class="bar" style="transform:scaleX(.6)"><rect class="b" y="22" width="100%" height="12"/><rect class="hi" y="22" width="100%" height="12" opacity="0"/></g></g>
+          <g class="row" tabindex="0" role="img" aria-label="Production: 9 pieces" transform="translate(0 160)"><rect class="hit" y="-4" width="100%" height="44" rx="6"/><text class="lab" y="14">Production</text><text class="lab" y="14" opacity="0"></text><text class="val" x="100%" y="14" text-anchor="end">9</text><g class="bar" style="transform:scaleX(.6)"><rect class="b" y="22" width="100%" height="12"/><rect class="hi" y="22" width="100%" height="12" opacity="0"/></g></g>
+          <g class="row" tabindex="0" role="img" aria-label="Illustration: 7 pieces" transform="translate(0 204)"><rect class="hit" y="-4" width="100%" height="44" rx="6"/><text class="lab" y="14">Illustration</text><text class="lab" y="14" opacity="0"></text><text class="val" x="100%" y="14" text-anchor="end">7</text><g class="bar" style="transform:scaleX(.4667)"><rect class="b" y="22" width="100%" height="12"/><rect class="hi" y="22" width="100%" height="12" opacity="0"/></g></g>
+          <g class="row" tabindex="0" role="img" aria-label="Publications: 5 pieces" transform="translate(0 248)"><rect class="hit" y="-4" width="100%" height="44" rx="6"/><text class="lab" y="14">Publications</text><text class="lab" y="14" opacity="0"></text><text class="val" x="100%" y="14" text-anchor="end">5</text><g class="bar" style="transform:scaleX(.3333)"><rect class="b" y="22" width="100%" height="12"/><rect class="hi" y="22" width="100%" height="12" opacity="0"/></g></g>
+          <g class="row" tabindex="0" role="img" aria-label="Mobile: 4 pieces" transform="translate(0 292)"><rect class="hit" y="-4" width="100%" height="44" rx="6"/><text class="lab" y="14">Mobile</text><text class="lab" y="14" opacity="0"></text><text class="val" x="100%" y="14" text-anchor="end">4</text><g class="bar" style="transform:scaleX(.2667)"><rect class="b" y="22" width="100%" height="12"/><rect class="hi" y="22" width="100%" height="12" opacity="0"/></g></g>
+          <g class="row" tabindex="0" role="img" aria-label="Video: 3 pieces" transform="translate(0 336)"><rect class="hit" y="-4" width="100%" height="44" rx="6"/><text class="lab" y="14">Video</text><text class="lab" y="14" opacity="0"></text><text class="val" x="100%" y="14" text-anchor="end">3</text><g class="bar" style="transform:scaleX(.2)"><rect class="b" y="22" width="100%" height="12"/><rect class="hi" y="22" width="100%" height="12" opacity="0"/></g></g>
+          <g class="row" tabindex="0" role="img" aria-label="IT: 3 pieces" transform="translate(0 380)"><rect class="hit" y="-4" width="100%" height="44" rx="6"/><text class="lab" y="14">IT</text><text class="lab" y="14" opacity="0"></text><text class="val" x="100%" y="14" text-anchor="end">3</text><g class="bar" style="transform:scaleX(.2)"><rect class="b" y="22" width="100%" height="12"/><rect class="hi" y="22" width="100%" height="12" opacity="0"/></g></g>
+        </svg>
+        <div class="tip" aria-hidden="true"><b></b><span class="mono"></span><span class="n"></span></div>
+      </figure>
+
+      <div class="tbl sr-only"><table class="data" data-set="discipline" data-title="Archive by discipline" data-unit="pieces" data-source="Internet Archive CDX of elysium.cc/assets/portfolio/">
+        <caption>Archive by discipline. Source: Internet Archive CDX of elysium.cc/assets/portfolio/.</caption>
+        <thead><tr><th scope="col">Discipline</th><th scope="col">Pieces</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">3D</th><td>15</td></tr>
+          <tr><th scope="row">Web</th><td>14</td></tr>
+          <tr><th scope="row">Branding</th><td>9</td></tr>
+          <tr><th scope="row">Production</th><td>9</td></tr>
+          <tr><th scope="row">Illustration</th><td>7</td></tr>
+          <tr><th scope="row">Publications</th><td>5</td></tr>
+          <tr><th scope="row">Mobile</th><td>4</td></tr>
+          <tr><th scope="row">Video</th><td>3</td></tr>
+          <tr><th scope="row">IT</th><td>3</td></tr>
+        </tbody>
+        <tfoot><tr><th scope="row">Total</th><td>69</td></tr></tfoot>
+      </table></div>
+      <div class="tbl sr-only" hidden><table class="data" data-set="sector" data-title="Clients by sector" data-unit="clients" data-source="Clients named by Elysium, 2024 and 2026">
+        <caption>Clients by sector. Source: clients named by Elysium, 2024 and 2026.</caption>
+        <thead><tr><th scope="col">Sector</th><th scope="col">Clients</th><th scope="col">Names</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Enterprise &amp; industry</th><td>7</td><td>UBS, Nestlé, UEFA, Caterpillar, Becton Dickinson, Medtronic, Rotel</td></tr>
+          <tr><th scope="row">UN system &amp; international</th><td>6</td><td>WHO, WIPO, WTO, UNICEF, ILO, CUAMM</td></tr>
+          <tr><th scope="row">Certification &amp; sector</th><td>2</td><td>GIA, Award Force</td></tr>
+          <tr><th scope="row">Ventures &amp; SMEs</th><td>7</td><td>BLU Healthcare, LetsMed, Faro Investors, Minga RUNNER, Striker, Geneva Guide Association, Pizza Brothers</td></tr>
+        </tbody>
+        <tfoot><tr><th scope="row">Total</th><td>22</td><td></td></tr></tfoot>
+      </table></div>
+
+      <p class="total"><span class="label">Total</span> <span class="mono" data-total>69</span> <span class="unit-out">pieces</span></p>
+      <p class="src" data-src>Source: Internet Archive CDX of elysium.cc/assets/portfolio/.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================== 07 DECISIONS ============================== -->
+<section class="sec" id="decisions" aria-labelledby="h-dec">
+  <div class="wrap"><div class="sec-rule" aria-hidden="true"></div></div>
+  <div class="wrap cols sec-head">
+    <p class="label idx">07 / Decisions</p>
+    <h2 id="h-dec">4 calls to make before step 2.</h2>
+    <p class="lede">Each one changes what step 2 builds. Everything else on this page follows the brief as written.</p>
+  </div>
+  <div class="wrap cols">
+    <ol class="dec span-r">
+      <li><p class="label">1 · Wordmark on dark</p><div>
+        <p>assets/wordmark.png is black on transparent: on --void it measures 1.04:1 and disappears. A keeps the file and its rendering untouched on a light pill (in the nav above). B renders the same file through CSS invert(1): the file stays as it is, but the mark shows white, which the brief counts as a recolour.</p>
+        <div class="wm-opts">
+          <figure><span class="wm-plate"><img src="assets/wordmark.png" width="320" height="63" alt="Option A: wordmark on a light pill"></span><figcaption class="label">A · plate</figcaption></figure>
+          <figure><img class="wm-inv" src="assets/wordmark.png" width="320" height="63" alt="Option B: wordmark rendered inverted"><figcaption class="label">B · invert(1)</figcaption></figure>
+        </div></div></li>
+      <li><p class="label">2 · JS budget</p><div>
+        <p>The anime.js 4.5.0 ESM bundle is 40.9 KB gzipped and Lenis 1.3.26 is 5.4 KB: 46.3 KB before any site code, over the 45 KB cap. Fitting the cap means tree-shaking anime down to the functions used, which takes one bundler run (esbuild, output vendored, no runtime dependency). That adds a build tool, so it needs your yes; the alternative is a cap near 55 KB.</p></div></li>
+      <li><p class="label">3 · Charts on --void</p><div>
+        <p>--accent-fill reaches 3.06:1 on --void and 2.94:1 on --raised. Charts and bars therefore stay on --void sections; the timeline and the Sierra Leone map follow the same rule.</p></div></li>
+      <li><p class="label">4 · Missing case screenshots</p><div>
+        <p>assets/work holds no screenshot of the WIPO Global Awards or Award Force API dashboards. Step 2 builds that case without an image and adds a CONFIRM row, as the brief directs.</p></div></li>
+    </ol>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap cols">
+    <p class="label">Elysium Sàrl · Carouge GE · Switzerland</p>
+    <p class="label">Design direction · step 1 · 3 October 2026 · branch redesign-motion</p>
+  </div>
+</footer>
+
+<script src="assets/vendor/lenis.min.js" defer></script>
+<script type="module">
+import { animate, createTimeline, stagger, onScroll, spring, svg, utils, splitText, engine, cubicBezier, steps } from './assets/vendor/anime.esm.min.js';
+
+const root = document.documentElement;
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+root.classList.add('js');
+
+/* Tokens are read from the stylesheet, so CSS and JS cannot drift apart. */
+const css = getComputedStyle(root);
+const tok = n => css.getPropertyValue(n).trim();
+const nums = n => (tok(n).match(/-?\d*\.?\d+/g) || []).map(Number);
+const T = {
+  spring: Object.fromEntries(['snap', 'glide', 'float'].map(k => {
+    const [stiffness, damping] = nums(`--spring-${k}`);
+    return [k, { stiffness, damping }];
+  })),
+  ease: { enter: cubicBezier(...nums('--ease-enter')), scrub: cubicBezier(...nums('--ease-scrub')), sync: t => t },
+  t: Object.fromEntries(['tick', 'move', 'reveal', 'draw'].map(k => [k, parseFloat(tok(`--t-${k}`))])),
+};
+const sp = k => spring(T.spring[k]);
+window.T = T;
+
+/* One clock: Lenis and anime advance in the same frame, so scroll-linked values never trail the scroll. */
+let lenis = null;
+if (!reduce && window.Lenis) {
+  lenis = new Lenis({ autoRaf: false });
+  engine.useDefaultMainLoop = false;
+  requestAnimationFrame(function raf(t) { lenis.raf(t); engine.update(); requestAnimationFrame(raf); });
+}
+const scrollTop = () => lenis ? lenis.scroll : scrollY;
+const onScrollFrame = fn => lenis ? lenis.on('scroll', fn) : addEventListener('scroll', fn, { passive: true });
+const belowFold = el => el.getBoundingClientRect().top > innerHeight;
+
+/* ---- contrast: every ratio is measured from the tokens above, at load ---- */
+{
+  const parse = v => {
+    if (v.startsWith('#')) return [...v.slice(1).match(/../g).map(h => parseInt(h, 16)), 1];
+    const [r, g, b, a = 1] = v.match(/[\d.]+/g).map(Number);
+    return [r, g, b, a];
+  };
+  const val = n => parse(n.startsWith('--') ? tok(n) : n);
+  const over = ([r, g, b, a], [R, G, B]) => [r * a + R * (1 - a), g * a + G * (1 - a), b * a + B * (1 - a)];
+  const lum = c => { const [r, g, b] = c.map(x => { x /= 255; return x <= .04045 ? x / 12.92 : ((x + .055) / 1.055) ** 2.4; }); return .2126 * r + .7152 * g + .0722 * b; };
+  for (const td of $$('td[data-fg]')) {
+    const bg = val(td.dataset.bg), fg = over(val(td.dataset.fg), bg);
+    const [hi, lo] = [lum(fg), lum(bg)].sort((a, b) => b - a);
+    const r = (hi + .05) / (lo + .05);
+    $('.r', td).textContent = r.toFixed(2);
+    const min = +td.dataset.min, mark = $('.ok,.no', td);
+    if (min && mark) { const ok = r >= min; mark.className = ok ? 'ok' : 'no'; mark.textContent = ok ? 'AA' : 'below'; }
+  }
+}
+
+/* ---- Geneva clock: the visitor reads the time where the firm is ---- */
+{
+  const fmt = new Intl.DateTimeFormat('fr-CH', { timeZone: 'Europe/Zurich', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' });
+  (function tick() {
+    const d = new Date();
+    for (const el of $$('[data-clock]')) { el.textContent = fmt.format(d); el.dateTime = d.toISOString(); }
+    setTimeout(tick, 60000 - d.getTime() % 60000 + 20);
+  })();
+}
+
+/* ---- nav: steps aside while reading down, returns on the first scroll up ---- */
+if (!reduce) {
+  const nav = $('#nav');
+  let last = 0, hidden = false;
+  onScrollFrame(() => {
+    const y = scrollTop(), d = y - last;
+    if (Math.abs(d) < 4) return;
+    last = y;
+    const hide = d > 0 && y > 120;
+    if (hide === hidden || nav.contains(document.activeElement) && hide) return;
+    hidden = hide;
+    // nav slides out of view and back, so it never covers what is being read
+    animate(nav, { y: hide ? '-100%' : '0%', duration: T.t.move, ease: T.ease.enter });
+  });
+}
+
+/* ---- active section: one pill slides between links, so the nav shows a single position ---- */
+{
+  const ul = $('.links'), pill = $('.links .pill'), links = $$('.links a');
+  let current = null;
+  const clipFor = a => {
+    const u = ul.getBoundingClientRect(), r = a.getBoundingClientRect();
+    return `inset(0px ${(u.right - r.right).toFixed(1)}px 0px ${(r.left - u.left).toFixed(1)}px round 999px)`;
+  };
+  const setActive = id => {
+    const a = links.find(l => l.hash === '#' + id) || null;
+    if (a === current) return;
+    links.forEach(l => l === a ? l.setAttribute('aria-current', 'true') : l.removeAttribute('aria-current'));
+    if (!a || !ul.offsetParent) { current = a; return; }
+    // the pill travels to the active link on the snap spring (FLIP through clip-path, no width animation)
+    if (!current || reduce) utils.set(pill, { clipPath: clipFor(a) });
+    else animate(pill, { clipPath: clipFor(a), ease: sp('snap') });
+    current = a;
+  };
+  const io = new IntersectionObserver(es => es.forEach(e => e.isIntersecting && setActive(e.target.id)),
+    { rootMargin: '-45% 0px -54% 0px' });
+  $$('main section[id]').forEach(s => io.observe(s));
+  addEventListener('resize', () => { if (current && ul.offsetParent) utils.set(pill, { clipPath: clipFor(current) }); });
+}
+
+/* ---- ground: --raised fades in over 30vh as a raised section arrives, and out as it leaves ---- */
+if (!reduce) {
+  const ground = $('.ground'), secs = $$('[data-ground="raised"]');
+  let spans = [];
+  const measure = () => { const y = scrollTop(); spans = secs.map(s => { const r = s.getBoundingClientRect(); return [r.top + y, r.bottom + y]; }); };
+  const paint = () => {
+    const y = scrollTop(), vh = innerHeight, k = vh * .3, edge = y + vh * .85;
+    const p = v => Math.min(1, Math.max(0, (edge - v) / k));
+    let o = 0;
+    for (const [a, b] of spans) o = Math.max(o, p(a) - p(b));
+    ground.style.opacity = o.toFixed(3);   // scroll-synced, linear, exactly reversible
+  };
+  root.classList.add('ground-live');
+  measure(); paint();
+  new ResizeObserver(() => { measure(); paint(); }).observe(document.body);
+  onScrollFrame(paint);
+}
+
+/* ---- hero: characters rise out of their line box; the entrance resolves inside 1.1 s ---- */
+if (!reduce) {
+  const chars = splitText($('.hero h1'), { chars: { wrap: 'clip' } }).chars;
+  createTimeline()
+    .add($('.hero .eyebrow'), { opacity: [0, 1], duration: T.t.move, ease: T.ease.enter }, 0)
+    .add(chars, { y: ['105%', '0%'], duration: 700, ease: T.ease.enter, delay: stagger(16) }, 60)
+    .add($('.hero .lede'), { opacity: [0, 1], y: [12, 0], duration: T.t.move, ease: T.ease.enter }, 600);
+}
+
+/* ---- section overture: rule draws, index types, heading rises word by word, body follows ---- */
+const overtures = new Map();
+if (!reduce) for (const sec of $$('.sec')) {
+  const rule = $('.sec-rule', sec), idx = $('.idx', sec), h2 = $('h2', sec), body = $$('.sec-head .lede', sec);
+  const words = splitText(h2, { words: { wrap: 'clip' } }).words;
+  const n = idx.textContent.length;
+  const play = () => createTimeline()
+    // the top hairline draws left to right: a new section starts here
+    .add(rule, { clipPath: ['inset(0% 100% 0% 0%)', 'inset(0% 0% 0% 0%)'], duration: 600, ease: T.ease.enter }, 0)
+    // the index label types in, one character per 18 ms
+    .add(idx, { clipPath: ['inset(0% 100% 0% 0%)', 'inset(0% 0% 0% 0%)'], duration: n * 18, ease: steps(n) }, 200)
+    // the heading rises out of its own measure, 40 ms per word
+    .add(words, { y: ['105%', '0%'], duration: T.t.reveal, ease: T.ease.enter, delay: stagger(40) }, 360)
+    // the body follows once the heading has landed
+    .add(body, { opacity: [0, 1], y: [12, 0], duration: T.t.reveal, ease: T.ease.enter }, 360 + words.length * 40 + 120);
+  overtures.set(sec.id, play);
+  if (!belowFold(sec)) continue;          // already on screen at load: shown as is
+  utils.set([rule, idx], { clipPath: 'inset(0% 100% 0% 0%)' });
+  utils.set(words, { y: '105%' });
+  utils.set(body, { opacity: 0 });
+  let done = false;
+  onScroll({ target: sec, enter: '85% top', onEnter: () => { if (!done) { done = true; play(); } } });
+}
+$('[data-replay="motion"]').addEventListener('click', () => overtures.get('motion')?.());
+
+/* ---- spring tokens: each curve is sampled from the spring anime will run, and the dot runs it ---- */
+for (const li of $$('[data-spring]')) {
+  const k = li.dataset.spring, s = sp(k), { stiffness: st, damping: dm } = T.spring[k];
+  const pts = Array.from({ length: 121 }, (_, i) => `${(i * 2).toFixed(0)},${(84 - s.ease(i / 120) * 64).toFixed(2)}`);
+  $('.ln', li).setAttribute('d', 'M' + pts.join('L'));
+  $('.meta', li).textContent = `ζ ${(dm / (2 * Math.sqrt(st))).toFixed(2)}\nsettles in ${s.settlingDuration} ms`;
+}
+const travel = dot => dot.parentElement.clientWidth - dot.offsetWidth;
+const parkDots = () => $$('#springs .dot').forEach(d => utils.set(d, { x: travel(d) }));
+parkDots(); addEventListener('resize', parkDots);
+$('[data-run="springs"]').addEventListener('click', () => {
+  for (const li of $$('[data-spring]')) {
+    const dot = $('.dot', li);
+    // the dot crosses the track on this token's spring, so the three settle at their own pace
+    if (reduce) utils.set(dot, { x: travel(dot) });
+    else animate(dot, { x: [0, travel(dot)], ease: sp(li.dataset.spring) });
+  }
+});
+
+/* ---- easing curves: one scrub drives all three, forwards and back, through each curve ---- */
+{
+  const rows = $$('[data-ease]').map(li => {
+    const f = T.ease[li.dataset.ease];
+    $('.ln', li).setAttribute('d', 'M' + Array.from({ length: 121 }, (_, i) => `${i * 2},${(84 - f(i / 120) * 64).toFixed(2)}`).join('L'));
+    return { f, dot: $('.dot', li) };
+  });
+  const range = $('#scrub');
+  const scrub = () => { const p = range.value / 1000; for (const r of rows) utils.set(r.dot, { x: r.f(p) * travel(r.dot) }); };
+  range.addEventListener('input', scrub); addEventListener('resize', scrub); scrub();
+}
+
+/* ---- durations: four bars fill at once, so their lengths compare directly ---- */
+$('[data-run="durs"]').addEventListener('click', () => {
+  for (const li of $$('[data-dur]')) {
+    const bar = $('.fillbar', li);
+    if (reduce) utils.set(bar, { scaleX: 1 });
+    else animate(bar, { scaleX: [0, 1], duration: T.t[li.dataset.dur], ease: 'linear' });
+  }
+});
+
+/* ---- pills: press answers on snap; the primary pill leans toward the pointer, 6 px at most ---- */
+if (!reduce) for (const b of $$('.pill-btn')) {
+  b.addEventListener('pointerdown', () => animate(b, { scale: .97, ease: sp('snap') }));
+  const up = () => animate(b, { scale: 1, ease: sp('snap') });
+  b.addEventListener('pointerup', up);
+  b.addEventListener('pointerleave', up);
+  if (!b.classList.contains('primary')) continue;
+  let box = null;
+  b.addEventListener('pointerenter', () => { box = b.getBoundingClientRect(); });
+  b.addEventListener('pointermove', e => {
+    if (!box) return;
+    const nx = (e.clientX - box.left - box.width / 2) / (box.width / 2), ny = (e.clientY - box.top - box.height / 2) / (box.height / 2);
+    animate(b, { x: utils.clamp(nx * 6, -6, 6), y: utils.clamp(ny * 6, -6, 6), ease: sp('snap') });
+  });
+  b.addEventListener('pointerleave', () => { box = null; animate(b, { x: 0, y: 0, ease: sp('float') }); });
+}
+
+/* ---- flag: cross cells turn white from the centre out, then field cells fill red ---- */
+{
+  const fb = $('#flag-build'), cellsG = $('.cells', fb), solid = $('.solid', fb);
+  const N = 32, RED = tok('--swiss'), inCross = (x, y) => (x >= 13 && x < 19 && y >= 6 && y < 26) || (y >= 13 && y < 19 && x >= 6 && x < 26);
+  let html = '';
+  for (let y = 0; y < N; y++) for (let x = 0; x < N; x++)
+    html += `<rect x="${x}" y="${y}" width="1" height="1" fill="${inCross(x, y) ? '#FFFFFF' : RED}" data-c="${+inCross(x, y)}"/>`;
+  cellsG.innerHTML = html;
+  const cells = $$('rect', cellsG);
+  const d = stagger(1, { grid: [N, N], from: 'center' });
+  const dist = cells.map((el, i) => d(el, i, cells));
+  const cross = [], field = [], crossD = [], fieldD = [];
+  cells.forEach((c, i) => c.dataset.c === '1' ? (cross.push(c), crossD.push(dist[i])) : (field.push(c), fieldD.push(dist[i])));
+  const norm = (ds, span) => { const lo = Math.min(...ds), hi = Math.max(...ds); return ds.map(v => (v - lo) / (hi - lo) * span); };
+  const cD = norm(crossD, 600 - T.t.tick), fD = norm(fieldD, 700 - T.t.tick);
+  const build = () => createTimeline({ autoplay: false })
+    // phase 1: the cross assembles in white, outward from the centre
+    .add(cross, { opacity: [0, 1], duration: T.t.tick, ease: 'linear', delay: (_, i) => cD[i] }, 0)
+    // phase 2: the red field closes in around the finished cross
+    .add(field, { opacity: [0, 1], duration: T.t.tick, ease: 'linear', delay: (_, i) => fD[i] }, 600);
+
+  // 20 frames, evenly spaced: read the rendered fill of every lit cell and count cross cells that are red
+  const strip = $('#filmstrip'), check = $('#flag-check');
+  const sample = () => {
+    const tl = build(), frames = 20;
+    let redCross = 0, nonRedField = 0;
+    strip.textContent = '';
+    for (let f = 0; f < frames; f++) {
+      const t = Math.round(tl.duration * f / (frames - 1));
+      tl.seek(t, true);
+      const cv = document.createElement('canvas'); cv.width = cv.height = N;
+      const g = cv.getContext('2d'); g.fillStyle = tok('--void'); g.fillRect(0, 0, N, N);
+      for (const c of cells) {
+        const o = +getComputedStyle(c).opacity; if (!o) continue;
+        const fill = getComputedStyle(c).fill, red = fill === 'rgb(218, 41, 28)';
+        if (c.dataset.c === '1' && red) redCross++;
+        if (c.dataset.c === '0' && !red) nonRedField++;
+        g.globalAlpha = o; g.fillStyle = fill; g.fillRect(+c.getAttribute('x'), +c.getAttribute('y'), 1, 1);
+      }
+      const fig = document.createElement('figure'), cap = document.createElement('figcaption');
+      cap.textContent = `${t} ms`; fig.append(cv, cap); strip.append(fig);
+    }
+    tl.revert();
+    check.innerHTML = `<b>${frames} frames × ${cross.length} cross cells: ${redCross} red.</b> Field cells shown in any colour but red: ${nonRedField}.`;
+    check.dataset.redCross = redCross;
+  };
+  const play = () => {
+    solid.style.opacity = 0;
+    const tl = build();
+    // swap to the solid flag once the cells are complete, so no seam can show at fractional scales
+    tl.onComplete = () => { solid.style.opacity = 1; utils.set(cells, { opacity: 0 }); };
+    tl.play();
+  };
+  sample();
+  utils.set(cells, { opacity: 0 });
+  $('[data-replay="flag"]').addEventListener('click', () => reduce ? null : play());
+  if (!reduce) {
+    if (belowFold(fb)) solid.style.opacity = 0;
+    let done = false;
+    onScroll({ target: fb, enter: '80% top', onEnter: () => { if (!done) { done = true; play(); } } });
+  }
+}
+
+/* ---- Chart A: bars, values and axis all derive from one spring-driven state ---- */
+{
+  const host = $('#chart-a'), svgEl = $('svg', host), tip = $('.tip', host);
+  const sets = $$('table[data-set]', host).map(t => ({
+    table: t, wrap: t.parentElement, title: t.dataset.title, unit: t.dataset.unit, source: t.dataset.source,
+    rows: $$('tbody tr', t).map(tr => { const td = $$('td', tr); return { label: $('th', tr).textContent.trim(), v: +td[0].textContent, names: td[1]?.textContent || '' }; }),
+  }));
+  const rows = $$('.row', svgEl).map((el, i) => ({
+    el, bar: $('.bar', el), hi: $('.hi', el), val: $('.val', el), labs: $$('.lab', el),
+    y: 28 + i * 44, on: true, p: { v: sets[0].rows[i].v, to: sets[0].rows[i].v },
+  }));
+  const nice = max => { const step = [1, 2, 5, 10, 20, 50].find(s => max / s <= 4); return { step, max: Math.ceil(max / step) * step }; };
+  const D = { v: 15, to: 15 };
+  let cur = 0, act = null;
+
+  const tickG = $('.ticks', svgEl), ticks = new Map($$('.tick', tickG).map(g => [+g.dataset.t, g]));
+  const tickFor = t => {
+    if (!ticks.has(t)) {
+      const g = ticks.get(0).cloneNode(true); g.dataset.t = t; $('text', g).textContent = t; utils.set(g, { opacity: 0 });
+      tickG.append(g); ticks.set(t, g);
+    }
+    return ticks.get(t);
+  };
+  const tickSet = set => { const { step, max } = nice(Math.max(...set.rows.map(r => r.v))); return Array.from({ length: max / step + 1 }, (_, i) => i * step); };
+
+  const totalEl = $('[data-total]', host);
+  const render = () => {
+    let sum = 0;
+    for (const r of rows) {
+      r.bar.style.transform = `scaleX(${(r.p.v / D.v).toFixed(4)})`;
+      const n = Math.round(r.p.v); sum += n;
+      r.val.textContent = r.on || n ? n : '';
+    }
+    for (const [t, g] of ticks) g.style.transform = `translateX(${(t / D.v * 100).toFixed(3)}%)`;
+    totalEl.textContent = sum;                                   // the total is the sum of the bars, every frame
+  };
+
+  // entrance: gridlines draw, then bars grow from the baseline with their values counting in step
+  const enter = () => {
+    for (const r of rows) r.p.v = 0;
+    render();
+    const tl = createTimeline()
+      .add(svg.createDrawable($$('.tick line', svgEl)), { draw: ['0 0', '0 1'], duration: 300, ease: 'linear' }, 0)
+      .add($$('.tick text', svgEl), { opacity: [0, 1], duration: 300, ease: 'linear' }, 0)
+      .add(rows.map(r => r.p), { v: p => p.to, ease: sp('glide'), delay: stagger(50), onUpdate: render }, 300);
+    return tl;
+  };
+  if (!reduce) {
+    if (belowFold(svgEl)) rows.forEach(r => { r.bar.style.transform = 'scaleX(0)'; });   // bars only; the numbers stay final until seen
+    let done = false;
+    onScroll({ target: svgEl, enter: 'bottom 40%', onEnter: () => { if (!done) { done = true; enter(); } } });
+  }
+
+  // hover / focus: the bar brightens, the rest dim to 40 %, crosshair and tooltip spring to it
+  const xh = $('.xhair', svgEl), xv = $('.xv', svgEl), xhl = $('.xh', svgEl);
+  const move = reduce ? { duration: 0 } : { ease: sp('snap') };
+  const activate = r => {
+    if (r === act) return;
+    act = r;
+    for (const x of rows) {
+      animate(x.el, { opacity: !x.on ? 0 : !r || x === r ? 1 : .4, duration: T.t.tick, ease: 'linear' });
+      animate(x.hi, { opacity: x === r ? 1 : 0, duration: T.t.tick, ease: 'linear' });
+    }
+    if (!r) { animate([tip, xh], { opacity: 0, duration: T.t.tick, ease: 'linear' }); return; }
+    const set = sets[cur], i = rows.indexOf(r), d = set.rows[i], total = set.rows.reduce((s, x) => s + x.v, 0);
+    $('b', tip).textContent = d.label;
+    $('.mono', tip).textContent = `${d.v} ${set.unit} · ${(d.v / total * 100).toFixed(1)}% of ${total}`;
+    $('.n', tip).textContent = d.names;
+    const w = svgEl.clientWidth, x = d.v / D.to * w, flip = x + tip.offsetWidth + 16 > w;
+    animate(tip, { x: flip ? x - tip.offsetWidth - 12 : x + 12, y: r.y + 40, opacity: 1, ...move });
+    animate(xv, { x: `${(d.v / D.to * 100).toFixed(3)}%`, ...move });
+    animate(xhl, { y: r.y + 28, ...move });
+    animate(xh, { opacity: 1, duration: T.t.tick, ease: 'linear' });
+  };
+  for (const r of rows) {
+    r.el.addEventListener('focus', () => activate(r));
+    r.el.addEventListener('pointerenter', () => r.on && activate(r));
+  }
+  svgEl.addEventListener('pointerleave', () => { if (!svgEl.contains(document.activeElement)) activate(null); });
+  svgEl.addEventListener('focusout', e => { if (!svgEl.contains(e.relatedTarget)) activate(null); });
+  svgEl.addEventListener('keydown', e => {
+    const vis = rows.filter(r => r.on), i = vis.indexOf(act);
+    const k = { ArrowDown: 1, ArrowRight: 1, ArrowUp: -1, ArrowLeft: -1, Home: -99, End: 99 }[e.key];
+    if (k === undefined) return;
+    e.preventDefault();
+    vis[utils.clamp(i + k, 0, vis.length - 1)].el.focus();
+  });
+
+  // toggle: the bars morph into the other dataset and the axis rescales on the same spring
+  const seg = $('.seg', host), segBtns = $$('button', seg), segPill = $('.seg-pill', seg);
+  const pillTo = b => `inset(0px ${(seg.clientWidth - 8 - b.offsetLeft - b.offsetWidth + 4).toFixed(1)}px 0px ${(b.offsetLeft - 4).toFixed(1)}px round 999px)`;
+  utils.set(segPill, { clipPath: pillTo(segBtns[0]) });
+  addEventListener('resize', () => utils.set(segPill, { clipPath: pillTo(segBtns[cur]) }));
+  const show = k => {
+    if (k === cur) return;
+    cur = k;
+    const set = sets[k];
+    segBtns.forEach((b, j) => b.setAttribute('aria-pressed', String(j === k)));
+    // the selection pill slides to the pressed button
+    animate(segPill, { clipPath: pillTo(segBtns[k]), ...(reduce ? { duration: 0 } : { ease: sp('snap') }) });
+    activate(null);
+    const want = new Set(tickSet(set));
+    D.to = Math.max(...want);
+    rows.forEach((r, i) => {
+      const d = set.rows[i];
+      r.on = !!d; r.p.to = d ? d.v : 0;
+      r.el.tabIndex = d ? 0 : -1;
+      d ? r.el.removeAttribute('aria-hidden') : r.el.setAttribute('aria-hidden', 'true');
+      r.el.setAttribute('aria-label', d ? `${d.label}: ${d.v} ${set.unit}` : '');
+      r.labs[k].textContent = d ? d.label : '';
+      // labels crossfade in place while the bar under them morphs
+      animate(r.labs[1 - k], { opacity: 0, duration: reduce ? T.t.tick : T.t.move, ease: 'linear' });
+      animate(r.labs[k], { opacity: d ? 1 : 0, duration: reduce ? T.t.tick : T.t.move, ease: 'linear' });
+      animate(r.el, { opacity: d ? 1 : 0, duration: reduce ? T.t.tick : T.t.move, ease: 'linear' });
+      r.el.style.pointerEvents = d ? '' : 'none';
+    });
+    for (const t of new Set([...ticks.keys(), ...want])) animate(tickFor(t), { opacity: want.has(t) ? 1 : 0, duration: reduce ? T.t.tick : T.t.move, ease: 'linear' });
+    for (const [t, g] of ticks) $('text', g).setAttribute('text-anchor', t === 0 ? 'start' : t === D.to ? 'end' : 'middle');
+    if (reduce) { for (const r of rows) r.p.v = r.p.to; D.v = D.to; render(); }
+    else animate([...rows.map(r => r.p), D], { v: o => o.to, ease: sp('glide'), onUpdate: render });
+    $('#ca-t').textContent = `${set.title}: ${set.rows.reduce((s, x) => s + x.v, 0)} ${set.unit}`;
+    $('#ca-d').textContent = 'Horizontal bars. ' + set.rows.map(r => `${r.label} ${r.v}`).join(', ') + '.';
+    $('.unit-out', host).textContent = set.unit;
+    $('[data-src]', host).textContent = `Source: ${set.source}.`;
+    sets.forEach((s, j) => { s.wrap.hidden = j !== k; });
+  };
+  segBtns.forEach((b, k) => b.addEventListener('click', () => show(k)));
+
+  const tv = $('.view-table', host), fig = $('.chart-fig', host);
+  tv.addEventListener('click', () => {
+    const on = tv.getAttribute('aria-pressed') !== 'true';
+    tv.setAttribute('aria-pressed', String(on));
+    tv.textContent = on ? 'View as chart' : 'View as table';
+    fig.hidden = on;
+    sets.forEach(s => { s.wrap.classList.toggle('sr-only', !on); s.wrap.classList.toggle('fade-x', on); });
+  });
+  window.chartA = { rows, sets, D };
+}
+</script>
+</body>
+</html>

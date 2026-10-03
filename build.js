@@ -18,6 +18,12 @@ const LANGS = {
 /* ---- collect every translatable string from the source ------------------ */
 // text between tags, plus the attributes that reach a human
 const skipTags = /<(script|style)[\s\S]*?<\/\1>/gi;
+// attributes that reach a human: accessible names, meta text, and the strings main.js reads from data-*
+const ATTRS = ['alt', 'title', 'aria-label', 'placeholder', 'content',
+  'data-m', 'data-title', 'data-unit', 'data-source', 'data-where', 'data-topic',
+  'data-of', 'data-source-label', 'data-bars', 'data-view-chart', 'data-view-table',
+  'data-err-name', 'data-err-email', 'data-err-format', 'data-err-msg', 'data-not-sent',
+  'data-measured', 'data-interp', 'data-a00', 'data-a15'];
 const skipTags2 = /<(script|style)[\s\S]*?<\/\1>/gi;
 function strings(html) {
   const out = new Set();
@@ -26,10 +32,10 @@ function strings(html) {
     const s = m[1].replace(/\s+/g, ' ').trim();
     if (s && /[A-Za-z]{2}/.test(s) && !/^[\d\s.,%$/·—–-]+$/.test(s)) out.add(s);
   }
-  for (const a of ['alt', 'title', 'aria-label', 'placeholder', 'content', 'description'])
-    for (const m of body.matchAll(new RegExp(`${a}="([^"]+)"`, 'g'))) {
+  for (const a of ATTRS)
+    for (const m of body.matchAll(new RegExp(`\\s${a}="([^"]+)"`, 'g'))) {
       const s = m[1].trim();
-      if (s && /[A-Za-z]{3}/.test(s) && !/^(https?:|width=|summary_large)/.test(s)) out.add(s);
+      if (s && /[A-Za-z]{2}/.test(s) && !/^(https?:|width=|summary_large)/.test(s)) out.add(s);
     }
   return [...out];
 }
@@ -62,14 +68,15 @@ function render(lang, cfg) {
     const lead = raw.match(/^\s*/)[0], tail = raw.match(/\s*$/)[0];
     return '>' + lead + dict[key] + tail + '<';
   });
-  for (const a of ['alt','title','aria-label','placeholder','content','data-lead','data-tail','data-m','data-b','data-under','data-over','data-saved','data-extra','data-month','data-never'])
-    h = h.replace(new RegExp(`(${a}=")([^"]+)(")`, 'g'), (m, p, v, q) =>
+  for (const a of ATTRS)
+    h = h.replace(new RegExp(`(\\s${a}=")([^"]+)(")`, 'g'), (m, p, v, q) =>
       dict[v.trim()] ? p + dict[v.trim()] + q : m);
 
   h = h.replace(/<!--SH(\d+)-->/g, (m, i) => shelf[+i]);
 
   // one directory down: relative asset paths need a hop
-  h = h.replace(/(src|href)="(?!https?:|\/|#|mailto:)/g, '$1="../');
+  h = h.replace(/(src|href)="(?!https?:|\/|#|mailto:|tel:|data:)/g, '$1="../');
+  h = h.replace(/srcset="([^"]+)"/g, (m, v) => 'srcset="' + v.split(',').map(x => x.trim()).map(x => /^(https?:|\/|data:)/.test(x) ? x : '../' + x).join(', ') + '"');
   // language switches
   h = h.replace('<html lang="en-GB">', `<html lang="${cfg.tag}-CH">`);
   h = h.replace('<meta property="og:locale" content="en_GB">',
@@ -79,8 +86,8 @@ function render(lang, cfg) {
   h = h.replace('<meta property="og:url" content="https://elysium.cc/">',
                 `<meta property="og:url" content="https://elysium.cc/${cfg.dir}/">`);
   // footer language state
-  h = h.replace('<a href="/" aria-current="page">English</a>', '<a href="/">English</a>');
-  h = h.replace(`<a href="/${cfg.dir}/">`, `<a href="/${cfg.dir}/" aria-current="page">`);
+  h = h.split('hreflang="en" aria-current="true">').join('hreflang="en">');
+  h = h.split(`hreflang="${cfg.tag}">`).join(`hreflang="${cfg.tag}" aria-current="true">`);
 
   const dir = path.join(ROOT, cfg.dir);
   fs.mkdirSync(dir, { recursive: true });
@@ -94,7 +101,7 @@ function render(lang, cfg) {
 for (const [lang, cfg] of Object.entries(LANGS)) render(lang, cfg);
 
 /* sitemap covers all three */
-const urls = ['', 'fr/', 'de/'].map(u => `  <url><loc>https://elysium.cc/${u}</loc><lastmod>2026-09-08</lastmod>
+const urls = ['', 'fr/', 'de/'].map(u => `  <url><loc>https://elysium.cc/${u}</loc><lastmod>2026-10-03</lastmod>
     <xhtml:link rel="alternate" hreflang="en" href="https://elysium.cc/"/>
     <xhtml:link rel="alternate" hreflang="fr" href="https://elysium.cc/fr/"/>
     <xhtml:link rel="alternate" hreflang="de" href="https://elysium.cc/de/"/>

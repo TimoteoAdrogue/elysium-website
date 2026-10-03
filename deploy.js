@@ -21,6 +21,8 @@ const fs = require('fs'), path = require('path'), cp = require('child_process');
 const ROOT = __dirname;
 const OUT = path.join(ROOT, 'docs');
 const BASE = process.env.BASE === undefined ? '/elysium-website' : process.env.BASE;
+// where the staging copy is served; link previews (og:image, og:url) must resolve there, not on elysium.cc
+const ORIGIN = process.env.ORIGIN || 'https://timoteoadrogue.github.io';
 
 // what ships. Anything not listed here stays out of the public mirror.
 const COPY = ['index.html', 'styles.css', 'main.js', '404.html', 'favicon.svg',
@@ -49,6 +51,7 @@ let touched = 0, files = 0;
     const before = h;
 
     if (BASE) h = h.replace(/\b(src|href)="\/(?!\/)/g, (m, a) => { touched++; return `${a}="${BASE}/`; });
+    h = h.replace(/(property="og:(?:image|url)" content=")https:\/\/elysium\.cc\//g, `$1${ORIGIN}${BASE}/`);
     if (!h.includes('name="robots"'))
       h = h.replace('<meta name="viewport"', `${NOINDEX}\n<meta name="viewport"`);
 
