@@ -78,6 +78,9 @@ h4{font-size:17px;font-weight:500;letter-spacing:-.01em;line-height:1.3}
   background:repeating-linear-gradient(to right,var(--line) 0 1px,transparent 1px calc(100% / 12))}
 main,footer{position:relative}
 .dock-live .flag{position:relative;z-index:11}       /* the flag flies over the nav to land in its mark */
+/* phones: the tilt moves into the flag's own transform, because a perspective on .flag would capture its position:fixed ride */
+.dock-fixed .flag{perspective:none}
+.dock-fixed #flag-build.ride{position:fixed}
 [data-ground=raised]{background:var(--raised)}
 .ground-live [data-ground=raised]{background:none}
 
@@ -189,6 +192,16 @@ main,footer{position:relative}
   .xp-now{margin-top:24px;font-size:clamp(1.5rem,2.2vw,2rem);font-weight:500;letter-spacing:-.025em;line-height:1.1;max-width:14ch;min-height:2.3em}
   .xp-where{margin-top:16px}
 }
+/* phones: the same counter becomes a meter pinned to the foot of the screen while the list is read. It is placed after the
+   list, so sticky bottom holds it on screen from the first practice to the last and then lets it settle under the list */
+@media (max-width:899px){
+  .js .xp-side{grid-row:2;display:flex;align-items:center;gap:14px;position:sticky;bottom:16px;z-index:2;justify-self:start;max-width:100%;
+    margin-top:20px;padding:10px 18px 10px 16px;border-radius:999px;background:var(--fill-2);box-shadow:0 8px 24px rgba(0,0,0,.5)}
+  .js .xp-count{flex:none;display:flex;align-items:baseline;gap:.3em;font:400 20px/1 "Geist Mono",monospace;letter-spacing:-.02em}
+  .js .xp-count .of{font-size:13px;color:var(--text-3);letter-spacing:0}
+  .js .xp-now{min-width:0;font-size:15px;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .js .xp-where{display:none}
+}
 
 /* ---- 4 record: chart A ------------------------------------------------------- */
 .chart-tools{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;margin-bottom:28px}
@@ -259,6 +272,23 @@ table.data{border-collapse:collapse;width:100%;font-size:15px}
 .tl-live .tl-list time{display:block;font-size:13px;color:var(--accent)}
 .tl-live .tl-list h4{font-size:15px;line-height:1.3}
 .tl-live .tl-list p{font-size:13px;line-height:1.4;color:var(--text-3)}
+/* vertical form — phones and short screens: a rail beside the list. The year readout is pinned to the foot of the screen
+   (sticky, so it holds still under a native touch scroll) and is the playhead; the rail's fill hangs from it and is
+   clipped at the top of the track. Rail centre: x 4.5 px in the track. */
+@supports (overflow:clip){
+  .tl-rail .tl-yr{display:none}                        /* the count moves into the playhead */
+  .tl-rail .tl-track{position:relative;overflow-x:visible;overflow-y:clip;padding-bottom:32px}
+  .tl-rail .tl-list{margin-left:4px;border-left:1px solid var(--line)}
+  .tl-rail .tl-list li{position:relative;grid-template-columns:6.5em 1fr;padding-left:22px}
+  .tl-rail .tl-list li::before{content:"";position:absolute;left:-5px;top:26px;width:9px;height:9px;border-radius:50%;background:var(--void);
+    box-shadow:inset 0 0 0 1px var(--text-3);transition:background-color var(--t-move) linear,box-shadow var(--t-move) linear}
+  .tl-rail .tl-list li.on::before{background:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+  .tl-rail .tl-ph{position:sticky;bottom:16px;z-index:2;display:flex;align-items:center;gap:10px;width:fit-content;
+    margin:16px 0 0 -12px;padding:8px 18px 8px 11px;font-size:17px;line-height:1.2;color:var(--text)}
+  .tl-rail .tl-ph::after{content:"";position:absolute;inset:0;z-index:-1;border-radius:999px;background:var(--fill-2);box-shadow:0 8px 24px rgba(0,0,0,.5)}
+  .tl-rail .tl-ph::before{content:"";position:absolute;z-index:-2;left:15.5px;bottom:50%;width:2px;height:300vh;background:var(--accent)}
+  .tl-rail .tl-ph i{flex:none;width:11px;height:11px;border-radius:50%;background:var(--accent)}
+}
 
 /* ---- 5 healthcare ---------------------------------------------------------- */
 .hc{row-gap:48px}
@@ -326,13 +356,17 @@ table.data{border-collapse:collapse;width:100%;font-size:15px}
   .case-text{grid-column:1/5;padding-inline:var(--pad);padding-top:8px}
   .case .frame{grid-column:5/13;margin-inline:var(--pad)}
   .case.noshot .case-text{grid-column:1/9}
-  .stack-live .case{position:sticky;top:calc(var(--nav-h) + 24px);min-height:calc(100vh - var(--nav-h) - 48px);transform-origin:50% 0}
-  .stack-live .case.noshot{position:relative;min-height:0}
+  .stack-live .case{min-height:calc(100vh - var(--nav-h) - 48px)}
+  .stack-live .case.noshot{min-height:0}
 }
+/* cases stack at every width: each sticks under the nav, or, when taller than the screen, once its foot is in view (--case-h from main.js) */
+.stack-live .case{position:sticky;top:calc(var(--nav-h) + 24px);top:min(calc(var(--nav-h) + 24px),calc(100svh - var(--case-h,0px) - 24px));transform-origin:50% 0}
+.stack-live .case.noshot{position:relative}
 .sheet-head{margin-top:clamp(64px,8vw,120px);margin-bottom:16px}
 .sheet{display:grid;grid-template-columns:repeat(auto-fill,130px);gap:2px;justify-content:start}
 .sheet img{width:130px;height:130px;filter:grayscale(.35)}
-.sheet img:hover{filter:none}
+.sheet img:hover,.sheet img.lit{filter:none}
+@media (hover:none){.sheet img{transition:filter var(--t-move) linear}}   /* .lit: touch screens, set as a row crosses mid-screen */
 .sheet-note{margin-top:14px;font-size:15px;color:var(--text-3)}
 
 /* ---- 8 cities ---------------------------------------------------------------- */
@@ -400,6 +434,7 @@ footer{padding-block:56px 72px;box-shadow:inset 0 1px var(--line)}
   .pill-btn:hover .arr{transform:none}
   .mq{-webkit-mask-image:none;mask-image:none}
   .mq-track{flex-wrap:wrap;width:auto;row-gap:4px}
+  .sheet img{transition:none}
 }
 
 /* ---- private AI ------------------------------------------------------------- */
@@ -436,7 +471,7 @@ footer{padding-block:56px 72px;box-shadow:inset 0 1px var(--line)}
 @media (max-width:699px){
   .pai-org{padding-bottom:28px}
   .pai-flow{grid-template-columns:1fr;justify-items:center;gap:8px}
-  .pai-arrow{width:1px;height:28px;margin-top:0}
+  .pai-arrow{width:1px;height:28px;margin-top:0;transform-origin:50% 0}
   .pai-arrow::after{right:auto;left:-4px;top:auto;bottom:-1px;transform:rotate(135deg)}
   .pai-down,.pai-x{display:none}
   .pai-server{width:auto;min-width:220px}
