@@ -12,7 +12,7 @@ const R = __dirname, read = f => fs.readFileSync(path.join(R, f));
 const MIME = { '.woff2': 'font/woff2', '.jpg': 'image/jpeg', '.png': 'image/png', '.svg': 'image/svg+xml', '.js': 'text/javascript' };
 const dataURI = f => `data:${MIME[path.extname(f)]};base64,${read(f).toString('base64')}`;
 
-let css = read('styles.css').toString().replace(/url\("([^"]+\.woff2)"\)/g, (m, f) => `url("${dataURI(f)}")`);
+let css = read('styles.css').toString().replace(/url\("([^"]+\.(?:woff2|svg))"\)/g, (m, f) => `url("${dataURI(f)}")`);
 const html = read('index.html').toString();
 const head = html.slice(html.indexOf('<head>') + 6, html.indexOf('</head>'))
   .replace(/<link rel="(stylesheet|preload|icon)"[^>]*>\s*/g, '');

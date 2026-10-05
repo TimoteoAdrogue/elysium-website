@@ -108,19 +108,138 @@ if (!reduce) {
   measures.add(() => { if (current && ul.offsetParent) utils.set(pill, { clipPath: clipFor(current) }); });
 }
 
-/* ---- ground: --raised fades in over 30vh as a raised section arrives, and out as it leaves ---- */
-if (!reduce) {
-  const ground = $('.ground'), secs = $$('[data-ground="raised"]');
-  let spans = [];
+/* ---- grounds: a fixed layer fades in over 30vh as its section arrives, and out as it leaves.
+   --raised under raised sections; Alpine contours under the sections that carry data-topo, drifting 8vh at most ---- */
+const underlay = (layer, secs, drift = 0) => {
+  let spans = [], was = -1;
   measures.add(() => { spans = secs.map(s => { const t = docTop(s); return [t, t + s.offsetHeight]; }); });
   scrollFns.add(() => {
-    const vh = innerHeight, k = vh * .3, edge = scrollTop() + vh * .85;
+    const y = scrollTop(), vh = innerHeight, k = vh * .3, edge = y + vh * .85;
     const p = v => clamp01((edge - v) / k);
-    let o = 0;
-    for (const [a, b] of spans) o = Math.max(o, p(a) - p(b));
-    ground.style.opacity = o.toFixed(3);            // scroll-synced, linear, exactly reversible
+    let o = 0, d = 0;
+    for (const [a, b] of spans) { const v = p(a) - p(b); if (v > o) { o = v; d = clamp01((y + vh - a) / (b - a + vh)) - .5; } }
+    if (!o && !was) return;
+    was = o;
+    layer.style.opacity = o.toFixed(3);            // scroll-synced, linear, exactly reversible
+    if (drift) layer.style.transform = `translate3d(0,${(-d * drift * vh / 100).toFixed(1)}px,0)`;
   });
+};
+if (!reduce) {
+  underlay($('.ground'), $$('[data-ground="raised"]'));
+  for (const t of $$('.topo')) underlay(t, $$(`[data-topo="${t.dataset.for}"]`), 16);
   root.classList.add('ground-live');
+}
+
+/* ---- sky: sparse stars in three depths behind the grid. Nearer stars slide further with scroll; now and then one
+   brightens and fades. Hidden until the hero has gone by, redrawn only when the scroll moves or a star twinkles ---- */
+{
+  const cv = $('.sky'), ctx = cv?.getContext('2d');
+  if (ctx) {
+    const LAYERS = [{ per: 9000, r: [.6, .9], a: [.14, .28], f: .03 }, { per: 26000, r: [.9, 1.2], a: [.26, .42], f: .08 }, { per: 80000, r: [1.1, 1.5], a: [.38, .55], f: .16 }];
+    let seed, W = 0, H = 0, dpr = 1, stars = [], from = 0, op = -1, lastY = NaN, tw = null, wait = 3000;
+    const rnd = () => (seed = seed * 16807 % 2147483647) / 2147483647;     // seeded: the same sky on every visit
+    measures.add(() => {
+      dpr = Math.min(2, devicePixelRatio || 1); W = innerWidth; H = innerHeight;
+      cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
+      seed = 11; stars = [];
+      LAYERS.forEach((L, l) => { for (let i = Math.round(W * H / L.per); i--;) stars.push({ x: rnd() * W, y: rnd() * H, r: L.r[0] + rnd() * (L.r[1] - L.r[0]), a: L.a[0] + rnd() * (L.a[1] - L.a[0]), f: reduce ? 0 : L.f, l }); });
+      const first = $('main > section:not(.hero-film)');
+      from = first ? docTop(first) - H : 0;                                // the film's stage lets go here
+      lastY = NaN;
+    });
+    const draw = y => {
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.clearRect(0, 0, W, H);
+      ctx.fillStyle = '#FFFFFF';
+      for (const s of stars) {
+        let sy = (s.y - y * s.f) % H; if (sy < 0) sy += H;
+        ctx.globalAlpha = tw && tw.s === s ? s.a + (.95 - s.a) * Math.sin(Math.PI * tw.p) ** 2 : s.a;
+        if (s.l < 2) ctx.fillRect(s.x, sy, s.r, s.r);
+        else { ctx.beginPath(); ctx.arc(s.x, sy, s.r * .6, 0, 6.2832); ctx.fill(); }
+      }
+    };
+    tickers.add(dt => {
+      if (document.hidden || !W) return;
+      const y = scrollTop(), o = reduce ? 1 : clamp01((y - from) / (H * .6));
+      if (o !== op) { op = o; cv.style.opacity = o.toFixed(3); }
+      if (!o) return;
+      // one star at a time brightens over 1.6 s, every 3 to 7 s
+      if (!reduce && (tw || (wait -= dt) <= 0)) {
+        if (!tw) tw = { s: stars[stars.length - 1 - Math.floor(Math.random() * stars.length * .4)], p: 0 };
+        if ((tw.p += dt / 1600) >= 1) { tw = null; wait = 3000 + Math.random() * 4000; }
+        lastY = NaN;
+      }
+      const yk = reduce ? 0 : y;                                          // reduced motion: one still sky
+      if (yk !== lastY) { draw(yk); lastY = yk; }
+    });
+  }
+}
+
+/* ---- guiding star: a point of light on the first grid line (the last one on phones). Its height is how far below the
+   hero the reader is; the tail stretches with scroll speed. One node per section on the same line is a second nav ---- */
+{
+  const host = $('.sky-nav'), secs = $$('main > section[id]').filter(s => $('.idx', s));
+  if (host && secs.length > 1) {
+    const ol = document.createElement('ol');
+    const nodes = secs.map(s => {
+      const li = document.createElement('li'), a = document.createElement('a'), t = $('.idx', s).textContent.trim();
+      a.href = '#' + s.id; a.setAttribute('aria-label', t); a.dataset.l = t.replace(' / ', ' ');
+      li.append(a); ol.append(li);
+      return a;
+    });
+    host.append(ol); host.hidden = false;
+    const star = document.createElement('i'), lab = document.createElement('b');
+    star.className = reduce ? 'star rm' : 'star'; star.setAttribute('aria-hidden', 'true'); star.append(lab);
+    document.body.append(star);
+    const phone = matchMedia('(max-width:767px)');
+    let x = 0, t0 = 0, t1 = 1, a = 0, b = 1, vh = 1, ps = [], cur = -2, k = 0, still = 0, lastKey = '', vis = -1, sayT = 0, py = NaN;
+    const say = () => {
+      lab.textContent = nodes[Math.max(0, cur)].dataset.l;
+      star.classList.add('say'); clearTimeout(sayT);
+      sayT = setTimeout(() => star.classList.remove('say'), 1200);
+    };
+    measures.add(() => {
+      const g = $('.grid-bg>div>div').getBoundingClientRect();
+      vh = innerHeight; x = phone.matches ? g.right - .5 : g.left + .5;
+      t0 = nav.offsetHeight + 28; t1 = vh - 28;
+      const tops = secs.map(docTop);
+      // the track runs from the first section at the reading line to the last one there (or the foot of the page)
+      a = tops[0] - vh * .4; b = Math.max(a + 1, Math.min(root.scrollHeight - vh, tops.at(-1) - vh * .4));
+      ps = tops.map(t => clamp01((t - vh * .4 - a) / (b - a)));
+      nodes.forEach((n, i) => { n.style.transform = `translate(${x.toFixed(1)}px,${(t0 + ps[i] * (t1 - t0)).toFixed(1)}px)`; });
+      star.style.setProperty('--track', `${(t1 - t0).toFixed(0)}px`);
+      lastKey = '';
+    });
+    tickers.add(dt => {
+      const y = scrollTop(), p = clamp01((y - a) / (b - a));
+      const o = clamp01((y - a + vh * .3) / (vh * .3));               // appears as the hero goes behind the reader
+      if (o !== vis) { vis = o; star.style.opacity = host.style.opacity = o.toFixed(3); host.classList.toggle('off', !o); }
+      let i = -1; while (i < ps.length - 1 && p + 1e-4 >= ps[i + 1]) i++;
+      if (i !== cur) {
+        const was = cur; cur = i;
+        nodes.forEach((n, j) => n.classList.toggle('lit', j <= i));
+        // passing a node lights it and names the section for 1.2 s; on phones the name waits until the star is at rest
+        if (was > -2 && o && !reduce && !phone.matches) say();
+      }
+      // tail: signed length follows scroll velocity (it trails behind the direction of travel), eased over ~80 ms
+      const v = lenis ? lenis.velocity : (Number.isNaN(py) ? 0 : y - py) * 16 / Math.max(dt, 1);
+      py = y;
+      if (!reduce) k += (Math.max(-1.4, Math.min(1.4, v * .045)) - k) * (1 - Math.exp(-dt / 80));
+      const moving = Math.abs(k) > .03 || Math.abs(v) > .3;
+      still = moving ? 0 : still + dt;
+      const kv = reduce ? p : Math.abs(k) < .005 ? 0 : k;
+      const key = `${(t0 + p * (t1 - t0)).toFixed(1)}|${kv.toFixed(3)}|${still > 240}`;
+      if (key === lastKey) return;
+      lastKey = key;
+      star.style.transform = `translate3d(${x.toFixed(1)}px,${(t0 + p * (t1 - t0)).toFixed(1)}px,0)`;
+      star.style.setProperty('--k', kv.toFixed(3));
+      const rest = !reduce && still > 240;
+      if (rest !== star.classList.contains('rest')) {
+        star.classList.toggle('rest', rest);
+        if (rest && phone.matches && o && !reduce) say();
+      }
+    });
+  }
 }
 
 /* ---- hero film: Switzerland as a 3D scan of real elevation data, flown Zürich → Geneva by scroll.

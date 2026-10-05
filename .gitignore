@@ -8,3 +8,6 @@ CONFIRM.md
 
 # Working brief for the next pass (names the client meeting); stays out of the public repo.
 v3-prompt.md
+
+# elevation tiles downloaded by tools/hero-film (re-fetched on demand)
+tools/hero-film/tiles*/

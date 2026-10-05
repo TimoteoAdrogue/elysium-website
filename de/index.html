@@ -37,6 +37,9 @@
 <body>
 <a class="skip" href="#main">Zum Inhalt springen</a>
 <div class="ground" aria-hidden="true"></div>
+<canvas class="sky" aria-hidden="true"></canvas>
+<div class="topo" data-for="a" aria-hidden="true"></div>
+<div class="topo" data-for="b" aria-hidden="true"></div>
 <div class="grid-bg" aria-hidden="true"><div><div></div></div></div>
 
 <header class="nav" id="nav">
@@ -65,6 +68,7 @@
     </ul>
   </div>
 </header>
+<nav class="sky-nav" aria-label="Abschnitte" hidden></nav>
 
 <main id="main">
 
@@ -157,7 +161,7 @@
 </section>
 
 <!-- ================================ 3 EXPERTISE ================================ -->
-<section class="sec" id="expertise" data-ground="raised" aria-labelledby="h-xp">
+<section class="sec" id="expertise" data-ground="raised" data-topo="a" aria-labelledby="h-xp">
   <div class="wrap"><div class="sec-rule" aria-hidden="true"></div></div>
   <div class="wrap cols sec-head">
     <p class="label idx">02 / Kompetenzen</p>
@@ -530,7 +534,7 @@
 </section>
 
 <!-- ================================ 8 CITIES ================================ -->
-<section class="sec" id="cities" aria-labelledby="h-cities">
+<section class="sec" id="cities" data-topo="b" aria-labelledby="h-cities">
   <div class="wrap"><div class="sec-rule" aria-hidden="true"></div></div>
   <div class="wrap cols sec-head">
     <p class="label idx">08 / Standorte</p>
@@ -617,7 +621,7 @@
         Swiss Made Software <span class="slot"><span class="sr-only">noch nicht bestätigt</span></span></p></div>
   </div>
   <div class="wrap foot-base"><p class="label">© 2026 Elysium Sàrl</p><p class="label">Genf · Zürich · Buenos Aires</p></div>
-  <p class="wrap credit">Hero terrain: Mapzen Terrain Tiles. Europe terrain data produced using Copernicus data and information funded by the European Union - EU-DEM layers. Austria terrain data © offene Daten Österreichs – Digitales Geländemodell (DGM) Österreich. SRTM and GMTED2010 terrain data courtesy of the U.S. Geological Survey.</p>
+  <p class="wrap credit">Terrain in the hero film and the contour lines: Mapzen Terrain Tiles. Europe terrain data produced using Copernicus data and information funded by the European Union - EU-DEM layers. Austria terrain data © offene Daten Österreichs – Digitales Geländemodell (DGM) Österreich. SRTM and GMTED2010 terrain data courtesy of the U.S. Geological Survey.</p>
 </footer>
 
 <script src="../assets/vendor/lenis.min.js" defer></script>

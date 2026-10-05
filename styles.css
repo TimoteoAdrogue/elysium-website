@@ -72,7 +72,7 @@ h4{font-size:17px;font-weight:500;letter-spacing:-.01em;line-height:1.3}
 
 /* ---- the visible grid ---------------------------------------------------- */
 .ground{position:fixed;inset:0;z-index:-1;background:var(--raised);opacity:0;pointer-events:none}
-.grid-bg{position:fixed;inset:0;z-index:-1;pointer-events:none}
+.grid-bg{position:fixed;inset:0;z-index:-1;pointer-events:none;background:url("assets/grain.svg")}   /* fine grain: no banding */
 .grid-bg>div{height:100%;max-width:var(--maxw);margin-inline:auto;padding-inline:var(--gut)}
 .grid-bg>div>div{height:100%;box-shadow:inset -1px 0 var(--line);
   background:repeating-linear-gradient(to right,var(--line) 0 1px,transparent 1px calc(100% / 12))}
@@ -160,8 +160,10 @@ main,footer{position:relative}
 .roster{margin-top:clamp(56px,7vw,96px)}
 .mq{position:relative;overflow:hidden;padding-block:6px;   /* relative: clips the sr-only spans inside the drifting track too */
   
-  -webkit-mask-image:linear-gradient(to right,transparent,#000 12%,#000 88%,transparent);
-          mask-image:linear-gradient(to right,transparent,#000 12%,#000 88%,transparent)}
+  /* fully clear over the outer grid lines, where the guiding star runs */
+  --mq-e:calc(max(0px,(100% - var(--maxw)) / 2) + var(--gut));
+  --mq-fade:linear-gradient(to right,transparent calc(var(--mq-e) + 10px),#000 calc(var(--mq-e) + 12%),#000 calc(88% - var(--mq-e)),transparent calc(100% - var(--mq-e) - 10px));
+  -webkit-mask-image:var(--mq-fade);mask-image:var(--mq-fade)}
 .mq+.mq{margin-top:4px}
 .mq-track{display:flex;width:max-content}
 .mq-track li{display:flex;align-items:center}
@@ -476,6 +478,46 @@ footer{padding-block:56px 72px;box-shadow:inset 0 1px var(--line)}
   .pai-down,.pai-x{display:none}
   .pai-server{width:auto;min-width:220px}
 }
+
+/* ---- background depth: stars in three depths, Alpine contours behind two sections, grain. White on --void only;
+   all of it sits under the grid (DOM order inside z-index -1) and stays hidden while the hero film plays ---- */
+.sky{position:fixed;inset:0;z-index:-1;width:100%;height:100%;pointer-events:none;opacity:0}
+.topo{position:fixed;inset:-8vh 0;z-index:-1;pointer-events:none;opacity:0;background:url("assets/topo-a.svg") 50% 50%/cover no-repeat}
+.topo[data-for=b]{background-image:url("assets/topo-b.svg")}
+
+/* ---- guiding star: a point of light on the first grid line (the last one on phones); its height is the reading
+   position below the hero. One node per section on the same line is a second navigation ---- */
+.star{position:fixed;left:0;top:0;z-index:4;pointer-events:none;opacity:0;--k:0}
+.star::after{content:"";position:absolute;left:-2.5px;top:-2.5px;width:5px;height:5px;border-radius:50%;background:#FFFFFF;
+  box-shadow:0 0 6px 1px rgba(255,255,255,.5),0 0 16px 4px rgba(159,196,255,.16)}
+.star::before{content:"";position:absolute;left:-1.5px;bottom:0;width:3px;height:100px;transform-origin:50% 100%;transform:scaleY(var(--k));
+  background:linear-gradient(to top,rgba(255,255,255,.9),rgba(255,255,255,0));clip-path:polygon(50% 0,100% 100%,0 100%)}
+.star.rest::after{animation:breathe 3.6s ease-in-out infinite}
+@keyframes breathe{50%{transform:scale(1.3);opacity:.7}}
+.star b,.sky-nav a::after{position:absolute;right:10px;top:0;font:400 11px/1 "Geist Mono",ui-monospace,monospace;letter-spacing:.14em;
+  text-transform:uppercase;white-space:nowrap;color:var(--text-2);writing-mode:vertical-rl;transform:translateY(-50%) rotate(180deg);
+  opacity:0;transition:opacity var(--t-tick) linear}
+.star.say b{opacity:1}
+.sky-nav{position:fixed;left:0;top:0;z-index:4;opacity:0;transition:opacity var(--t-move) linear}
+.sky-nav:focus-within{opacity:1!important}   /* keyboard: the nodes show while one has focus, even over the hero */
+.sky-nav.off a{pointer-events:none}
+.sky-nav a{position:fixed;left:-12px;top:-12px;width:24px;height:24px;border-radius:50%}
+.sky-nav a::before{content:"";position:absolute;left:9.5px;top:9.5px;width:5px;height:5px;border-radius:50%;box-shadow:inset 0 0 0 1px rgba(255,255,255,.4);
+  background:var(--void);transition:background-color var(--t-move) linear,box-shadow var(--t-move) linear}
+.sky-nav a.lit::before{background:rgba(255,255,255,.75);box-shadow:none}
+.sky-nav a::after{content:attr(data-l);right:auto;left:2px;top:12px;transform:translate(-100%,-50%) rotate(180deg)}
+.sky-nav a:hover::after,.sky-nav a:focus-visible::after{opacity:1}
+.sky-nav a:focus-visible{outline-offset:0}
+/* phones: the star rides the right edge, smaller, and its label sits in the 16 px gutter outside the line */
+@media (max-width:767px){
+  .star::after{left:-2px;top:-2px;width:4px;height:4px}
+  .star b,.sky-nav a::after{right:auto;left:4px;font-size:10px;letter-spacing:.1em}
+  .sky-nav a::after{left:16px;transform:translateY(-50%) rotate(180deg)}
+}
+/* reduced motion: a still 1 px progress line from the top of the track to a dot, no tail and no glow */
+.star.rm::after{box-shadow:none}
+.star.rm::before{left:-.5px;width:1px;height:var(--track,0px);background:rgba(255,255,255,.35);clip-path:none}
+.star.rm b{display:none}
 
 /* ---- hero film: Switzerland as a 3D scan from real elevation data, scrubbed by scroll ----
    main.js adds .film-live (motion allowed, no Save-Data); without it this is the plain hero. */
