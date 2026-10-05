@@ -70,7 +70,24 @@
 <main id="main">
 
 <!-- ================================ 1 HERO ================================ -->
-<section class="hero wrap cols" id="top" aria-labelledby="h-top">
+<section class="hero-film" id="top" aria-labelledby="h-top">
+ <div class="hf-stage">
+  <div class="hf-media" aria-hidden="true">
+    <video class="hf-video" muted playsinline preload="none" disablepictureinpicture tabindex="-1"></video>
+    <div class="hf-scrim"></div>
+    <div class="hf-pins">
+      <p class="hf-pin label"><span><b>Zürich</b>Elysium Labs</span></p>
+      <p class="hf-pin label"><span><b>Pilatus</b>2128 m</span></p>
+      <p class="hf-pin label"><span><b>Genfersee</b>372 m</span></p>
+      <p class="hf-pin label"><span><b>Genf</b>Hauptsitz Elysium</span></p>
+    </div>
+    <div class="hf-hud"><div class="wrap">
+      <div class="hf-row"><p class="label">3D-Scan · Schweiz<br>Offene Höhendaten · 100-m-Raster</p><p class="label hf-frame">Bild <b>001</b> / 240</p></div>
+      <div class="hf-row"><p class="label hf-read"><span>LAT <b></b></span><span>LON <b></b></span><span class="hf-x">ALT <b></b></span><span class="hf-x">HDG <b></b></span></p><p class="label hf-route">Zürich <i><em></em></i> Genf</p></div>
+    </div></div>
+    <p class="hf-cue label"><i></i>Scrollen</p>
+  </div>
+  <div class="hero wrap cols">
   <p class="label eyebrow"><svg class="mark" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" fill="#DA291C"/><path d="M13 6h6v7h7v6h-7v7h-6v-7H6v-6h7z" fill="#FFFFFF"/></svg>ELYSIUM SÀRL · GENF · ZÜRICH · SEIT 2005</p>
   <h1 class="display" id="h-top">Design <span class="t2">und Technologie.</span></h1>
   <p class="lede">Software, 3D und Datenprodukte für UBS, Nestlé, die WIPO und die WHO, entwickelt in Genf und Zürich seit 2005.</p>
@@ -85,6 +102,8 @@
       <g class="solid"><rect width="32" height="32" fill="#DA291C"/><path d="M13 6h6v7h7v6h-7v7h-6v-7H6v-6h7z" fill="#FFFFFF"/></g>
     </svg>
   </figure>
+  </div>
+ </div>
 </section>
 
 <!-- ================================ 2 CLIENTS ================================ -->
@@ -599,6 +618,7 @@
         Swiss Made Software <span class="slot"><span class="sr-only">noch nicht bestätigt</span></span></p></div>
   </div>
   <div class="wrap foot-base"><p class="label">© 2026 Elysium Sàrl</p><p class="label">Genf · Zürich · Buenos Aires</p></div>
+  <p class="wrap credit">Hero terrain: Mapzen Terrain Tiles. Europe terrain data produced using Copernicus data and information funded by the European Union - EU-DEM layers. Austria terrain data © offene Daten Österreichs – Digitales Geländemodell (DGM) Österreich. SRTM and GMTED2010 terrain data courtesy of the U.S. Geological Survey.</p>
 </footer>
 
 <script src="../assets/vendor/lenis.min.js" defer></script>

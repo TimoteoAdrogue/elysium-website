@@ -123,15 +123,102 @@ if (!reduce) {
   root.classList.add('ground-live');
 }
 
+/* ---- hero film: Switzerland as a 3D scan of real elevation data, flown Zürich → Geneva by scroll.
+   Its last frame is the page grid, so the film hands over to the template without a cut.
+   Self-contained: remove this block, the .hf-* markup and the .hf-* styles to drop it. ---- */
+const film = (() => {
+  const sec = $('.hero-film');
+  if (!sec || reduce || !lenis || navigator.connection?.saveData) return null;
+  const name = matchMedia('(max-aspect-ratio: 1/1)').matches ? 'portrait' : 'landscape';
+  const url = f => new URL(`./assets/hero/${f}`, import.meta.url).href;
+  const stage = $('.hf-stage', sec), video = $('.hf-video', sec), kids = [...$('.hero', sec).children];
+  const pins = $$('.hf-pin', sec), hud = $('.hf-hud', sec), cue = $('.hf-cue', sec), scrim = $('.hf-scrim', sec);
+  const rd = $$('.hf-read b', sec), fr = $('.hf-frame b', sec), dot = $('.hf-route em', sec);
+  const nf = new Intl.NumberFormat(root.lang), df = new Intl.NumberFormat(root.lang, { minimumFractionDigits: 4, maximumFractionDigits: 4 });
+  const sm = (a, b, v) => { v = clamp01((v - a) / (b - a)); return v * v * (3 - 2 * v); };
+  const WIN = [[0, .1], [.19, .27], [.5, .57], [.6, .8]];         // when each pin may show: Zürich, Pilatus, the lake, Geneva
+  const api = { mark: 1, onEnd: null };
+  let meta = null, top = 0, span = 1, dy = 0, vw = 1, vh = 1, dur = 0, ended = false;
+  root.classList.add('film-live');
+  video.poster = url(`poster-${name}.webp`);
+
+  // seeks are serialised: one in flight, the latest request waits and wins
+  let busy = false, want = null;
+  const seek = t => { if (busy) { want = t; return; } busy = true; try { video.currentTime = t; } catch { busy = false; } };
+  video.addEventListener('seeked', () => { busy = false; if (want !== null) { const t = want; want = null; seek(t); } });
+  // a src swap orphans the seek in flight, so the queue is reset with it
+  const attach = src => {
+    busy = false; want = null; video.src = src; video.load();
+    video.addEventListener('loadeddata', () => { dur = video.duration; run(); }, { once: true });
+    video.play().then(() => video.pause()).catch(() => {});        // iOS loads frames only after a play
+  };
+  const start = () => {
+    const mp4 = url(`film-${name}.mp4`);
+    video.preload = 'auto'; attach(mp4);                            // range requests: the film answers at once
+    fetch(mp4).then(r => r.ok ? r.blob() : Promise.reject()).then(b => attach(URL.createObjectURL(b))).catch(() => {});  // then from memory: every seek immediate
+  };
+  if (document.readyState === 'complete') start(); else addEventListener('load', start, { once: true });
+  fetch(url(`film-${name}.json`)).then(r => r.json()).then(m => { meta = m; run(); }).catch(() => {});
+
+  measures.add(() => {
+    top = docTop(sec); span = Math.max(1, sec.offsetHeight - innerHeight);
+    vw = stage.clientWidth; vh = stage.clientHeight;
+    const h1 = kids[1], saved = h1.style.transform; h1.style.transform = 'none';
+    dy = vh * .86 - (h1.getBoundingClientRect().bottom - stage.getBoundingClientRect().top);   // the slogan opens low over the film
+    h1.style.transform = saved;
+  });
+  function run() {
+    const p = clamp01((scrollTop() - top) / span), n = meta ? meta.f.length : 240, i = Math.round(p * (n - 1));
+    if (dur) seek(Math.min(dur - .001, (i + .5) / (meta ? meta.fps : 30)));
+    video.style.opacity = (1 - sm(.985, 1, p)).toFixed(3);            // the last frame is the grid underneath
+    cue.style.opacity = (1 - sm(0, .03, p)).toFixed(3);
+    hud.style.opacity = (sm(.06, .12, p) * (1 - sm(.8, .86, p))).toFixed(3);
+    scrim.style.opacity = (1 - sm(.05, .12, p) * .45).toFixed(3);
+    // eyebrow and slogan open the film and leave with the first metres; the whole hero lands on the grid at the end
+    kids.forEach((k, j) => {
+      let o, y;
+      if (p < .5) { o = j < 2 ? 1 - sm(.02, .09, p) : 0; y = j < 2 ? dy - 60 * sm(0, .1, p) : 0; }
+      else { o = sm(.85 + j * .015, .9 + j * .015, p); y = 24 * (1 - o); }
+      k.style.opacity = o.toFixed(3); k.style.transform = `translateY(${y.toFixed(1)}px)`;
+    });
+    api.mark = 1 - sm(.8, .88, p);
+    if (!ended && p > .9) { ended = true; api.onEnd?.(); }
+    if (!meta) return;
+    const f = meta.f[i];
+    rd[0].textContent = `${df.format(Math.abs(f[0]))}° ${f[0] >= 0 ? 'N' : 'S'}`;
+    rd[1].textContent = `${df.format(Math.abs(f[1]))}° ${f[1] >= 0 ? 'E' : 'W'}`;
+    rd[2].textContent = `${nf.format(f[2])} m`;
+    rd[3].textContent = `${f[3]}°`;
+    fr.textContent = String(i + 1).padStart(3, '0');
+    dot.style.left = `${(100 * Math.min(p / .74, 1)).toFixed(2)}%`;
+    // pins follow their place in the frame (object-fit: cover)
+    const s = Math.max(vw / meta.w, vh / meta.h), ox = (vw - meta.w * s) / 2, oy = (vh - meta.h * s) / 2;
+    pins.forEach((el, k) => {
+      const L = f[4 + k], w = WIN[k];
+      let o = 0;
+      if (L) {
+        const X = ox + L[0] * s, Y = oy + L[1] * s;
+        if (X > 40 && X < vw - 40 && Y > 110 && Y < vh - 90) o = sm(w[0], w[0] + .03, p) * (1 - sm(w[1] - .03, w[1], p));
+        el.style.transform = `translate(${X.toFixed(1)}px,${Y.toFixed(1)}px)`;
+        el.classList.toggle('flip', X > vw - 240);
+      }
+      el.style.opacity = o.toFixed(3);
+    });
+  }
+  scrollFns.add(run);
+  return api;
+})();
+
 /* ---- hero: the slogan rises out of its line box; the entrance resolves inside 1.1 s ---- */
 if (!reduce) {
   // characters on wide screens; words on phones, where per-character boxes lose kerning and the slogan would wrap
   const sp1 = innerWidth >= 768 ? splitText($('.hero h1'), { chars: { wrap: 'clip' } }).chars : splitText($('.hero h1'), { words: { wrap: 'clip' } }).words;
   const chars = sp1;
-  createTimeline()
+  const tl = createTimeline()
     .add($('.hero .eyebrow'), { opacity: [0, 1], duration: T.t.move, ease: T.ease.enter }, 0)
-    .add(chars, { y: ['105%', '0%'], duration: 700, ease: T.ease.enter, delay: stagger(16) }, 60)
-    .add($$('.hero .lede, .hero .ctas, .hero .hero-new'), { opacity: [0, 1], y: [12, 0], duration: T.t.move, ease: T.ease.enter, delay: stagger(80) }, 560);
+    .add(chars, { y: ['105%', '0%'], duration: 700, ease: T.ease.enter, delay: stagger(16) }, 60);
+  // with the film, the rest of the hero waits for the end of the flight
+  if (!film) tl.add($$('.hero .lede, .hero .ctas, .hero .hero-new'), { opacity: [0, 1], y: [12, 0], duration: T.t.move, ease: T.ease.enter, delay: stagger(80) }, 560);
 }
 
 /* ---- the flag: built cell by cell, then docked into the nav as the hero leaves ---- */
@@ -164,13 +251,14 @@ if (!reduce) {
     const cD = norm(cd, 600 - T.t.tick), fD = norm(fd, 700 - T.t.tick);
     solid.style.opacity = 0;
     utils.set(cells, { opacity: 0 });
-    navMark.style.opacity = 0;
+    navMark.style.opacity = film ? 1 : 0;
     root.classList.add('dock-live');
-    createTimeline({ delay: 250 })
+    const build = () => createTimeline({ delay: film ? 0 : 250 })
       // the cross assembles in white, outward from the centre; it is never red
       .add(cross, { opacity: [0, 1], duration: T.t.tick, ease: 'linear', delay: (_, i) => cD[i] }, 0)
       // the red field closes in around the finished cross
       .add(field, { opacity: [0, 1], duration: T.t.tick, ease: 'linear', delay: (_, i) => fD[i] }, 600);
+    if (film) film.onEnd = build; else build();
 
     // dock: tilt ≤ 12°, field cells release outermost first, the white cross condenses into the 16 px nav mark
     let top = 0, h = 1, cx = 0, cy = 0, size = 1, mx = 0, my = 0;
@@ -178,8 +266,14 @@ if (!reduce) {
       const saved = fb.style.transform; fb.style.transform = 'none';
       const r = fb.getBoundingClientRect(), m = navMark.getBoundingClientRect();
       fb.style.transform = saved;
-      const hero = $('.hero'); top = docTop(hero); h = hero.offsetHeight; navHoldUntil = Math.max(120, top + h * .8 + 240);
       cx = r.left + r.width / 2; cy = r.top + scrollTop() + r.height / 2; size = r.width;
+      if (film) {
+        // the dock starts where the film's sticky stage lets go
+        const s = $('.hero-film'), st = $('.hf-stage');
+        top = docTop(s) + s.offsetHeight - innerHeight; h = innerHeight;
+        cy = top + r.top - st.getBoundingClientRect().top + r.height / 2;
+      } else { const hero = $('.hero'); top = docTop(hero); h = hero.offsetHeight; }
+      navHoldUntil = Math.max(120, top + h * .8 + 240);
       mx = m.left + m.width / 2; my = m.top + m.height / 2;
     });
     const navY = () => { const t = nav.style.transform.match(/-?[\d.]+%/); return t ? parseFloat(t[0]) / 100 * nav.offsetHeight : 0; };
@@ -193,7 +287,7 @@ if (!reduce) {
       const dx = (mx - cx) * q, dy = Math.max(natY, minY) - natY;
       fb.style.transform = `translate(${dx.toFixed(1)}px,${dy.toFixed(1)}px) scale(${s.toFixed(4)}) rotateX(${(12 * clamp01(p / .5) * (1 - q)).toFixed(2)}deg)`;
       fb.style.opacity = q > .92 ? (1 - (q - .92) / .08).toFixed(3) : 1;
-      navMark.style.opacity = clamp01((q - .9) / .1).toFixed(3);
+      navMark.style.opacity = Math.max(film ? film.mark : 0, clamp01((q - .9) / .1)).toFixed(3);
     });
   }
 }

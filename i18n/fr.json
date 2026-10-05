@@ -340,5 +340,17 @@
  "Tell us about the project.": "Décrivez-nous le projet.",
  "Not sent: this form is not connected yet. Your message is still in the form; please email it to info@elysium.cc.": "Non envoyé : ce formulaire n’est pas encore relié. Votre message est toujours dans le formulaire ; merci de l’envoyer à info@elysium.cc.",
  "interpolated": "interpolé",
- "2,324 px": "2 324 px"
+ "2,324 px": "2 324 px",
+ "Elysium Labs": "",
+ "Pilatus": "",
+ "Lake Geneva": "Lac Léman",
+ "Elysium HQ": "Siège d’Elysium",
+ "3D scan · Switzerland": "Scan 3D · Suisse",
+ "Open elevation data · 100 m grid": "Données d’altitude ouvertes · maille de 100 m",
+ "LAT": "",
+ "LON": "",
+ "ALT": "",
+ "HDG": "",
+ "Scroll": "Défiler",
+ "Hero terrain: Mapzen Terrain Tiles. Europe terrain data produced using Copernicus data and information funded by the European Union - EU-DEM layers. Austria terrain data © offene Daten Österreichs – Digitales Geländemodell (DGM) Österreich. SRTM and GMTED2010 terrain data courtesy of the U.S. Geological Survey.": ""
 }
