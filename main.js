@@ -538,7 +538,7 @@ if (!reduce) for (const b of $$('.fig b')) {
   });
 }
 
-/* ---- expertise: the sticky column counts the practice being read ---- */
+/* ---- what we do: the sticky column counts the service being read ---- */
 {
   const side = $('.xp-side'), items = $$('.xp-item');
   if (side && items.length) {
@@ -570,151 +570,7 @@ if (!reduce) for (const b of $$('.fig b')) {
   }
 }
 
-/* ---- Chart A: bars, values and axis all derive from one spring-driven state ---- */
-{
-  const host = $('#chart-a'), svgEl = $('svg', host), tip = $('.tip', host), L = host.dataset;
-  const pct = new Intl.NumberFormat(root.lang, { style: 'percent', minimumFractionDigits: 1, maximumFractionDigits: 1 });
-  const sets = $$('table[data-set]', host).map(t => ({
-    table: t, wrap: t.parentElement, title: t.dataset.title, unit: t.dataset.unit, source: t.dataset.source,
-    rows: $$('tbody tr', t).map(tr => { const td = $$('td', tr); return { label: $('th', tr).textContent.trim(), v: +td[0].textContent, names: td[1]?.textContent || '' }; }),
-  }));
-  const rows = $$('.row', svgEl).map((el, i) => ({
-    el, bar: $('.bar', el), hi: $('.hi', el), val: $('.val', el), labs: $$('.lab', el),
-    y: 28 + i * 44, on: true, p: { v: sets[0].rows[i].v, to: sets[0].rows[i].v },
-  }));
-  const nice = max => { const step = [1, 2, 5, 10, 20, 50].find(s => max / s <= 4); return { step, max: Math.ceil(max / step) * step }; };
-  const tickSet = set => { const { step, max } = nice(Math.max(...set.rows.map(r => r.v))); return Array.from({ length: max / step + 1 }, (_, i) => i * step); };
-  const D = { v: 15, to: 15 };
-  let cur = 0, act = null;
-
-  // ticks move by transform from here on: zero their percentage attributes
-  const tickG = $('.ticks', svgEl), ticks = new Map($$('.tick', tickG).map(g => [+g.dataset.t, g]));
-  for (const g of ticks.values()) { for (const l of $$('line', g)) { l.setAttribute('x1', 0); l.setAttribute('x2', 0); } $('text', g).setAttribute('x', 0); }
-  const tickFor = t => {
-    if (!ticks.has(t)) {
-      const g = ticks.get(0).cloneNode(true); g.dataset.t = t; $('text', g).textContent = t; utils.set(g, { opacity: 0 });
-      tickG.append(g); ticks.set(t, g);
-    }
-    return ticks.get(t);
-  };
-  const totalEl = $('[data-total]', host);
-  const render = () => {
-    let sum = 0;
-    for (const r of rows) {
-      r.bar.style.transform = `scaleX(${(r.p.v / D.v).toFixed(4)})`;
-      const n = Math.round(r.p.v); sum += n;
-      r.val.textContent = r.on || n ? n : '';
-    }
-    for (const [t, g] of ticks) g.style.transform = `translateX(${(t / D.v * 100).toFixed(3)}%)`;
-    totalEl.textContent = sum;                                   // the total is the sum of the bars, every frame
-  };
-  render();
-
-  if (!reduce) {
-    if (belowFold(svgEl)) rows.forEach(r => { r.bar.style.transform = 'scaleX(0)'; });   // bars only; the numbers stay final until seen
-    once(svgEl, 'bottom 40%', () => {
-      for (const r of rows) r.p.v = 0;
-      render();
-      createTimeline()
-        // axis first: gridlines draw top to bottom
-        .add(svg.createDrawable($$('.tick line', svgEl)), { draw: ['0 0', '0 1'], duration: 300, ease: 'linear' }, 0)
-        // then bars grow from the baseline on the glide spring, 50 ms apart, values counting in step
-        .add(rows.map(r => r.p), { v: p => p.to, ease: sp('glide'), delay: stagger(50), onUpdate: render }, 300);
-    });
-  }
-
-  // hover / focus: the bar brightens, the rest dim to 40%, crosshair and tooltip spring to it
-  const xh = $('.xhair', svgEl), xv = $('.xv', svgEl), xhl = $('.xh', svgEl);
-  const move = () => reduce ? { duration: 0 } : { ease: sp('snap') };
-  const activate = r => {
-    if (r === act) return;
-    act = r;
-    for (const x of rows) {
-      animate(x.el, { opacity: !x.on ? 0 : !r || x === r ? 1 : .4, duration: T.t.tick, ease: 'linear' });
-      animate(x.hi, { opacity: x === r ? 1 : 0, duration: T.t.tick, ease: 'linear' });
-    }
-    if (!r) { animate([tip, xh], { opacity: 0, duration: T.t.tick, ease: 'linear' }); return; }
-    const set = sets[cur], i = rows.indexOf(r), d = set.rows[i], total = set.rows.reduce((s, x) => s + x.v, 0);
-    $('b', tip).textContent = d.label;
-    $('.mono', tip).textContent = `${d.v} ${set.unit} · ${pct.format(d.v / total)} ${L.of} ${total}`;
-    $('.n', tip).textContent = d.names;
-    const w = svgEl.clientWidth, x = d.v / D.to * w, flip = x + tip.offsetWidth + 16 > w;
-    animate(tip, { x: flip ? Math.max(0, x - tip.offsetWidth - 12) : x + 12, y: r.y + 40, opacity: 1, ...move() });
-    animate(xv, { x: `${(d.v / D.to * 100).toFixed(3)}%`, ...move() });
-    animate(xhl, { y: r.y + 28, ...move() });
-    animate(xh, { opacity: 1, duration: T.t.tick, ease: 'linear' });
-  };
-  // touch: a tap pins a bar and its tooltip; tapping it again, or anywhere outside the chart, lets go
-  let touched = false, before = null;
-  addEventListener('pointerdown', e => {
-    touched = e.pointerType === 'touch'; before = act;          // the state before a tap may focus the row
-    if (touched && act && !svgEl.contains(e.target)) activate(null);
-  });
-  for (const r of rows) {
-    r.el.addEventListener('focus', () => activate(r));
-    r.el.addEventListener('pointerenter', e => e.pointerType !== 'touch' && r.on && activate(r));
-    r.el.addEventListener('click', () => { if (touched && r.on) activate(before === r ? null : r); });
-  }
-  svgEl.addEventListener('pointerleave', e => { if (e.pointerType !== 'touch' && !svgEl.contains(document.activeElement)) activate(null); });
-  svgEl.addEventListener('focusout', e => { if (!svgEl.contains(e.relatedTarget)) activate(null); });
-  svgEl.addEventListener('keydown', e => {
-    const vis = rows.filter(r => r.on), i = vis.indexOf(act);
-    const k = { ArrowDown: 1, ArrowRight: 1, ArrowUp: -1, ArrowLeft: -1, Home: -99, End: 99 }[e.key];
-    if (k === undefined) return;
-    e.preventDefault();
-    vis[utils.clamp(i + k, 0, vis.length - 1)].el.focus();
-  });
-
-  // toggle: the bars morph into the other dataset and the axis rescales on the same spring
-  const seg = $('.seg', host), segBtns = $$('button', seg), segPill = $('.seg-pill', seg);
-  const pillTo = b => `inset(0px ${(seg.clientWidth - 8 - b.offsetLeft - b.offsetWidth + 4).toFixed(1)}px 0px ${(b.offsetLeft - 4).toFixed(1)}px round 999px)`;
-  measures.add(() => utils.set(segPill, { clipPath: pillTo(segBtns[cur]) }));
-  const show = k => {
-    if (k === cur) return;
-    cur = k;
-    const set = sets[k], fade = reduce ? T.t.tick : T.t.move;
-    segBtns.forEach((b, j) => b.setAttribute('aria-pressed', String(j === k)));
-    // the selection pill slides to the pressed button
-    animate(segPill, { clipPath: pillTo(segBtns[k]), ...move() });
-    activate(null);
-    const want = new Set(tickSet(set));
-    D.to = Math.max(...want);
-    rows.forEach((r, i) => {
-      const d = set.rows[i];
-      r.on = !!d; r.p.to = d ? d.v : 0;
-      r.el.tabIndex = d ? 0 : -1;
-      d ? r.el.removeAttribute('aria-hidden') : r.el.setAttribute('aria-hidden', 'true');
-      r.el.setAttribute('aria-label', d ? `${d.label}: ${d.v} ${set.unit}` : '');
-      r.labs[k].textContent = d ? d.label : '';
-      // labels crossfade in place while the bar under them morphs
-      animate(r.labs[1 - k], { opacity: 0, duration: fade, ease: 'linear' });
-      animate(r.labs[k], { opacity: d ? 1 : 0, duration: fade, ease: 'linear' });
-      animate(r.el, { opacity: d ? 1 : 0, duration: fade, ease: 'linear' });
-      r.el.style.pointerEvents = d ? '' : 'none';
-    });
-    for (const t of new Set([...ticks.keys(), ...want])) animate(tickFor(t), { opacity: want.has(t) ? 1 : 0, duration: fade, ease: 'linear' });
-    for (const [t, g] of ticks) $('text', g).setAttribute('text-anchor', t === 0 ? 'start' : t === D.to ? 'end' : 'middle');
-    if (reduce) { for (const r of rows) r.p.v = r.p.to; D.v = D.to; render(); }
-    else animate([...rows.map(r => r.p), D], { v: o => o.to, ease: sp('glide'), onUpdate: render });
-    $('#ca-t').textContent = `${set.title}: ${set.rows.reduce((s, x) => s + x.v, 0)} ${set.unit}`;
-    $('#ca-d').textContent = `${L.bars} ` + set.rows.map(r => `${r.label} ${r.v}`).join(', ') + '.';
-    $('.unit-out', host).textContent = set.unit;
-    $('[data-src]', host).textContent = `${L.sourceLabel} ${set.source}.`;
-    sets.forEach((s, j) => { s.wrap.hidden = j !== k; });
-  };
-  segBtns.forEach((b, k) => b.addEventListener('click', () => show(k)));
-
-  const tv = $('.view-table', host), fig = $('.chart-fig', host);
-  tv.addEventListener('click', () => {
-    const on = tv.getAttribute('aria-pressed') !== 'true';
-    tv.setAttribute('aria-pressed', String(on));
-    tv.textContent = on ? L.viewChart : L.viewTable;
-    fig.hidden = on;
-    sets.forEach(s => { s.wrap.classList.toggle('sr-only', !on); s.wrap.classList.toggle('fade-x', on); });
-  });
-}
-
-/* ---- Chart B: a playhead scrubs 2002 → 2026; ticks draw and events drop in as it passes ---- */
+/* ---- record: one column per year slides past a fixed playhead, 2002 → 2026; on phones a rail fills down to the year ---- */
 {
   const tl = $('#timeline');
   // the horizontal form pins a stage the height of the screen: it is used only where that stage fits
@@ -725,37 +581,29 @@ if (!reduce) for (const b of $$('.fig b')) {
     if (!wide) tl.classList.remove('tl-live');
   }
   if (wide) {
-    const pin = $('.tl-pin', tl), axis = $('.tl-axis', tl), yr = $('.tl-yr', tl), items = $$('.tl-list li', tl);
-    items.forEach(li => li.style.setProperty('--x', li.dataset.x));
-    const NS = 'http://www.w3.org/2000/svg';
-    const line = (cls, x, y1, y2) => { const l = document.createElementNS(NS, 'line'); l.setAttribute('class', cls); l.setAttribute('x1', x); l.setAttribute('x2', x); l.setAttribute('y1', y1); l.setAttribute('y2', y2); axis.append(l); return l; };
-    const base = document.createElementNS(NS, 'line');
-    base.setAttribute('class', 'base'); base.setAttribute('x1', '0'); base.setAttribute('x2', '100%'); base.setAttribute('y1', 12); base.setAttribute('y2', 12); axis.append(base);
-    const yticks = Array.from({ length: 25 }, (_, i) => line('yt', `${(i / 24 * 100).toFixed(3)}%`, i % 5 ? 8 : 2, 16));
-    const ph = line('ph', '0', -160, 180); ph.style.transformBox = 'view-box'; ph.style.transformOrigin = '0 0';
-    let top = 0, len = 1, shownTicks = -1;
-    const state = items.map(() => null);
-    measures.add(() => { top = docTop(pin); len = Math.max(1, pin.offsetHeight - innerHeight); });
-    utils.set(yticks, { scaleY: 0 }); utils.set(items, { opacity: 0 });
+    const pin = $('.tl-pin', tl), track = $('.tl-track', tl), list = $('.tl-list', tl), yr = $('.tl-yr', tl), items = $$('.tl-list li', tl);
+    const years = items.map(li => $('time', li).getAttribute('datetime').slice(0, 4));
+    // one grid column per year; the first line of each year carries the year
+    let col = 0;
+    items.forEach((li, i) => {
+      if (i && years[i] !== years[i - 1]) col++;
+      li.style.setProperty('--c', col + 1);
+      if (!i || years[i] !== years[i - 1]) { li.classList.add('y0'); li.dataset.y = years[i]; }
+    });
+    const heads = items.filter(li => li.classList.contains('y0'));
+    let top = 0, len = 1, ph = 0, xs = [0], cur = -1;
+    measures.add(() => { top = docTop(pin); len = Math.max(1, pin.offsetHeight - innerHeight); ph = track.clientWidth * .24; xs = heads.map(li => li.offsetLeft); });
     scrollFns.add(() => {
-      const p = clamp01((scrollTop() - top) / len);
-      // the playhead tracks scroll linearly, so the scrub is exactly reversible
-      ph.style.transform = `translateX(${(p * 100).toFixed(3)}%)`;
-      yr.textContent = Math.min(2026, Math.floor(2002 + p * 24 + 1e-6));
-      const t = Math.floor(p * 24 + 1e-6);
-      if (t !== shownTicks) {
-        // year ticks draw up to the playhead
-        yticks.forEach((l, i) => { const on = i <= t; if ((i <= shownTicks) !== on) animate(l, { scaleY: on ? 1 : 0, duration: T.t.tick, ease: T.ease.enter }); });
-        shownTicks = t;
-      }
-      items.forEach((li, i) => {
-        const on = p + 1e-6 >= +li.dataset.x;
-        if (state[i] === on) return;
-        state[i] = on;
-        // each event drops in as the playhead passes it, and lifts out if the reader scrolls back
-        animate(li, { opacity: on ? 1 : 0, duration: T.t.move, ease: 'linear' });
-        animate([...li.children], { translateY: on ? [-10, 0] : -10, duration: T.t.move, ease: T.ease.enter });
-      });
+      const p = clamp01((scrollTop() - top) / len), at = xs[0] + p * (xs.at(-1) - xs[0]);
+      // the strip slides linearly with scroll, so the scrub is exactly reversible
+      list.style.transform = `translate3d(${(ph - at).toFixed(1)}px,0,0)`;
+      let k = 0; while (k < xs.length - 1 && at + 1 >= xs[k + 1]) k++;
+      if (k === cur) return;
+      cur = k;
+      const y = heads[k].dataset.y;
+      yr.textContent = y;
+      // every line up to the playhead's year is lit; later years wait at a third of their brightness
+      items.forEach((li, i) => li.classList.toggle('on', years[i] <= y));
     });
   } else if (tl && !reduce && CSS.supports('overflow', 'clip')) {
     // phones and short screens: the list stays vertical. The year readout is pinned to the foot of the screen by CSS
@@ -803,38 +651,6 @@ if (!reduce) for (const b of $$('.fig b')) {
       .add(drawable, { draw: ['0 0', '0 1'], duration: T.t.draw, ease: T.ease.enter }, 0)
       // the dates settle onto the arc once it reaches them
       .add(dates, { opacity: [0, 1], duration: T.t.move, ease: 'linear', delay: stagger(240) }, 700));
-  }
-}
-
-/* ---- Elysium Labs: the contour draws, then morphs between the two measured frames ---- */
-{
-  const frame = $('.ex-frame'), live = $('#c-live'), c00 = $('#c00'), c15 = $('#c15');
-  const f15 = $('.f15', frame), rFrame = $('[data-r=frame]'), rArea = $('[data-r=area]'), rState = $('[data-r=state]'), RL = $('.ex-read').dataset;
-  if (frame && !reduce) {
-    live.setAttribute('d', c00.getAttribute('d'));
-    const morph = animate(live, { d: svg.morphTo(c15), duration: 1000, ease: 'linear', autoplay: false });
-    let top = 0, h = 1, drawn = false, lastKey = '';
-    measures.add(() => { top = docTop(frame); h = frame.offsetHeight; });
-    const [dr] = svg.createDrawable(live);
-    utils.set(dr, { draw: '0 0' });
-    once(frame, '70% top', () => {
-      // the boundary is traced once, as computed from the pixels
-      animate(dr, { draw: ['0 0', '0 1'], duration: T.t.draw, ease: T.ease.enter, onComplete: () => { drawn = true; runScroll(); } });
-    });
-    scrollFns.add(() => {
-      if (!drawn) return;
-      const vh = innerHeight, p = clamp01((scrollTop() + vh * .7 - (top + h * .5)) / (vh * .5));
-      // scroll moves the shape between frame 00 and frame 15, both measured; between them it is interpolated
-      morph.seek(p * 1000);
-      f15.style.opacity = p.toFixed(3);
-      const key = p <= .001 ? '00' : p >= .999 ? '15' : 'mid';
-      if (key === lastKey) return;
-      lastKey = key;
-      rFrame.textContent = key === 'mid' ? '—' : key;
-      rArea.textContent = key === '00' ? RL.a00 : key === '15' ? RL.a15 : '—';
-      rState.textContent = key === 'mid' ? RL.interp : RL.measured;
-    });
-    rFrame.textContent = '00'; rArea.textContent = RL.a00;
   }
 }
 
@@ -899,11 +715,6 @@ if (!reduce) for (const b of $$('.fig b')) {
         c.style.transform = `scale(${(1 - .06 * q).toFixed(4)})`;
       });
     });
-  }
-  // contact sheet: where nothing hovers, each row comes into full colour as it crosses the middle of the screen
-  if (matchMedia('(hover: none)').matches) {
-    const io = new IntersectionObserver(es => es.forEach(e => e.target.classList.toggle('lit', e.isIntersecting)), { rootMargin: '-40% 0px -40% 0px' });
-    $$('.sheet img').forEach(img => io.observe(img));
   }
 }
 
@@ -978,8 +789,21 @@ if (!reduce) for (const b of $$('.pill-btn')) {
   b.addEventListener('pointerleave', () => { box = null; animate(b, { x: 0, y: 0, ease: sp('float') }); });
 }
 
-/* in-page links go through Lenis so anchor jumps share the same clock */
-if (lenis) for (const a of $$('a[href^="#"]')) a.addEventListener('click', e => {
+/* ---- index: filtering is CSS (:target), so it works without JS and the address keeps it. JS marks the active chip
+   for assistive tech, and on touch screens a first tap on a line shows its picture, a second follows its link ---- */
+{
+  const chips = $$('.chip-f');
+  const mark = () => { const h = location.hash.startsWith('#f-') ? location.hash : '#f-all'; chips.forEach(a => a.hash === h ? a.setAttribute('aria-current', 'true') : a.removeAttribute('aria-current')); };
+  addEventListener('hashchange', mark); mark();
+  for (const li of $$('.ix-list li.has-th')) li.addEventListener('click', e => {
+    if (!matchMedia('(hover: none)').matches || li.classList.contains('peek')) return;
+    for (const x of $$('.ix-list li.peek')) x.classList.remove('peek');
+    li.classList.add('peek'); e.preventDefault();
+  });
+}
+
+/* in-page links go through Lenis so anchor jumps share the same clock; the index filters keep their native jump */
+if (lenis) for (const a of $$('a[href^="#"]:not(.chip-f)')) a.addEventListener('click', e => {
   const id = a.getAttribute('href'); if (id.length < 2) return;
   const t = $(id); if (!t) return;
   e.preventDefault(); lenis.scrollTo(t, { offset: id === '#top' ? 0 : -8 }); history.replaceState(null, '', id);

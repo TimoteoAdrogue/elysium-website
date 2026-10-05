@@ -146,17 +146,22 @@ main,footer{position:relative}
   .flag{grid-column:10/13;grid-row:1/5;margin-top:0;width:100%;align-self:start}
 }
 
-/* ---- 2 clients ------------------------------------------------------------- */
+/* ---- 2 about: the CV header ------------------------------------------------- */
 .figs{row-gap:28px}
-.fig b{display:block;font:400 clamp(3rem,6.4vw,6rem)/1 "Geist Mono",monospace;letter-spacing:-.04em;color:var(--text)}
+.fig{grid-column:span 6}
+.fig b{display:block;font:400 clamp(2.75rem,6vw,6rem)/1 "Geist Mono",monospace;letter-spacing:-.04em;color:var(--text)}
 .fig .label{display:block;margin-top:14px}
-@media (min-width:900px){.figs .fig:nth-child(1){grid-column:1/5}.figs .fig:nth-child(2){grid-column:5/9}.figs .fig:nth-child(3){grid-column:9/13}}
+@media (min-width:900px){.figs .fig{grid-column:span 3}}
 .odo{display:inline-flex}
 .odo-col{display:inline-block;height:1em;overflow:clip}
 .odo-strip{display:block}
 .odo-strip i{display:block;height:1em;font-style:normal}
-.figs-src{margin-top:24px}
+.glance{margin-top:12px;padding-top:20px;border-top:1px solid var(--line);font-size:clamp(1.15rem,1.6vw,1.4rem);color:var(--text)}
+.glance .label{margin-right:16px}
+.figs-src{margin-top:8px}
+.sec-head .lede+.lede{margin-top:-6px}
 
+/* ---- 3 clients -------------------------------------------------------------- */
 .roster{margin-top:clamp(56px,7vw,96px)}
 .mq{position:relative;overflow:hidden;padding-block:6px;   /* relative: clips the sr-only spans inside the drifting track too */
   
@@ -176,15 +181,15 @@ main,footer{position:relative}
 .mq-row-b .mq-track button:hover,.mq-row-b .mq-track button:focus-visible,.mq-row-b .mq-track button.on{color:var(--text)}
 .readout{min-height:3.2em;margin-top:24px;color:var(--text-2)}
 .readout b{color:var(--text);font-weight:400}
-.wl{margin-top:28px;color:var(--text-2);max-width:64ch}
 
-/* ---- 3 expertise ----------------------------------------------------------- */
+/* ---- 4 what we do ------------------------------------------------------------- */
 .xp-side{display:none}
 .xp-item{padding-block:36px 40px;border-top:1px solid var(--line);display:grid;gap:14px}
 .xp-item:last-child{border-bottom:1px solid var(--line)}
 .xp-item .no{color:var(--text-3)}
 .xp-item p{color:var(--text-2);max-width:60ch}
-.xp-item .stack{color:var(--text-3)}
+.xp-item .xp-out{color:var(--text);font-size:clamp(1.1rem,1.4vw,1.3rem);line-height:1.45}
+.xp-del .label,.xp-who .label{display:inline-block;min-width:7.5em;margin-right:8px}
 .xp-item figure{margin-top:8px;border-radius:10px;overflow:hidden;background:var(--fill-2);max-width:560px}
 @media (min-width:900px){
   .xp-side{display:block;grid-column:1/5;position:sticky;top:calc(var(--nav-h) + 56px);align-self:start}
@@ -205,75 +210,33 @@ main,footer{position:relative}
   .js .xp-where{display:none}
 }
 
-/* ---- 4 record: chart A ------------------------------------------------------- */
-.chart-tools{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;margin-bottom:28px}
-.seg{position:relative;display:inline-flex;padding:4px;border-radius:999px;background:var(--fill-2)}
-.seg button{position:relative;z-index:1;min-height:44px;padding:0 18px;border:0;border-radius:999px;background:none;color:var(--text-2);cursor:pointer;font-size:15px}
-.seg button[aria-pressed=true]{color:var(--void);background:var(--text)}
-.js .seg button[aria-pressed=true]{background:none;transition:color var(--t-tick) linear}
-.seg-pill{position:absolute;inset:4px;border-radius:999px;background:var(--text);clip-path:inset(0 100% 0 0 round 999px)}
-.chart-fig{position:relative}
-.chart-fig svg{overflow:visible;font-family:"Geist",sans-serif}
-.chart-fig .lab{fill:var(--text-2);font-size:15px}
-.chart-fig .val{fill:var(--text);font:14px "Geist Mono",monospace}
-.chart-fig .tick text{fill:var(--text-3);font:12px "Geist Mono",monospace}
-.chart-fig .tick line{stroke:var(--line)}
-.chart-fig .tick,.chart-fig .bar,.chart-fig .xv,.chart-fig .xh{transform-box:view-box;transform-origin:0 0}
-.chart-fig .b{fill:var(--accent-fill)}
-.chart-fig .hi{fill:var(--accent)}
-.chart-fig .hit{fill:transparent}
-.chart-fig .row{outline:none}
-.chart-fig .row:focus-visible .hit{stroke:var(--accent);stroke-width:2}
-.chart-fig .xhair line{stroke:var(--text-3);stroke-width:1}
-.tip{position:absolute;left:0;top:0;z-index:3;pointer-events:none;opacity:0;padding:10px 14px;border-radius:10px;background:var(--fill-2);
-  font-size:14px;line-height:1.45;max-width:300px;box-shadow:0 8px 24px rgba(0,0,0,.5)}
-.tip b{display:block;font-weight:500}
-.tip .mono{color:var(--text);font-size:13px}
-.tip .n{display:block;color:var(--text-2);font-size:13px}
-.total{display:flex;align-items:baseline;gap:12px;padding-top:20px;margin-top:8px;border-top:1px solid var(--line)}
-.total .mono{font-size:28px}
-.src{font-size:14px;color:var(--text-3);margin-top:8px}
-table.data{border-collapse:collapse;width:100%;font-size:15px}
-.data caption{text-align:left;color:var(--text-2);padding-bottom:12px}
-.data th,.data td{text-align:left;padding:10px 16px 10px 0;border-bottom:1px solid var(--line);vertical-align:baseline}
-.data td:nth-child(2){font-family:"Geist Mono",monospace}
-.data thead th{font:400 var(--fs-label)/1.4 "Geist Mono",monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--text-3)}
 
-/* ---- 4 record: chart B, the timeline -------------------------------------- */
+/* ---- 6 record: the timeline ------------------------------------------------------ */
 .tl-head{display:flex;align-items:baseline;justify-content:space-between;gap:16px;padding-bottom:16px;border-bottom:1px solid var(--line)}
 .tl-yr{font:400 clamp(2.5rem,5vw,4.5rem)/1 "Geist Mono",monospace;letter-spacing:-.04em}
 .tl-list li{display:grid;grid-template-columns:7.5em 1fr;gap:4px 16px;padding-block:18px;border-bottom:1px solid var(--line)}
 .tl-list time{grid-row:1/3;font-family:"Geist Mono",monospace;font-size:15px;color:var(--text)}
 .tl-list h4{font-weight:500}
 .tl-list p{font-size:15px;color:var(--text-2)}
-.tl-axis{display:none}
-/* horizontal, pinned form — only once main.js has measured the stage */
-.tl-live .tl-pin{height:300vh}
+/* desktop: one column per year on a strip that slides past a fixed playhead while the stage is pinned (main.js sets
+   --c, the year column, and .y0 on the first line of each year). Lines reached by the playhead light up */
+.tl-live .tl-pin{height:420vh}
 .tl-live .tl-stage{position:sticky;top:0;height:100vh;align-content:center;padding-top:var(--nav-h)}
-.tl-live .tl-head{margin-bottom:24px}
-.tl-live .tl-track{position:relative;height:480px}
-.tl-live .tl-axis{display:block;position:absolute;left:0;right:0;top:268px;height:24px;overflow:visible}
-.tl-live .tl-axis line{stroke:var(--text-3)}
-.tl-live .tl-axis .base{stroke:var(--line)}
-.tl-live .tl-axis .yt{transform-box:fill-box;transform-origin:50% 100%}
-.tl-live .tl-axis .ph{stroke:var(--accent);stroke-width:2}
-.tl-live .tl-list{position:absolute;inset:0}
-.tl-live .tl-list li{position:absolute;display:block;width:min(15%,210px);padding:0;border:0;left:calc(var(--x) * 100%)}
-.tl-live .tl-list li.end{transform:translateX(-100%);text-align:right}
-.tl-live .tl-list li::before{content:"";position:absolute;width:1px;background:var(--text-3);left:0;opacity:.5}
-.tl-live .tl-list li.end::before{left:auto;right:0}
-/* lanes: three above the axis, two below; the axis sits at y 280 of a 480 px track */
-.tl-live .tl-list li[data-lane=a1]{bottom:230px;--lane:30}
-.tl-live .tl-list li[data-lane=a2]{bottom:314px;--lane:114}
-.tl-live .tl-list li[data-lane=a3]{bottom:398px;--lane:198}
-.tl-live .tl-list li[data-lane=b1]{top:300px;--lane:20}
-.tl-live .tl-list li[data-lane=b2]{top:384px;--lane:104}
-.tl-live .tl-list li[data-lane^=a]::before{top:100%;height:calc(var(--lane) * 1px)}
-.tl-live .tl-list li[data-lane^=b]::before{bottom:100%;height:calc(var(--lane) * 1px)}
-.tl-live .tl-list li>*{padding-inline:10px}
+.tl-live .tl-head{margin-bottom:28px}
+.tl-live .tl-track{position:relative;overflow:hidden;
+  -webkit-mask-image:linear-gradient(to right,transparent,#000 6%,#000 88%,transparent);mask-image:linear-gradient(to right,transparent,#000 6%,#000 88%,transparent)}
+.tl-live .tl-track::after{content:"";position:absolute;left:24%;top:0;width:2px;height:17px;margin-left:-1px;background:var(--accent)}
+.tl-live .tl-track::before{content:"";position:absolute;left:24%;top:4px;z-index:1;width:9px;height:9px;margin-left:-4.5px;border-radius:50%;background:var(--accent)}
+.tl-live .tl-list{display:grid;grid-auto-flow:column;grid-auto-columns:clamp(220px,19vw,280px);align-content:start;width:max-content;
+  padding-top:64px;border-top:1px solid var(--line);margin-top:8px}
+.tl-live .tl-list li{grid-column:var(--c);display:block;padding:0 28px 22px 0;border:0;position:relative;opacity:.32;transition:opacity var(--t-move) linear}
+.tl-live .tl-list li.on{opacity:1}
+.tl-live .tl-list li.y0::before{content:attr(data-y);position:absolute;top:-64px;left:0;font:400 28px/1 "Geist Mono",monospace;letter-spacing:-.03em;color:var(--text)}
+.tl-live .tl-list li.y0::after{content:"";position:absolute;top:-77px;left:-4px;width:9px;height:9px;border-radius:50%;background:var(--void);box-shadow:inset 0 0 0 1px var(--text-3)}
+.tl-live .tl-list li.y0.on::after{background:var(--accent);box-shadow:none}
 .tl-live .tl-list time{display:block;font-size:13px;color:var(--accent)}
-.tl-live .tl-list h4{font-size:15px;line-height:1.3}
-.tl-live .tl-list p{font-size:13px;line-height:1.4;color:var(--text-3)}
+.tl-live .tl-list h4{font-size:16px;line-height:1.3;margin-top:4px}
+.tl-live .tl-list p{font-size:14px;line-height:1.45;color:var(--text-2);margin-top:2px}
 /* vertical form — phones and short screens: a rail beside the list. The year readout is pinned to the foot of the screen
    (sticky, so it holds still under a native touch scroll) and is the playhead; the rail's fill hangs from it and is
    clipped at the top of the track. Rail centre: x 4.5 px in the track. */
@@ -292,11 +255,8 @@ table.data{border-collapse:collapse;width:100%;font-size:15px}
   .tl-rail .tl-ph i{flex:none;width:11px;height:11px;border-radius:50%;background:var(--accent)}
 }
 
-/* ---- 5 healthcare ---------------------------------------------------------- */
-.hc{row-gap:48px}
-.hc-case h3{font-size:clamp(1.5rem,2.4vw,2.1rem);font-weight:500;letter-spacing:-.025em;line-height:1.1;margin-bottom:20px}
-.hc-case p{color:var(--text-2);max-width:56ch}
-.hc-case p+p{margin-top:14px}
+
+/* ---- 5 work: cases ------------------------------------------------------------- */
 .facts{margin-top:28px;display:grid;grid-template-columns:auto 1fr;gap:0 20px}
 .facts dt,.facts dd{padding-block:12px;border-top:1px solid var(--line)}
 .facts dt{padding-top:15px}
@@ -308,41 +268,21 @@ table.data{border-collapse:collapse;width:100%;font-size:15px}
 .hc-map .ring{fill:none;stroke:var(--accent);stroke-width:1.5}
 .hc-map text{fill:var(--text-2);font:15px "Geist Mono",monospace;letter-spacing:.06em}
 .hc-map text.d{fill:var(--accent);font-size:14px}
-.hc-more{row-gap:0;margin-top:clamp(48px,6vw,88px)}
-.hc-more li{padding-block:24px;border-top:1px solid var(--line);display:grid;gap:6px}
-.hc-more p{color:var(--text-2)}
-@media (min-width:900px){
-  .hc-case{grid-column:1/7}.hc-map{grid-column:7/13}
-  .hc-more{grid-template-columns:repeat(12,minmax(0,1fr))}
-  .hc-more li{grid-column:span 6}
-}
-
-/* ---- 6 labs ------------------------------------------------------------------ */
-.labs{row-gap:48px;align-items:start}
-.ex-frame{position:relative;aspect-ratio:1;border-radius:12px;overflow:hidden;background:#000;max-width:560px}
-.ex-frame picture{position:absolute;inset:0}
-.ex-frame img{width:100%;height:100%;object-fit:cover}
-.ex-frame .f15{opacity:1}
-.js-motion .ex-frame .f15{opacity:0}
-.ex-frame svg{position:absolute;inset:0;width:100%;height:100%}
-.ex-frame .contour{fill:rgba(159,196,255,.12);stroke:var(--accent);stroke-width:.7;stroke-linejoin:round}
-.ex-read{display:grid;grid-template-columns:repeat(3,auto);justify-content:start;gap:4px 32px;margin-top:20px}
-.ex-read b{display:block;font:400 clamp(1.5rem,2.4vw,2.25rem)/1.1 "Geist Mono",monospace;letter-spacing:-.03em;color:var(--text)}
-.ex-read .state{color:var(--accent)}
-.ex-note{margin-top:14px;font-size:15px;color:var(--text-2);max-width:56ch}
-.lab-list li{display:flex;align-items:baseline;justify-content:space-between;gap:16px;padding-block:18px;border-top:1px solid var(--line)}
-.lab-list li:last-child{border-bottom:1px solid var(--line)}
-.lab-list span{font-size:clamp(1.15rem,1.6vw,1.4rem);font-weight:500;letter-spacing:-.02em}
-.status{flex:none;padding:4px 10px;border-radius:999px;box-shadow:inset 0 0 0 1px var(--line);color:var(--text-3)}
-.lab-note{margin-top:24px;color:var(--text-2);max-width:56ch}
-@media (min-width:900px){.ex{grid-column:1/7}.lab-side{grid-column:8/13}}
-
-/* ---- 7 work ------------------------------------------------------------------ */
+.hc-map svg{width:100%;height:auto;max-height:70vh}
+.hc-map .dots{stroke:var(--node);stroke-width:4.2;stroke-linecap:round;fill:none}
+.hc-map .arc{stroke:var(--accent);stroke-width:2.4;fill:none;stroke-linecap:round}
+.hc-map .pt{fill:var(--text)}
+.hc-map .ring{fill:none;stroke:var(--accent);stroke-width:1.5}
+.hc-map text{fill:var(--text-2);font:15px "Geist Mono",monospace;letter-spacing:.06em}
+.hc-map text.d{fill:var(--accent);font-size:14px}
 .cases{display:grid;gap:clamp(56px,8vw,112px)}
 .case{display:grid;gap:28px;align-content:start;background:var(--void)}
+.case-text{padding-inline:var(--pad)}
 .case-meta{color:var(--text-3)}
 .case h3{font-size:clamp(1.5rem,2.6vw,2.4rem);font-weight:500;letter-spacing:-.03em;line-height:1.08;margin-top:12px}
-.case p{color:var(--text-2);max-width:52ch;margin-top:16px}
+.case-dl{margin-top:20px;max-width:52ch}
+.case-dl dt{margin-top:16px}
+.case-dl dd{margin:6px 0 0;color:var(--text-2)}
 .frame{background:var(--raised);border-radius:14px;padding:10px;overflow:hidden}
 .frame .bar{display:flex;align-items:center;gap:6px;padding:4px 6px 12px}
 .frame .bar i{width:9px;height:9px;border-radius:50%;background:var(--fill-2)}
@@ -351,25 +291,85 @@ table.data{border-collapse:collapse;width:100%;font-size:15px}
 .shot img{width:100%}
 .phones{display:flex;gap:10px;justify-content:center}
 .phones .shot{flex:1 1 0;max-width:260px;border-radius:12px}
-.frame.duo{display:grid;grid-template-columns:3fr 2fr;gap:10px;align-items:start}
-.frame.duo .bar{grid-column:1/-1}
+.frame.duo,.frame.trio{display:grid;grid-template-columns:3fr 2fr;gap:10px;align-items:start}
+.frame.duo .bar,.frame.trio .bar{grid-column:1/-1}
+.frame.trio{align-items:stretch}
+.frame.trio>:nth-child(3){grid-column:2;grid-row:2/4}
+.frame.trio>:nth-child(3) img{height:100%;object-fit:cover;object-position:50% 0}
+.frame .hc-map{align-self:center;padding:8px}
+@media (max-width:699px){
+  .frame.duo,.frame.trio{grid-template-columns:1fr}
+  .frame.trio>:nth-child(3){grid-column:auto;grid-row:auto}
+  .frame .hc-map svg{max-height:56vh;margin-inline:auto}
+}
+/* a project with no image to show is set in type: year, client, what we made */
+.frame.type{display:grid;align-content:end;gap:12px;min-height:clamp(280px,34vw,480px);padding:clamp(22px,3vw,44px);box-shadow:inset 0 0 0 1px var(--line)}
+.t-y{font:400 clamp(4rem,10vw,9rem)/.9 "Geist Mono",monospace;letter-spacing:-.05em;color:var(--text)}
+.t-c{font-size:clamp(1.6rem,3.2vw,2.8rem);font-weight:600;letter-spacing:-.035em;line-height:1.05;color:var(--text)}
+.t-w{color:var(--text-2)}
 @media (min-width:900px){
   .case{grid-template-columns:repeat(12,minmax(0,1fr));gap:0}
   .case-text{grid-column:1/5;padding-inline:var(--pad);padding-top:8px}
   .case .frame{grid-column:5/13;margin-inline:var(--pad)}
-  .case.noshot .case-text{grid-column:1/9}
   .stack-live .case{min-height:calc(100vh - var(--nav-h) - 48px)}
-  .stack-live .case.noshot{min-height:0}
 }
 /* cases stack at every width: each sticks under the nav, or, when taller than the screen, once its foot is in view (--case-h from main.js) */
 .stack-live .case{position:sticky;top:calc(var(--nav-h) + 24px);top:min(calc(var(--nav-h) + 24px),calc(100svh - var(--case-h,0px) - 24px));transform-origin:50% 0}
-.stack-live .case.noshot{position:relative}
-.sheet-head{margin-top:clamp(64px,8vw,120px);margin-bottom:16px}
-.sheet{display:grid;grid-template-columns:repeat(auto-fill,130px);gap:2px;justify-content:start}
-.sheet img{width:130px;height:130px;filter:grayscale(.35)}
-.sheet img:hover,.sheet img.lit{filter:none}
-@media (hover:none){.sheet img{transition:filter var(--t-move) linear}}   /* .lit: touch screens, set as a row crosses mid-screen */
-.sheet-note{margin-top:14px;font-size:15px;color:var(--text-3)}
+
+/* ---- 5 work: the index. Filters are links to empty anchors; :target hides what does not match, so the filter works
+   without JS and the address keeps it ---- */
+.ix{position:relative;margin-top:clamp(96px,11vw,160px)}
+.ix>*{grid-column:1/-1}
+.ix-head{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:8px 24px;margin-bottom:20px}
+.ix-head h3{font-size:clamp(1.5rem,2.6vw,2.4rem);font-weight:500;letter-spacing:-.03em}
+.ix-t{position:absolute;top:0;left:0;scroll-margin-top:calc(var(--nav-h) + 16px)}
+.ix-chips{display:flex;gap:8px;padding-block:4px 20px;white-space:nowrap}
+.ix .ix-chips{--fade:var(--gut);padding-inline:calc(var(--gut) + var(--pad))}   /* the row bleeds to the screen edge, never past it */
+.chip-f{flex:none;display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 16px;border-radius:999px;background:var(--fill-2);color:var(--text-2);
+  text-decoration:none;font-size:15px}
+.chip-f:hover{color:var(--text)}
+.chip-f .mono{font-size:13px}
+.chip-sep{flex:none;width:1px;margin-inline:6px;background:var(--line)}
+.ix:not(:has(.ix-t:target)) .ix-chips a[href="#f-all"],#f-all:target~.ix-chips a[href="#f-all"]{background:var(--text);color:var(--void)}
+.ix-list li{position:relative;display:grid;grid-template-columns:4.2em 1fr;gap:2px 16px;padding-block:14px;border-top:1px solid var(--line);scroll-margin-top:calc(var(--nav-h) + 24px)}
+.ix-list li:last-child{border-bottom:1px solid var(--line)}
+.ix-y{grid-row:1/4;color:var(--text-3);font-size:15px}
+.ix-c{color:var(--text);font-weight:500}
+.ix-c a{color:inherit;text-decoration:underline;text-decoration-color:var(--text-3);text-decoration-thickness:1px;text-underline-offset:4px}
+.ix-c a:hover{text-decoration-color:var(--text)}
+.ix-w{color:var(--text-2)}
+.ix-k{color:var(--text-3)}
+.ix-th{display:none;position:absolute;right:0;top:50%;z-index:3;width:auto;max-width:min(240px,40%);max-height:180px;object-fit:cover;border-radius:6px;
+  transform:translateY(-50%);box-shadow:0 10px 30px rgba(0,0,0,.6);pointer-events:none}
+.ix-list li:hover .ix-th,.ix-list li:focus-within .ix-th{display:block}
+.has-th .ix-c::after{content:"";display:inline-block;width:6px;height:6px;margin-left:10px;border-radius:50%;background:var(--text-3);vertical-align:2px}
+@media (min-width:900px){
+  .ix-list li{grid-template-columns:5em minmax(0,13em) minmax(0,1fr) 11em;align-items:baseline}
+  .ix-y{grid-row:auto}
+  .ix-k{text-align:right}
+}
+@media (hover:none){.ix-list li.peek .ix-th{display:block;position:static;grid-column:2/-1;transform:none;max-width:min(240px,100%);margin-top:10px}}
+.ix-arch-h{margin-top:40px;margin-bottom:12px}
+.ix-arch{display:grid;grid-template-columns:repeat(auto-fill,minmax(76px,1fr));gap:2px}
+.ix-arch img{width:100%;height:auto;max-width:130px}
+@media (min-width:900px){.ix-arch{grid-template-columns:repeat(auto-fill,130px)}}
+/* ix:start */
+#f-s-co:target~.ix-list>li:not([data-f~="s-co"]),#f-s-co:target~.ix-arch>li:not([data-f~="s-co"]){display:none}#f-s-co:target~.ix-chips a[href="#f-s-co"]{background:var(--text);color:var(--void)}
+#f-s-io:target~.ix-list>li:not([data-f~="s-io"]),#f-s-io:target~.ix-arch>li:not([data-f~="s-io"]){display:none}#f-s-io:target~.ix-chips a[href="#f-s-io"]{background:var(--text);color:var(--void)}
+#f-s-he:target~.ix-list>li:not([data-f~="s-he"]),#f-s-he:target~.ix-arch>li:not([data-f~="s-he"]){display:none}#f-s-he:target~.ix-chips a[href="#f-s-he"]{background:var(--text);color:var(--void)}
+#f-s-cu:target~.ix-list>li:not([data-f~="s-cu"]),#f-s-cu:target~.ix-arch>li:not([data-f~="s-cu"]){display:none}#f-s-cu:target~.ix-chips a[href="#f-s-cu"]{background:var(--text);color:var(--void)}
+#f-k-sw:target~.ix-list>li:not([data-f~="k-sw"]),#f-k-sw:target~.ix-arch>li:not([data-f~="k-sw"]){display:none}#f-k-sw:target~.ix-chips a[href="#f-k-sw"]{background:var(--text);color:var(--void)}
+#f-k-web:target~.ix-list>li:not([data-f~="k-web"]),#f-k-web:target~.ix-arch>li:not([data-f~="k-web"]){display:none}#f-k-web:target~.ix-chips a[href="#f-k-web"]{background:var(--text);color:var(--void)}
+#f-k-mob:target~.ix-list>li:not([data-f~="k-mob"]),#f-k-mob:target~.ix-arch>li:not([data-f~="k-mob"]){display:none}#f-k-mob:target~.ix-chips a[href="#f-k-mob"]{background:var(--text);color:var(--void)}
+#f-k-3d:target~.ix-list>li:not([data-f~="k-3d"]),#f-k-3d:target~.ix-arch>li:not([data-f~="k-3d"]){display:none}#f-k-3d:target~.ix-chips a[href="#f-k-3d"]{background:var(--text);color:var(--void)}
+#f-k-vid:target~.ix-list>li:not([data-f~="k-vid"]),#f-k-vid:target~.ix-arch>li:not([data-f~="k-vid"]){display:none}#f-k-vid:target~.ix-chips a[href="#f-k-vid"]{background:var(--text);color:var(--void)}
+#f-k-pub:target~.ix-list>li:not([data-f~="k-pub"]),#f-k-pub:target~.ix-arch>li:not([data-f~="k-pub"]){display:none}#f-k-pub:target~.ix-chips a[href="#f-k-pub"]{background:var(--text);color:var(--void)}
+#f-k-it:target~.ix-list>li:not([data-f~="k-it"]),#f-k-it:target~.ix-arch>li:not([data-f~="k-it"]){display:none}#f-k-it:target~.ix-chips a[href="#f-k-it"]{background:var(--text);color:var(--void)}
+#f-k-brand:target~.ix-list>li:not([data-f~="k-brand"]),#f-k-brand:target~.ix-arch>li:not([data-f~="k-brand"]){display:none}#f-k-brand:target~.ix-chips a[href="#f-k-brand"]{background:var(--text);color:var(--void)}
+#f-k-prod:target~.ix-list>li:not([data-f~="k-prod"]),#f-k-prod:target~.ix-arch>li:not([data-f~="k-prod"]){display:none}#f-k-prod:target~.ix-chips a[href="#f-k-prod"]{background:var(--text);color:var(--void)}
+#f-k-ill:target~.ix-list>li:not([data-f~="k-ill"]),#f-k-ill:target~.ix-arch>li:not([data-f~="k-ill"]){display:none}#f-k-ill:target~.ix-chips a[href="#f-k-ill"]{background:var(--text);color:var(--void)}
+.ix-t[id^="f-s-"]:target~.ix-arch-h{display:none}
+/* ix:end */
 
 /* ---- 8 cities ---------------------------------------------------------------- */
 .cities{row-gap:40px;align-items:center}
