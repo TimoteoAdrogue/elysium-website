@@ -1,0 +1,5 @@
+tiles/
+dem.npz
+png-*/
+frames*/
+*.json
