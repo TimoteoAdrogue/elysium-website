@@ -225,11 +225,11 @@ if (!reduce) {
 {
   const fig = $('.flag'), fb = $('#flag-build'), cellsG = $('.cells', fb), solid = $('.solid', fb);
   const navMark = $('.brand .mark');
-  const live = !reduce && innerWidth >= 768;
-  if (!live) {
+  if (reduce) {
     // static flag; the nav mark appears with a plain fade once the hero flag is off screen
     new IntersectionObserver(([e]) => animate(navMark, { opacity: e.isIntersecting ? 0 : 1, duration: T.t.tick, ease: 'linear' })).observe(fig);
   } else {
+    const phone = innerWidth < 900;                    // below 900 px the flag sits in the flow under the hero text, as on a phone
     const N = 32, c = 15.5;
     const inCross = (x, y) => (x >= 13 && x < 19 && y >= 6 && y < 26) || (y >= 13 && y < 19 && x >= 6 && x < 26);
     // field cells sit in 16 concentric rings so the release can be scrubbed with 16 writes a frame
@@ -253,42 +253,77 @@ if (!reduce) {
     utils.set(cells, { opacity: 0 });
     navMark.style.opacity = film ? 1 : 0;
     root.classList.add('dock-live');
-    const build = () => createTimeline({ delay: film ? 0 : 250 })
+    const build = delay => createTimeline({ delay })
       // the cross assembles in white, outward from the centre; it is never red
       .add(cross, { opacity: [0, 1], duration: T.t.tick, ease: 'linear', delay: (_, i) => cD[i] }, 0)
       // the red field closes in around the finished cross
       .add(field, { opacity: [0, 1], duration: T.t.tick, ease: 'linear', delay: (_, i) => fD[i] }, 600);
-    if (film) film.onEnd = build; else build();
-
-    // dock: tilt ≤ 12°, field cells release outermost first, the white cross condenses into the 16 px nav mark
-    let top = 0, h = 1, cx = 0, cy = 0, size = 1, mx = 0, my = 0;
-    measures.add(() => {
-      const saved = fb.style.transform; fb.style.transform = 'none';
-      const r = fb.getBoundingClientRect(), m = navMark.getBoundingClientRect();
-      fb.style.transform = saved;
-      cx = r.left + r.width / 2; cy = r.top + scrollTop() + r.height / 2; size = r.width;
-      if (film) {
-        // the dock starts where the film's sticky stage lets go
-        const s = $('.hero-film'), st = $('.hf-stage');
-        top = docTop(s) + s.offsetHeight - innerHeight; h = innerHeight;
-        cy = top + r.top - st.getBoundingClientRect().top + r.height / 2;
-      } else { const hero = $('.hero'); top = docTop(hero); h = hero.offsetHeight; }
-      navHoldUntil = Math.max(120, top + h * .8 + 240);
-      mx = m.left + m.width / 2; my = m.top + m.height / 2;
-    });
+    // on a phone the flag sits below the fold, so it is built when it scrolls into view rather than unseen on load
+    const fr = fig.getBoundingClientRect();
+    if (film) film.onEnd = () => build(0);                // with the hero film, the flag is built as the flight lands
+    else if (!phone || fr.bottom <= innerHeight || fr.top < 0) build(250); else once(fig, 'bottom 80%', () => build(0));
     const navY = () => { const t = nav.style.transform.match(/-?[\d.]+%/); return t ? parseFloat(t[0]) / 100 * nav.offsetHeight : 0; };
-    scrollFns.add(() => {
-      const p = clamp01((scrollTop() - top) / (h * .8));
-      const rel = clamp01((p - .1) / .45), q = T.ease.scrub(clamp01((p - .5) / .5));
-      ringGs.forEach((g, r) => { g.style.opacity = clamp01(1 - (rel * 17 - (15 - r))).toFixed(3); });
-      // the flag rides just under the nav once it reaches it, then shrinks and slides into the mark
-      const s = 1 + (16 / size - 1) * q, natY = cy - scrollTop(), half = size * s / 2;
-      const minY = (nav.offsetHeight + half + 16) * (1 - q) + (my + navY()) * q;
-      const dx = (mx - cx) * q, dy = Math.max(natY, minY) - natY;
-      fb.style.transform = `translate(${dx.toFixed(1)}px,${dy.toFixed(1)}px) scale(${s.toFixed(4)}) rotateX(${(12 * clamp01(p / .5) * (1 - q)).toFixed(2)}deg)`;
-      fb.style.opacity = q > .92 ? (1 - (q - .92) / .08).toFixed(3) : 1;
-      navMark.style.opacity = Math.max(film ? film.mark : 0, clamp01((q - .9) / .1)).toFixed(3);
-    });
+    const releaseRings = rel => ringGs.forEach((g, r) => { g.style.opacity = clamp01(1 - (rel * 17 - (15 - r))).toFixed(3); });
+
+    if (phone) {
+      // phones: the flag scrolls with the page until it meets the nav, then rides there position:fixed — anchored by the
+      // compositor, so it holds still under a native touch scroll — while the field releases and the cross condenses into the mark
+      root.classList.add('dock-fixed');
+      let size = 1, left = 0, ride = 0, sRide = 0, span = 1, mx = 0, my = 0, fixed = false;
+      const pin = on => Object.assign(fb.style, on ? { left: `${left}px`, top: `${ride}px`, width: `${size}px` } : { left: '', top: '', width: '' });
+      measures.add(() => {
+        const r = fig.getBoundingClientRect(), cs = getComputedStyle(fig), m = navMark.getBoundingClientRect();
+        const pl = parseFloat(cs.paddingLeft);
+        size = r.width - pl - parseFloat(cs.paddingRight); left = r.left + pl;
+        fig.style.minHeight = `${size}px`;                 // keeps the flag's place in the hero while it rides
+        ride = nav.offsetHeight + 16; sRide = docTop(fig) - ride; span = innerHeight * .4;
+        mx = m.left + m.width / 2; my = m.top - nav.getBoundingClientRect().top + m.height / 2;
+        navHoldUntil = Math.max(120, sRide + span + 240);
+        if (fixed) pin(true);
+      });
+      scrollFns.add(() => {
+        const y = scrollTop();
+        // p crosses .5 exactly as the flag meets the nav, so the ride and the condensing begin together
+        const p = clamp01((y - sRide + span) / (2 * span));
+        const q = T.ease.scrub(clamp01((p - .5) / .5));
+        releaseRings(clamp01((p - .1) / .45));
+        if (fixed !== (y >= sRide)) { fixed = !fixed; pin(fixed); fb.classList.toggle('ride', fixed); }
+        const s = 1 + (16 / size - 1) * q, half = size / 2;
+        const dx = (mx - left - half) * q, dy = (my + navY() - ride - half) * q;
+        fb.style.transform = `translate(${dx.toFixed(1)}px,${dy.toFixed(1)}px) scale(${s.toFixed(4)}) perspective(1200px) rotateX(${(12 * clamp01(p / .5) * (1 - q)).toFixed(2)}deg)`;
+        fb.style.opacity = q > .92 ? (1 - (q - .92) / .08).toFixed(3) : 1;
+        navMark.style.opacity = Math.max(film ? film.mark : 0, clamp01((q - .9) / .1)).toFixed(3);
+      });
+    } else {
+      // dock: tilt ≤ 12°, field cells release outermost first, the white cross condenses into the 16 px nav mark
+      let top = 0, h = 1, cx = 0, cy = 0, size = 1, mx = 0, my = 0;
+      measures.add(() => {
+        const saved = fb.style.transform; fb.style.transform = 'none';
+        const r = fb.getBoundingClientRect(), m = navMark.getBoundingClientRect();
+        fb.style.transform = saved;
+        cx = r.left + r.width / 2; cy = r.top + scrollTop() + r.height / 2; size = r.width;
+        if (film) {
+          // the dock starts where the film's sticky stage lets go
+          const s = $('.hero-film'), st = $('.hf-stage');
+          top = docTop(s) + s.offsetHeight - innerHeight; h = innerHeight;
+          cy = top + r.top - st.getBoundingClientRect().top + r.height / 2;
+        } else { const hero = $('.hero'); top = docTop(hero); h = hero.offsetHeight; }
+        navHoldUntil = Math.max(120, top + h * .8 + 240);
+        mx = m.left + m.width / 2; my = m.top + m.height / 2;
+      });
+      scrollFns.add(() => {
+        const p = clamp01((scrollTop() - top) / (h * .8));
+        const q = T.ease.scrub(clamp01((p - .5) / .5));
+        releaseRings(clamp01((p - .1) / .45));
+        // the flag rides just under the nav once it reaches it, then shrinks and slides into the mark
+        const s = 1 + (16 / size - 1) * q, natY = cy - scrollTop(), half = size * s / 2;
+        const minY = (nav.offsetHeight + half + 16) * (1 - q) + (my + navY()) * q;
+        const dx = (mx - cx) * q, dy = Math.max(natY, minY) - natY;
+        fb.style.transform = `translate(${dx.toFixed(1)}px,${dy.toFixed(1)}px) scale(${s.toFixed(4)}) rotateX(${(12 * clamp01(p / .5) * (1 - q)).toFixed(2)}deg)`;
+        fb.style.opacity = q > .92 ? (1 - (q - .92) / .08).toFixed(3) : 1;
+        navMark.style.opacity = Math.max(film ? film.mark : 0, clamp01((q - .9) / .1)).toFixed(3);
+      });
+    }
   }
 }
 
@@ -347,10 +382,18 @@ if (!reduce) for (const b of $$('.fig b')) {
   $$('.mq').forEach((mq, i) => {
     const track = $('.mq-track', mq);
     const set = btn => { $$('button', track).forEach(x => x.classList.toggle('on', x === btn)); show(btn); };
-    track.addEventListener('pointerover', e => { const b = e.target.closest('button'); if (b) { hold = true; set(b); } });
-    track.addEventListener('pointerleave', () => { hold = mq.contains(document.activeElement); if (!hold) set(null); });
-    track.addEventListener('focusin', e => { hold = true; set(e.target.closest('button')); if (!reduce) centre(e.target.closest('li')); });
-    track.addEventListener('focusout', e => { if (!track.contains(e.relatedTarget)) { hold = false; set(null); } });
+    const letGo = () => { hold = false; set(null); };
+    track.addEventListener('pointerover', e => { if (e.pointerType === 'touch') return; const b = e.target.closest('button'); if (b) { hold = true; set(b); } });
+    track.addEventListener('pointerleave', e => { if (e.pointerType === 'touch') return; hold = mq.contains(document.activeElement); if (!hold) set(null); });
+    // touch has no hover: a tap pins the client in the readout and stops the row under the finger; a tap anywhere else lets go
+    let touched = false;
+    addEventListener('pointerdown', e => { touched = e.pointerType === 'touch'; if (touched && hold && !track.contains(e.target)) letGo(); });
+    // the separator after a name belongs to its item, so a tap that lands between names still finds one
+    track.addEventListener('click', e => { const b = e.target.closest('li')?.querySelector('button'); if (b && touched) { hold = true; set(b); } });
+    // only a keyboard focus recentres the row; a tapped name stays where the finger found it
+    const keyed = el => { try { return el.matches(':focus-visible'); } catch { return true; } };
+    track.addEventListener('focusin', e => { hold = true; set(e.target.closest('button')); if (!reduce && keyed(e.target)) centre(e.target.closest('li')); });
+    track.addEventListener('focusout', e => { if (!track.contains(e.relatedTarget)) letGo(); });
     mq.addEventListener('scroll', () => { mq.scrollLeft = 0; });       // focus must not scroll the clipped row
     let hold = false;
     if (reduce) return;
@@ -361,7 +404,8 @@ if (!reduce) for (const b of $$('.fig b')) {
     let half = 1, x = 0, s = 1, v = 0, on = false;
     measures.add(() => { half = track.scrollWidth / 2; if (dir > 0 && x === 0) x = -half; });
     const centre = li => { x = -(li.offsetLeft - mq.clientWidth / 2 + li.offsetWidth / 2); };
-    new IntersectionObserver(([e]) => { on = e.isIntersecting; }).observe(mq);
+    // a row scrolled out of view is released, so a tapped row is moving again when the reader comes back
+    new IntersectionObserver(([e]) => { on = e.isIntersecting; if (!on && hold && !mq.contains(document.activeElement)) letGo(); }).observe(mq);
     const { stiffness: k, damping: c } = T.spring.float;
     tickers.add(dt => {
       if (!on) return;
@@ -476,16 +520,23 @@ if (!reduce) for (const b of $$('.fig b')) {
     $('.mono', tip).textContent = `${d.v} ${set.unit} · ${pct.format(d.v / total)} ${L.of} ${total}`;
     $('.n', tip).textContent = d.names;
     const w = svgEl.clientWidth, x = d.v / D.to * w, flip = x + tip.offsetWidth + 16 > w;
-    animate(tip, { x: flip ? x - tip.offsetWidth - 12 : x + 12, y: r.y + 40, opacity: 1, ...move() });
+    animate(tip, { x: flip ? Math.max(0, x - tip.offsetWidth - 12) : x + 12, y: r.y + 40, opacity: 1, ...move() });
     animate(xv, { x: `${(d.v / D.to * 100).toFixed(3)}%`, ...move() });
     animate(xhl, { y: r.y + 28, ...move() });
     animate(xh, { opacity: 1, duration: T.t.tick, ease: 'linear' });
   };
+  // touch: a tap pins a bar and its tooltip; tapping it again, or anywhere outside the chart, lets go
+  let touched = false, before = null;
+  addEventListener('pointerdown', e => {
+    touched = e.pointerType === 'touch'; before = act;          // the state before a tap may focus the row
+    if (touched && act && !svgEl.contains(e.target)) activate(null);
+  });
   for (const r of rows) {
     r.el.addEventListener('focus', () => activate(r));
-    r.el.addEventListener('pointerenter', () => r.on && activate(r));
+    r.el.addEventListener('pointerenter', e => e.pointerType !== 'touch' && r.on && activate(r));
+    r.el.addEventListener('click', () => { if (touched && r.on) activate(before === r ? null : r); });
   }
-  svgEl.addEventListener('pointerleave', () => { if (!svgEl.contains(document.activeElement)) activate(null); });
+  svgEl.addEventListener('pointerleave', e => { if (e.pointerType !== 'touch' && !svgEl.contains(document.activeElement)) activate(null); });
   svgEl.addEventListener('focusout', e => { if (!svgEl.contains(e.relatedTarget)) activate(null); });
   svgEl.addEventListener('keydown', e => {
     const vis = rows.filter(r => r.on), i = vis.indexOf(act);
@@ -547,8 +598,14 @@ if (!reduce) for (const b of $$('.fig b')) {
 /* ---- Chart B: a playhead scrubs 2002 → 2026; ticks draw and events drop in as it passes ---- */
 {
   const tl = $('#timeline');
+  // the horizontal form pins a stage the height of the screen: it is used only where that stage fits
+  let wide = false;
   if (tl && !reduce && innerWidth >= 900) {
     tl.classList.add('tl-live');
+    wide = $('.span-r', tl).offsetHeight + nav.offsetHeight <= innerHeight;
+    if (!wide) tl.classList.remove('tl-live');
+  }
+  if (wide) {
     const pin = $('.tl-pin', tl), axis = $('.tl-axis', tl), yr = $('.tl-yr', tl), items = $$('.tl-list li', tl);
     items.forEach(li => li.style.setProperty('--x', li.dataset.x));
     const NS = 'http://www.w3.org/2000/svg';
@@ -579,6 +636,38 @@ if (!reduce) for (const b of $$('.fig b')) {
         // each event drops in as the playhead passes it, and lifts out if the reader scrolls back
         animate(li, { opacity: on ? 1 : 0, duration: T.t.move, ease: 'linear' });
         animate([...li.children], { translateY: on ? [-10, 0] : -10, duration: T.t.move, ease: T.ease.enter });
+      });
+    });
+  } else if (tl && !reduce && CSS.supports('overflow', 'clip')) {
+    // phones and short screens: the list stays vertical. The year readout is pinned to the foot of the screen by CSS
+    // (sticky, so it holds still under a native touch scroll) and is the playhead: the rail fills down to it
+    tl.classList.add('tl-rail');
+    const track = $('.tl-track', tl), items = $$('.tl-list li', tl);
+    const ph = document.createElement('p'), yr = document.createElement('span');
+    ph.className = 'tl-ph mono'; ph.setAttribute('aria-hidden', 'true');
+    ph.append(document.createElement('i'), yr); track.append(ph);
+    const years = items.map(li => +$('time', li).getAttribute('datetime').slice(0, 4));
+    const kids = items.map(li => [...li.children]);
+    let marks = [], lift = 0;
+    const state = items.map(() => null);
+    // each event's mark is its node on the rail, level with the date
+    measures.add(() => { marks = items.map(li => docTop(li) + parseFloat(getComputedStyle(li, '::before').top) + 4.5); lift = 16 + ph.offsetHeight / 2; });
+    utils.set(kids.flat(), { opacity: 0 });
+    scrollFns.add(() => {
+      const y = scrollTop() + innerHeight - lift;                 // the playhead, in page coordinates
+      let i = 0;
+      while (i < marks.length - 1 && y >= marks[i + 1]) i++;
+      // the year runs through the gaps between events, so it reads each event's year exactly as the playhead reaches it
+      const t = y < marks[0] || i === marks.length - 1 ? years[i] : Math.floor(years[i] + (years[i + 1] - years[i]) * (y - marks[i]) / (marks[i + 1] - marks[i]));
+      if (yr.textContent !== String(t)) yr.textContent = t;
+      items.forEach((li, k) => {
+        const on = y >= marks[k];
+        if (state[k] === on) return;
+        state[k] = on;
+        li.classList.toggle('on', on);
+        // each event drops in as the playhead passes its node, and lifts out if the reader scrolls back
+        animate(kids[k], { opacity: on ? 1 : 0, duration: T.t.move, ease: 'linear' });
+        animate(kids[k], { translateY: on ? [-10, 0] : -10, duration: T.t.move, ease: T.ease.enter });
       });
     });
   }
@@ -636,14 +725,16 @@ if (!reduce) for (const b of $$('.fig b')) {
   if (diag && !reduce) {
     const [edge] = svg.createDrawable($('.pai-edge rect', diag));
     const nodes = $$('.pai-node, .pai-org-l', diag), arrows = $$('.pai-arrow', diag), down = $('.pai-down', diag), x = $('.pai-x', diag), out = $('.pai-out', diag);
-    if (belowFold(diag)) { utils.set(edge, { draw: '0 0' }); utils.set(nodes, { opacity: 0 }); utils.set(arrows, { scaleX: 0 }); utils.set(down, { scaleY: 0 }); utils.set([x, out], { opacity: 0 }); }
+    // in the stacked phone layout the arrows point down, so they draw downwards
+    const grow = matchMedia('(max-width:699px)').matches ? 'scaleY' : 'scaleX';
+    if (belowFold(diag)) { utils.set(edge, { draw: '0 0' }); utils.set(nodes, { opacity: 0 }); utils.set(arrows, { [grow]: 0 }); utils.set(down, { scaleY: 0 }); utils.set([x, out], { opacity: 0 }); }
     once(diag, '75% top', () => createTimeline()
       // the organisation's perimeter is traced first: everything that follows happens inside it
       .add(edge, { draw: ['0 0', '0 1'], duration: T.t.draw, ease: T.ease.enter }, 0)
       // documents, server and team appear in reading order
       .add(nodes, { opacity: [0, 1], translateY: [12, 0], duration: T.t.reveal, ease: T.ease.enter, delay: stagger(120) }, 400)
       // the data path draws from documents to server to team
-      .add(arrows, { scaleX: [0, 1], duration: T.t.move, ease: T.ease.enter, delay: stagger(180) }, 800)
+      .add(arrows, { [grow]: [0, 1], duration: T.t.move, ease: T.ease.enter, delay: stagger(180) }, 800)
       // the route out to public providers draws, and stops at the perimeter
       .add(down, { scaleY: [0, 1], duration: T.t.move, ease: T.ease.enter }, 1200)
       .add([x, out], { opacity: [0, 1], duration: T.t.tick, ease: 'linear' }, 1560));
@@ -667,12 +758,13 @@ if (!reduce) for (const b of $$('.fig b')) {
     const imgs = shots.map(s => $('img', s));
     utils.set(imgs, { scale: 1.08 });
     let tops = [];
-    const stack = innerWidth >= 900;
-    if (stack) root.classList.add('stack-live');
+    root.classList.add('stack-live');
     measures.add(() => {
       // natural positions: sticky cases are measured from their flow order, not their stuck position
       const list = cases[0].parentElement, gap = parseFloat(getComputedStyle(list).rowGap) || 0;
       let y = docTop(list); tops = cases.map(c => { const t = y; y += c.offsetHeight + gap; return [t, c.offsetHeight]; });
+      // a case taller than the screen sticks only once its foot is in view, so none is covered before it has been seen
+      for (const c of cases) c.style.setProperty('--case-h', `${c.offsetHeight}px`);
     });
     scrollFns.add(() => {
       const st = scrollTop(), vh = innerHeight;
@@ -681,13 +773,18 @@ if (!reduce) for (const b of $$('.fig b')) {
         // the image drifts at most 40 px inside its frame while the case is on screen
         const p = clamp01((st + vh - t) / (vh + h));
         for (const img of $$('img', c)) img.style.transform = `translateY(${((p - .5) * 40).toFixed(1)}px) scale(1.08)`;
-        if (!stack || i === cases.length - 1) return;
+        if (i === cases.length - 1) return;
         // the case steps back to .94 as the next one arrives over it
         const [tn] = tops[i + 1] || [0];
         const q = clamp01((st + vh - tn) / (vh - 80));
         c.style.transform = `scale(${(1 - .06 * q).toFixed(4)})`;
       });
     });
+  }
+  // contact sheet: where nothing hovers, each row comes into full colour as it crosses the middle of the screen
+  if (matchMedia('(hover: none)').matches) {
+    const io = new IntersectionObserver(es => es.forEach(e => e.target.classList.toggle('lit', e.isIntersecting)), { rootMargin: '-40% 0px -40% 0px' });
+    $$('.sheet img').forEach(img => io.observe(img));
   }
 }
 
@@ -737,19 +834,27 @@ if (!reduce) for (const b of $$('.fig b')) {
   });
 }
 
-/* ---- pills: press answers on snap; primary pills lean toward the pointer, 6 px at most ---- */
+/* ---- pills: press answers on snap; primary pills lean toward the pointer, 6 px at most, or toward the pressing finger, 4 px ---- */
 if (!reduce) for (const b of $$('.pill-btn')) {
-  b.addEventListener('pointerdown', () => animate(b, { scale: .97, ease: sp('snap') }));
-  const up = () => animate(b, { scale: 1, ease: sp('snap') });
+  const primary = b.classList.contains('primary');
+  const toward = (e, box, max) => {
+    const nx = (e.clientX - box.left - box.width / 2) / (box.width / 2), ny = (e.clientY - box.top - box.height / 2) / (box.height / 2);
+    return { x: utils.clamp(nx * max, -max, max), y: utils.clamp(ny * max, -max, max) };
+  };
+  // touch has no hover to lean on, so the press itself leans toward the finger
+  b.addEventListener('pointerdown', e => animate(b, { scale: .97, ...(primary && e.pointerType === 'touch' ? toward(e, b.getBoundingClientRect(), 4) : {}), ease: sp('snap') }));
+  const up = e => {
+    animate(b, { scale: 1, ease: sp('snap') });
+    if (e.pointerType === 'touch') animate(b, { x: 0, y: 0, ease: sp('float') });
+  };
   b.addEventListener('pointerup', up);
   b.addEventListener('pointerleave', up);
-  if (!b.classList.contains('primary') || !matchMedia('(hover: hover)').matches) continue;
+  if (!primary || !matchMedia('(hover: hover)').matches) continue;
   let box = null;
   b.addEventListener('pointerenter', () => { box = b.getBoundingClientRect(); });
   b.addEventListener('pointermove', e => {
     if (!box) return;
-    const nx = (e.clientX - box.left - box.width / 2) / (box.width / 2), ny = (e.clientY - box.top - box.height / 2) / (box.height / 2);
-    animate(b, { x: utils.clamp(nx * 6, -6, 6), y: utils.clamp(ny * 6, -6, 6), ease: sp('snap') });
+    animate(b, { ...toward(e, box, 6), ease: sp('snap') });
   });
   b.addEventListener('pointerleave', () => { box = null; animate(b, { x: 0, y: 0, ease: sp('float') }); });
 }
