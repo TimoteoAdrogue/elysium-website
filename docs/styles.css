@@ -1,7 +1,7 @@
 /* ==========================================================================
    Elysium — design and technology.
    Dark from top to bottom, one accent (the business-card blue), Swiss red
-   for the flag field only. Geist + Geist Mono, self-hosted.
+   for the flag field and the hero film's map pins. Geist + Geist Mono, self-hosted.
    Tokens live here; main.js reads them, it never restates them.
    ========================================================================== */
 
@@ -23,7 +23,7 @@
   --maxw:1440px; --gut:clamp(16px,4vw,64px); --pad:clamp(12px,1.5vw,24px);
   --fs-display:clamp(3rem,8.5vw,8.5rem); --fs-h2:clamp(2rem,4.6vw,4.25rem); --fs-h3:clamp(1.25rem,1.6vw,1.5rem);
   --fs-body:clamp(17px,16px + .25vw,18px); --fs-label:12px;
-  --nav-h:56px;
+  --nav-h:68px;   /* the band the floating nav occupies: 10 px off the top, 48 px tall, 10 px clear */
 }
 
 *,*::before,*::after{box-sizing:border-box}
@@ -111,8 +111,13 @@ main,footer{position:relative}
 }
 
 /* ---- nav ------------------------------------------------------------------ */
-.nav{position:fixed;inset:0 0 auto;z-index:10;height:var(--nav-h);background:var(--void);box-shadow:inset 0 -1px var(--line)}
-.nav-in{height:100%;display:flex;align-items:center;gap:clamp(10px,2vw,28px)}
+.nav{position:fixed;top:10px;left:0;right:0;z-index:10;height:48px;pointer-events:none}
+/* glass: the film and the page stay visible through the bar, blurred; no hard border, only a light catching its top edge */
+.nav-in{height:100%;display:flex;align-items:center;gap:clamp(10px,2vw,28px);pointer-events:auto;
+  width:calc(100% - 2 * var(--gut));max-width:calc(var(--maxw) - 2 * var(--gut));padding-inline:6px 18px;border-radius:999px;
+  background:rgba(14,16,20,.46);-webkit-backdrop-filter:blur(18px) saturate(1.6);backdrop-filter:blur(18px) saturate(1.6);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.10),inset 0 0 0 1px rgba(255,255,255,.035),0 14px 34px -14px rgba(0,0,0,.7)}
+@supports not ((-webkit-backdrop-filter:blur(1px)) or (backdrop-filter:blur(1px))){.nav-in{background:rgba(11,13,16,.94)}}
 .brand{display:flex;align-items:center;gap:10px;text-decoration:none;flex:none;border-radius:999px}
 .wm-plate{display:block;background:var(--text);border-radius:999px;padding:7px 12px}
 .wm-plate img{height:18px;width:auto}
@@ -120,7 +125,7 @@ main,footer{position:relative}
 .links{position:relative;display:flex;margin-inline-start:auto}
 .links a{position:relative;z-index:1;display:flex;align-items:center;min-height:44px;padding:0 12px;text-decoration:none;color:var(--text-2);border-radius:999px}
 .links a:hover,.links a[aria-current]{color:var(--text)}
-.links .pill{position:absolute;inset:6px 0;background:var(--fill-2);border-radius:999px;clip-path:inset(0 100% 0 0 round 999px)}
+.links .pill{position:absolute;inset:4px 0;background:var(--fill-2);border-radius:999px;clip-path:inset(0 100% 0 0 round 999px)}
 .clock{flex:none;color:var(--text-2);white-space:nowrap}
 .clock time{color:var(--text)}
 .lang{display:flex;gap:2px;flex:none;color:var(--text-3)}
@@ -522,7 +527,7 @@ footer{padding-block:56px 72px;box-shadow:inset 0 1px var(--line)}
 /* ---- hero film: Switzerland as a 3D scan from real elevation data, scrubbed by scroll ----
    main.js adds .film-live (motion allowed, no Save-Data); without it this is the plain hero. */
 .hf-media{display:none}
-.film-live .hero-film{height:420vh}
+.film-live .hero-film{height:300vh}
 .film-live .hf-stage{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden}
 .film-live .hf-media{display:block;position:absolute;inset:0;pointer-events:none}
 .film-live .hero{position:relative;z-index:1}
@@ -537,9 +542,14 @@ footer{padding-block:56px 72px;box-shadow:inset 0 1px var(--line)}
 .hf-route i{position:relative;display:block;width:200px;height:1px;background:rgba(255,255,255,.22)}
 .hf-route em{position:absolute;top:-3px;left:0;width:7px;height:7px;margin-left:-3px;border-radius:50%;background:#FFFFFF;box-shadow:0 0 12px 2px rgba(255,255,255,.7)}
 .hf-pin{position:absolute;left:0;top:0;white-space:nowrap;opacity:0;color:var(--text-2)}
-.hf-pin::before{content:"";position:absolute;left:-5px;top:-5px;width:9px;height:9px;border:1px solid #FFFFFF;border-radius:50%}
-.hf-pin span{position:absolute;left:0;bottom:6px;height:56px;padding-left:10px;border-left:1px solid rgba(255,255,255,.55);display:flex;flex-direction:column;gap:2px}
-.hf-pin.flip span{left:auto;right:0;padding:0 10px 0 0;border-left:0;border-right:1px solid rgba(255,255,255,.55);text-align:right}
+/* pins are Swiss red so they read at a glance over the white scan; the label stays white for legibility */
+.hf-pin::before{content:"";position:absolute;left:-5px;top:-5px;width:10px;height:10px;border-radius:50%;background:var(--swiss);
+  box-shadow:0 0 0 3px rgba(218,41,28,.28),0 0 18px 4px rgba(218,41,28,.55)}
+.hf-pin::after{content:"";position:absolute;left:-14px;top:-14px;width:28px;height:28px;border-radius:50%;box-shadow:inset 0 0 0 1.5px var(--swiss);
+  animation:pin-ring 2.4s cubic-bezier(.16,1,.3,1) infinite}
+@keyframes pin-ring{from{transform:scale(.35);opacity:1}to{transform:scale(1.5);opacity:0}}
+.hf-pin span{position:absolute;left:0;bottom:6px;height:56px;padding-left:10px;border-left:1px solid var(--swiss);display:flex;flex-direction:column;gap:2px}
+.hf-pin.flip span{left:auto;right:0;padding:0 10px 0 0;border-left:0;border-right:1px solid var(--swiss);text-align:right}
 .hf-pin b{color:var(--text);font-weight:400}
 .hf-cue{position:absolute;left:50%;bottom:28px;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:10px}
 .hf-cue i{display:block;width:1px;height:36px;background:linear-gradient(#FFFFFF,rgba(255,255,255,0))}

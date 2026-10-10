@@ -11,3 +11,8 @@ v3-prompt.md
 
 # elevation tiles downloaded by tools/hero-film (re-fetched on demand)
 tools/hero-film/tiles*/
+tools/hero-film/osm/
+tools/hero-film/dem.npz
+tools/hero-film/png-*/
+tools/hero-film/png-*.json
+tools/hero-film/test-*/

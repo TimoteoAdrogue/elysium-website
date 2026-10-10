@@ -70,7 +70,8 @@ const once = (target, enter, fn) => {
 const nav = $('#nav');
 let navHoldUntil = 120;                 // the flag docks into the nav, so the nav stays put until it lands
 if (!reduce) {
-  let last = 0, hidden = false;
+  let last = 0, hidden = false, out = 70;
+  measures.add(() => { out = nav.offsetTop + nav.offsetHeight + 8; });
   scrollFns.add(() => {
     const y = scrollTop(), d = y - last;
     if (Math.abs(d) < 4) return;
@@ -79,7 +80,7 @@ if (!reduce) {
     if (hide === hidden) return;
     hidden = hide;
     // the bar slides out of the reading area and returns when the reader turns back
-    animate(nav, { y: hide ? '-100%' : '0%', duration: T.t.move, ease: T.ease.enter });
+    animate(nav, { y: hide ? -out : 0, duration: T.t.move, ease: T.ease.enter });
   });
 }
 
@@ -201,7 +202,7 @@ if (!reduce) {
     measures.add(() => {
       const g = $('.grid-bg>div>div').getBoundingClientRect();
       vh = innerHeight; x = phone.matches ? g.right - .5 : g.left + .5;
-      t0 = nav.offsetHeight + 28; t1 = vh - 28;
+      t0 = nav.offsetTop + nav.offsetHeight + 24; t1 = vh - 28;
       const tops = secs.map(docTop);
       // the track runs from the first section at the reading line to the last one there (or the foot of the page)
       a = tops[0] - vh * .4; b = Math.max(a + 1, Math.min(root.scrollHeight - vh, tops.at(-1) - vh * .4));
@@ -255,7 +256,7 @@ const film = (() => {
   const rd = $$('.hf-read b', sec), fr = $('.hf-frame b', sec), dot = $('.hf-route em', sec);
   const nf = new Intl.NumberFormat(root.lang), df = new Intl.NumberFormat(root.lang, { minimumFractionDigits: 4, maximumFractionDigits: 4 });
   const sm = (a, b, v) => { v = clamp01((v - a) / (b - a)); return v * v * (3 - 2 * v); };
-  const WIN = [[0, .1], [.19, .27], [.5, .57], [.6, .8]];         // when each pin may show: Zürich, Pilatus, the lake, Geneva
+  const WIN = pins.map(p => (p.dataset.win || '0,1').split(',').map(Number));   // when each pin may show, from its data-win
   const api = { mark: 1, onEnd: null };
   let meta = null, top = 0, span = 1, dy = 0, vw = 1, vh = 1, dur = 0, ended = false;
   root.classList.add('film-live');
@@ -381,7 +382,7 @@ if (!reduce) {
     const fr = fig.getBoundingClientRect();
     if (film) film.onEnd = () => build(0);                // with the hero film, the flag is built as the flight lands
     else if (!phone || fr.bottom <= innerHeight || fr.top < 0) build(250); else once(fig, 'bottom 80%', () => build(0));
-    const navY = () => { const t = nav.style.transform.match(/-?[\d.]+%/); return t ? parseFloat(t[0]) / 100 * nav.offsetHeight : 0; };
+    const navY = () => { const t = nav.style.transform.match(/translateY\((-?[\d.]+)px\)/); return t ? +t[1] : 0; };
     const releaseRings = rel => ringGs.forEach((g, r) => { g.style.opacity = clamp01(1 - (rel * 17 - (15 - r))).toFixed(3); });
 
     if (phone) {
@@ -395,7 +396,7 @@ if (!reduce) {
         const pl = parseFloat(cs.paddingLeft);
         size = r.width - pl - parseFloat(cs.paddingRight); left = r.left + pl;
         fig.style.minHeight = `${size}px`;                 // keeps the flag's place in the hero while it rides
-        ride = nav.offsetHeight + 16; sRide = docTop(fig) - ride; span = innerHeight * .4;
+        ride = nav.offsetTop + nav.offsetHeight + 12; sRide = docTop(fig) - ride; span = innerHeight * .4;
         mx = m.left + m.width / 2; my = m.top - nav.getBoundingClientRect().top + m.height / 2;
         navHoldUntil = Math.max(120, sRide + span + 240);
         if (fixed) pin(true);
@@ -436,7 +437,7 @@ if (!reduce) {
         releaseRings(clamp01((p - .1) / .45));
         // the flag rides just under the nav once it reaches it, then shrinks and slides into the mark
         const s = 1 + (16 / size - 1) * q, natY = cy - scrollTop(), half = size * s / 2;
-        const minY = (nav.offsetHeight + half + 16) * (1 - q) + (my + navY()) * q;
+        const minY = (nav.offsetTop + nav.offsetHeight + half + 12) * (1 - q) + (my + navY()) * q;
         const dx = (mx - cx) * q, dy = Math.max(natY, minY) - natY;
         fb.style.transform = `translate(${dx.toFixed(1)}px,${dy.toFixed(1)}px) scale(${s.toFixed(4)}) rotateX(${(12 * clamp01(p / .5) * (1 - q)).toFixed(2)}deg)`;
         fb.style.opacity = q > .92 ? (1 - (q - .92) / .08).toFixed(3) : 1;
@@ -444,6 +445,14 @@ if (!reduce) {
       });
     }
   }
+}
+
+/* ---- images: each lazy picture starts downloading two screens before it scrolls into view, so none appears blank;
+   the index's hover pictures, hidden until hovered, are fetched once the page has settled ---- */
+{
+  const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.loading = 'eager'; io.unobserve(e.target); } }), { rootMargin: '200% 0px' });
+  for (const img of $$('img[loading="lazy"]')) io.observe(img);
+  addEventListener('load', () => setTimeout(() => { for (const img of $$('.ix-th')) { img.loading = 'eager'; new Image().src = img.currentSrc || img.src; } }, 1500), { once: true });
 }
 
 /* ---- section overture: rule draws, index types, heading rises word by word, body follows ---- */
@@ -577,7 +586,7 @@ if (!reduce) for (const b of $$('.fig b')) {
   let wide = false;
   if (tl && !reduce && innerWidth >= 900) {
     tl.classList.add('tl-live');
-    wide = $('.span-r', tl).offsetHeight + nav.offsetHeight <= innerHeight;
+    wide = $('.span-r', tl).offsetHeight + nav.offsetTop + nav.offsetHeight <= innerHeight;
     if (!wide) tl.classList.remove('tl-live');
   }
   if (wide) {
@@ -688,7 +697,7 @@ if (!reduce) for (const b of $$('.fig b')) {
     for (const s of shots) {
       if (belowFold(s)) utils.set(s, { clipPath: 'inset(100% 0% 0% 0%)' });
       // the screenshot is revealed bottom-up, like a screen being drawn
-      once(s, '90% top', () => animate(s, { clipPath: ['inset(100% 0% 0% 0%)', 'inset(0% 0% 0% 0%)'], duration: T.t.reveal, ease: T.ease.enter }));
+      once(s, '90% top', () => { const img = $('img', s); (img && !img.complete ? img.decode().catch(() => {}) : Promise.resolve()).then(() => animate(s, { clipPath: ['inset(100% 0% 0% 0%)', 'inset(0% 0% 0% 0%)'], duration: T.t.reveal, ease: T.ease.enter })); });
     }
     const imgs = shots.map(s => $('img', s));
     utils.set(imgs, { scale: 1.08 });

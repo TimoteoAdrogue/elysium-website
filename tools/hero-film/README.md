@@ -12,7 +12,7 @@ python dem.py
 NAME=png-d python render.py 240
 FW=720 FH=1560 HFOV=42 PITCH=-8 GRID=m NAME=png-m python render.py 240
 # 4. scrub encodes: one keyframe per frame, or Firefox seeks stall
-ffmpeg -framerate 30 -i png-d/f%03d.png -c:v libx264 -profile:v high -pix_fmt yuv420p -crf 27 -tune film -g 1 -keyint_min 1 -sc_threshold 0 -movflags +faststart -an film-landscape.mp4
+sh encode.sh png-d landscape 28 && sh encode.sh png-m portrait 28   # see encode.sh
 ```
 
 `render.py` writes `<NAME>.json` beside the frames: per frame, the camera's lat/lon/alt/heading and the
