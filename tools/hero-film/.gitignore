@@ -3,3 +3,5 @@ dem.npz
 png-*/
 frames*/
 *.json
+osm/
+test-*/

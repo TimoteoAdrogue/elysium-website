@@ -255,7 +255,7 @@ const film = (() => {
   const pins = $$('.hf-pin', sec), hud = $('.hf-hud', sec), cue = $('.hf-cue', sec), scrim = $('.hf-scrim', sec);
   const rd = $$('.hf-read b', sec), fr = $('.hf-frame b', sec), dot = $('.hf-route em', sec);
   const nf = new Intl.NumberFormat(root.lang), df = new Intl.NumberFormat(root.lang, { minimumFractionDigits: 4, maximumFractionDigits: 4 });
-  const sm = (a, b, v) => { v = clamp01((v - a) / (b - a)); return v * v * (3 - 2 * v); };
+  const sm = (a, b, v) => { v = clamp01((v - a) / (b - a)); return v * v * (3 - 2 * v); };   // film times: flight to .8, crane to .92, grid by .99
   const WIN = pins.map(p => (p.dataset.win || '0,1').split(',').map(Number));   // when each pin may show, from its data-win
   const api = { mark: 1, onEnd: null };
   let meta = null, top = 0, span = 1, dy = 0, vw = 1, vh = 1, dur = 0, ended = false;
@@ -273,7 +273,8 @@ const film = (() => {
     video.play().then(() => video.pause()).catch(() => {});        // iOS loads frames only after a play
   };
   const start = () => {
-    const mp4 = url(`film-${name}.mp4`);
+    // a 2x screen gets the 2880 px film; any other landscape screen the 1920 px one, which is half the weight
+    const mp4 = url(`film-${name}${name === 'landscape' && innerWidth * devicePixelRatio > 2200 ? '-2x' : ''}.mp4`);
     video.preload = 'auto'; attach(mp4);                            // range requests: the film answers at once
     fetch(mp4).then(r => r.ok ? r.blob() : Promise.reject()).then(b => attach(URL.createObjectURL(b))).catch(() => {});  // then from memory: every seek immediate
   };
@@ -292,17 +293,17 @@ const film = (() => {
     if (dur) seek(Math.min(dur - .001, (i + .5) / (meta ? meta.fps : 30)));
     video.style.opacity = (1 - sm(.985, 1, p)).toFixed(3);            // the last frame is the grid underneath
     cue.style.opacity = (1 - sm(0, .03, p)).toFixed(3);
-    hud.style.opacity = (sm(.06, .12, p) * (1 - sm(.8, .86, p))).toFixed(3);
+    hud.style.opacity = (sm(.06, .12, p) * (1 - sm(.88, .93, p))).toFixed(3);
     scrim.style.opacity = (1 - sm(.05, .12, p) * .45).toFixed(3);
     // eyebrow and slogan open the film and leave with the first metres; the whole hero lands on the grid at the end
     kids.forEach((k, j) => {
       let o, y;
       if (p < .5) { o = j < 2 ? 1 - sm(.02, .09, p) : 0; y = j < 2 ? dy - 60 * sm(0, .1, p) : 0; }
-      else { o = sm(.85 + j * .015, .9 + j * .015, p); y = 24 * (1 - o); }
+      else { o = sm(.91 + j * .008, .95 + j * .008, p); y = 24 * (1 - o); }
       k.style.opacity = o.toFixed(3); k.style.transform = `translateY(${y.toFixed(1)}px)`;
     });
-    api.mark = 1 - sm(.8, .88, p);
-    if (!ended && p > .9) { ended = true; api.onEnd?.(); }
+    api.mark = 1 - sm(.88, .94, p);
+    if (!ended && p > .95) { ended = true; api.onEnd?.(); }
     if (!meta) return;
     const f = meta.f[i];
     rd[0].textContent = `${df.format(Math.abs(f[0]))}° ${f[0] >= 0 ? 'N' : 'S'}`;
@@ -310,15 +311,19 @@ const film = (() => {
     rd[2].textContent = `${nf.format(f[2])} m`;
     rd[3].textContent = `${f[3]}°`;
     fr.textContent = String(i + 1).padStart(3, '0');
-    dot.style.left = `${(100 * Math.min(p / .74, 1)).toFixed(2)}%`;
+    dot.style.left = `${(100 * Math.min(p / .8, 1)).toFixed(2)}%`;   // the flight reaches Geneva at .8
     // pins follow their place in the frame (object-fit: cover)
     const s = Math.max(vw / meta.w, vh / meta.h), ox = (vw - meta.w * s) / 2, oy = (vh - meta.h * s) / 2;
+    const placed = [];
     pins.forEach((el, k) => {
       const L = f[4 + k], w = WIN[k];
       let o = 0;
       if (L) {
         const X = ox + L[0] * s, Y = oy + L[1] * s;
         if (X > 40 && X < vw - 40 && Y > 110 && Y < vh - 90) o = sm(w[0], w[0] + .03, p) * (1 - sm(w[1] - .03, w[1], p));
+        // a label that would land on one already showing waits its turn (pins are listed in order of priority)
+        if (o > .01 && placed.some(([a, b]) => Math.abs(a - X) < 200 && Math.abs(b - Y) < 74)) o = 0;
+        if (o > .01) placed.push([X, Y]);
         el.style.transform = `translate(${X.toFixed(1)}px,${Y.toFixed(1)}px)`;
         el.classList.toggle('flip', X > vw - 240);
       }
