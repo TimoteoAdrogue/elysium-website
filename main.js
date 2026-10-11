@@ -300,7 +300,9 @@ const film = (() => {
     media.style.opacity = (1 - sm(.97, 1, p)).toFixed(3);            // faded as one layer, so the poster under the canvas never shows
     cue.style.opacity = (1 - sm(0, .03, p)).toFixed(3);
     hud.style.opacity = (sm(.06, .12, p) * (1 - sm(.88, .93, p))).toFixed(3);
-    scrim.style.opacity = (1 - sm(.05, .12, p) * .45).toFixed(3);
+    const veil = sm(.9, .95, p);                                       // the city darkens behind the slogan as it comes back
+    scrim.style.opacity = (1 - sm(.05, .12, p) * .45 * (1 - veil)).toFixed(3);
+    scrim.style.setProperty('--veil', veil.toFixed(3));
     // eyebrow and slogan open the film and leave with the first metres; the whole hero lands on the grid at the end
     kids.forEach((k, j) => {
       let o, y;
