@@ -1,6 +1,10 @@
-# Hero film renderer
+# Hero film data
 
-Offline tools that made `assets/hero/film-*.mp4`. Nothing here ships with the site.
+The hero is drawn live in the browser by `film3d.js` (WebGL2) from `assets/hero3d/`: `terrain.png` (the corridor the
+flight can see, 250 m grid, height in decimetres in R/G, water in B), `city.bin` (OpenStreetMap buildings within 6 km
+of Geneva) and `meta.json` (grid placement, route waypoints, pin anchors). `webdata.py` writes all three. The offline
+renderer below made the earlier video version and still renders stills; `render.py`'s route and timing match
+`film3d.js`. Nothing here ships with the site.
 Needs Python 3 with numpy, scipy, scikit-image and Pillow, plus ffmpeg and cwebp.
 
 ```bash
@@ -15,8 +19,10 @@ mkdir -p osm && curl -s -A "elysium-site-build" -H "Accept: application/json" -o
 # 4. frames + per-frame data: desktop 2880x1800 (2x a 1440 x 900 screen), then phone 1170x2532 (3x a 390 x 844 screen)
 NAME=png-d PROCS=3 python3 render.py 300
 FW=1170 FH=2532 HFOV=42 PITCH=-8 GRID=m NAME=png-m PROCS=3 python3 render.py 300
-# 5. scrub encodes (one keyframe per frame, or Firefox stalls when seeking), posters and the trimmed pin data
-sh encode.sh
+# 5. the live hero's data -> assets/hero3d/ (about 3.4 MB)
+python3 webdata.py
+# 6. optional: offline frames for stills, and the opening poster the page shows while the live scene loads
+sh encode.sh   # also writes assets/hero/poster-*.webp
 ```
 
 The route: Zürich, the Alps and Lake Geneva as scan lines from real elevation data; a low pass over the lake past

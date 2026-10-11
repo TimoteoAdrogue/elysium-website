@@ -25,7 +25,7 @@ const BASE = process.env.BASE === undefined ? '/elysium-website' : process.env.B
 const ORIGIN = process.env.ORIGIN || 'https://timoteoadrogue.github.io';
 
 // what ships. Anything not listed here stays out of the public mirror.
-const COPY = ['index.html', 'styles.css', 'main.js', '404.html', 'favicon.svg',
+const COPY = ['index.html', 'styles.css', 'main.js', 'film3d.js', '404.html', 'favicon.svg',
               'sitemap.xml', 'assets', 'fr', 'de', '.well-known'];
 
 const NOINDEX = '<meta name="robots" content="noindex,nofollow">';

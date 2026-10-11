@@ -243,43 +243,36 @@ if (!reduce) {
   }
 }
 
-/* ---- hero film: Switzerland as a 3D scan of real elevation data, flown Zürich → Geneva by scroll.
-   Its last frame is the page grid, so the film hands over to the template without a cut.
-   Self-contained: remove this block, the .hf-* markup and the .hf-* styles to drop it. ---- */
+/* ---- hero film: Switzerland as a 3D scan of real elevation data, flown Zürich → Geneva by scroll, drawn live by
+   film3d.js. Its last frame is the page grid, so the film hands over to the template without a cut.
+   Self-contained: remove this block, film3d.js, the .hf-* markup and the .hf-* styles to drop it. ---- */
 const film = (() => {
   const sec = $('.hero-film');
-  if (!sec || reduce || !lenis || navigator.connection?.saveData) return null;
-  const name = matchMedia('(max-aspect-ratio: 1/1)').matches ? 'portrait' : 'landscape';
-  const url = f => new URL(`./assets/hero/${f}`, import.meta.url).href;
-  const stage = $('.hf-stage', sec), video = $('.hf-video', sec), kids = [...$('.hero', sec).children];
+  if (!sec || reduce || !lenis || navigator.connection?.saveData || !window.WebGL2RenderingContext) return null;
+  const portrait = matchMedia('(max-aspect-ratio: 1/1)').matches;
+  const stage = $('.hf-stage', sec), media = $('.hf-media', sec), kids = [...$('.hero', sec).children];
   const pins = $$('.hf-pin', sec), hud = $('.hf-hud', sec), cue = $('.hf-cue', sec), scrim = $('.hf-scrim', sec);
   const rd = $$('.hf-read b', sec), fr = $('.hf-frame b', sec), dot = $('.hf-route em', sec);
   const nf = new Intl.NumberFormat(root.lang), df = new Intl.NumberFormat(root.lang, { minimumFractionDigits: 4, maximumFractionDigits: 4 });
   const sm = (a, b, v) => { v = clamp01((v - a) / (b - a)); return v * v * (3 - 2 * v); };   // film times: flight to .8, crane to .92, grid by .99
   const WIN = pins.map(p => (p.dataset.win || '0,1').split(',').map(Number));   // when each pin may show, from its data-win
+  const ORDER = pins.map((p, k) => k).sort((a, b) => pins[b].classList.contains('hf-pin-ely') - pins[a].classList.contains('hf-pin-ely') || a - b);
   const api = { mark: 1, onEnd: null };
-  let meta = null, top = 0, span = 1, dy = 0, vw = 1, vh = 1, dur = 0, ended = false;
+  let scene = null, top = 0, span = 1, dy = 0, vw = 1, vh = 1, ended = false, lastT = -1, onScreen = true;
   root.classList.add('film-live');
-  video.poster = url(`poster-${name}.webp`);
-
-  // seeks are serialised: one in flight, the latest request waits and wins
-  let busy = false, want = null;
-  const seek = t => { if (busy) { want = t; return; } busy = true; try { video.currentTime = t; } catch { busy = false; } };
-  video.addEventListener('seeked', () => { busy = false; if (want !== null) { const t = want; want = null; seek(t); } });
-  // a src swap orphans the seek in flight, so the queue is reset with it
-  const attach = src => {
-    busy = false; want = null; video.src = src; video.load();
-    video.addEventListener('loadeddata', () => { dur = video.duration; run(); }, { once: true });
-    video.play().then(() => video.pause()).catch(() => {});        // iOS loads frames only after a play
+  // the opening frame shows at once; the live scene (about 3.4 MB of terrain and buildings) takes over when it is ready
+  media.style.backgroundImage = `url(${new URL(`./assets/hero/poster-${portrait ? 'portrait' : 'landscape'}.webp`, import.meta.url).href})`;
+  const canvas = document.createElement('canvas');
+  canvas.className = 'hf-canvas';
+  media.prepend(canvas);
+  const grid = () => {
+    const g = $('.grid-bg>div>div').getBoundingClientRect(), n = innerWidth < 768 ? 4 : 12;
+    return Array.from({ length: n + 1 }, (_, i) => g.left + g.width * i / n - (i === n ? 1 : 0));
   };
-  const start = () => {
-    // a 2x screen gets the 2880 px film; any other landscape screen the 1920 px one, which is half the weight
-    const mp4 = url(`film-${name}${name === 'landscape' && innerWidth * devicePixelRatio > 2200 ? '-2x' : ''}.mp4`);
-    video.preload = 'auto'; attach(mp4);                            // range requests: the film answers at once
-    fetch(mp4).then(r => r.ok ? r.blob() : Promise.reject()).then(b => attach(URL.createObjectURL(b))).catch(() => {});  // then from memory: every seek immediate
-  };
-  if (document.readyState === 'complete') start(); else addEventListener('load', start, { once: true });
-  fetch(url(`film-${name}.json`)).then(r => r.json()).then(m => { meta = m; run(); }).catch(() => {});
+  import('./film3d.js').then(m => m.createFilm(canvas, new URL('./assets/hero3d/', import.meta.url).href, portrait)).then(s => {
+    scene = s; scene.resize(vw, vh, grid()); lastT = -1; root.classList.add('film-ready'); run();
+  }).catch(() => {});                                              // no WebGL2 or no data: the opening frame stays, the page works as before
+  new IntersectionObserver(([e]) => { onScreen = e.isIntersecting; }).observe(stage);
 
   measures.add(() => {
     top = docTop(sec); span = Math.max(1, sec.offsetHeight - innerHeight);
@@ -287,11 +280,20 @@ const film = (() => {
     const h1 = kids[1], saved = h1.style.transform; h1.style.transform = 'none';
     dy = vh * .86 - (h1.getBoundingClientRect().bottom - stage.getBoundingClientRect().top);   // the slogan opens low over the film
     h1.style.transform = saved;
+    if (scene) { scene.resize(vw, vh, grid()); lastT = -1; }
+  });
+  const progress = () => clamp01((scrollTop() - top) / span);
+  // the scene is drawn on the shared clock: every frame while the jet plays, otherwise only when the scroll moves
+  tickers.add(() => {
+    if (!scene || !onScreen || document.hidden) return;
+    const t = progress();
+    if (t === lastT && !(t > .34 && t < .8)) return;
+    lastT = t;
+    scene.draw(t, performance.now());
   });
   function run() {
-    const p = clamp01((scrollTop() - top) / span), n = meta ? meta.f.length : 240, i = Math.round(p * (n - 1));
-    if (dur) seek(Math.min(dur - .001, (i + .5) / (meta ? meta.fps : 30)));
-    video.style.opacity = (1 - sm(.985, 1, p)).toFixed(3);            // the last frame is the grid underneath
+    const p = progress();
+    canvas.style.opacity = (1 - sm(.985, 1, p)).toFixed(3);          // the last frame is the grid underneath
     cue.style.opacity = (1 - sm(0, .03, p)).toFixed(3);
     hud.style.opacity = (sm(.06, .12, p) * (1 - sm(.88, .93, p))).toFixed(3);
     scrim.style.opacity = (1 - sm(.05, .12, p) * .45).toFixed(3);
@@ -304,24 +306,22 @@ const film = (() => {
     });
     api.mark = 1 - sm(.88, .94, p);
     if (!ended && p > .95) { ended = true; api.onEnd?.(); }
-    if (!meta) return;
-    const f = meta.f[i];
-    rd[0].textContent = `${df.format(Math.abs(f[0]))}° ${f[0] >= 0 ? 'N' : 'S'}`;
-    rd[1].textContent = `${df.format(Math.abs(f[1]))}° ${f[1] >= 0 ? 'E' : 'W'}`;
-    rd[2].textContent = `${nf.format(f[2])} m`;
-    rd[3].textContent = `${f[3]}°`;
-    fr.textContent = String(i + 1).padStart(3, '0');
+    fr.textContent = String(Math.round(p * 299) + 1).padStart(3, '0');
     dot.style.left = `${(100 * Math.min(p / .8, 1)).toFixed(2)}%`;   // the flight reaches Geneva at .8
-    // pins follow their place in the frame (object-fit: cover)
-    const s = Math.max(vw / meta.w, vh / meta.h), ox = (vw - meta.w * s) / 2, oy = (vh - meta.h * s) / 2;
+    if (!scene) return;
+    const S = scene.state(p);
+    rd[0].textContent = `${df.format(Math.abs(S.lat))}° ${S.lat >= 0 ? 'N' : 'S'}`;
+    rd[1].textContent = `${df.format(Math.abs(S.lon))}° ${S.lon >= 0 ? 'E' : 'W'}`;
+    rd[2].textContent = `${nf.format(Math.round(S.C[2]))} m`;
+    rd[3].textContent = `${Math.round((S.psi * 180 / Math.PI % 360 + 360) % 360)}°`;
+    // pins sit on their place in the scene; a label that would land on one already showing waits its turn
     const placed = [];
-    pins.forEach((el, k) => {
-      const L = f[4 + k], w = WIN[k];
+    ORDER.forEach(k => {
+      const el = pins[k], w = WIN[k], L = scene.project(el.dataset.pin, p);
       let o = 0;
       if (L) {
-        const X = ox + L[0] * s, Y = oy + L[1] * s;
+        const [X, Y] = L;
         if (X > 40 && X < vw - 40 && Y > 110 && Y < vh - 90) o = sm(w[0], w[0] + .03, p) * (1 - sm(w[1] - .03, w[1], p));
-        // a label that would land on one already showing waits its turn (pins are listed in order of priority)
         if (o > .01 && placed.some(([a, b]) => Math.abs(a - X) < 200 && Math.abs(b - Y) < 74)) o = 0;
         if (o > .01) placed.push([X, Y]);
         el.style.transform = `translate(${X.toFixed(1)}px,${Y.toFixed(1)}px)`;
