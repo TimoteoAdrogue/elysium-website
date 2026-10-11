@@ -93,35 +93,45 @@ void main() {
 const JET_SCALE = 1.6;                                   // drawn larger than life so it reads from the approach
 const JET_VS = `#version 300 es
 precision highp float;
-uniform vec3 u_jet; uniform vec2 u_wind; uniform float u_time, u_exag, u_amp, u_dpr, u_halo;
+uniform vec3 u_jet; uniform vec2 u_wind; uniform float u_time, u_exag, u_amp, u_dpr, u_halo, u_fpx;
 uniform vec3 u_cam, u_f, u_r, u_u; uniform vec4 u_proj;
 out float v_i;
 float hash(float n) { return fract(sin(n * 12.9898) * 43758.5453); }
 void main() {
-  // the real thing: 500 l/s leave the nozzle at about 200 km/h and climb 140 m as one white column; past the top the
-  // stream breaks into spray, which spreads, drifts with the wind and falls back to the lake as a wide veil
+  // the real thing: 500 l/s leave the nozzle at about 200 km/h and climb 140 m as one thin white column, leaning a
+  // little with the wind; there is no crown: from the top down the spray hangs downwind as a veil that widens all the
+  // way to the lake, lands about a third of the height away from the jetty and boils up there as foam
   float id = float(gl_VertexID), r0 = hash(id + 1.0), r1 = hash(id + 7.3), r2 = hash(id + 19.1), r3 = hash(id + 41.7);
-  vec3 P; float I;
-  if (id < 1800.0) {                                     // mist over the water at the foot of the jet
-    float a = r1 * 6.2832, rr = 4.0 + 30.0 * sqrt(r2);
-    P = vec3(u_wind * 10.0 + vec2(cos(a), sin(a)) * rr * vec2(1.0, .7), 2.0 + 10.0 * r3 * r3); I = .09;
-  } else {
-    float g = 9.81, v = 52.4 * mix(.8, 1.0, pow(r1, .3));  // most of the water reaches near the top, some breaks off lower
-    float T = 2.0 * v / g, tA = v / g, tau = fract(r0 + u_time / 7.0) * T;
-    float z = v * tau - .5 * g * tau * tau, rise = min(tau, tA), fall = max(tau - tA, 0.0);
-    float ang = r2 * 6.2832;
-    float rad = .3 + 1.0 * pow(rise / tA, 4.0) + fall * (1.0 + 5.0 * r3);
-    vec2 xy = vec2(cos(ang), sin(ang)) * rad * mix(.55, 1.0, r3) + u_wind * (fall * fall * .6 + pow(rise / tA, 6.0) * 2.0);
-    P = vec3(xy, max(z, 0.0));
-    float core = 1.0 - smoothstep(.0, 2.2, fall);         // the rising stream is solid white, the falling spray is light
-    I = mix(.2 * (1.0 - .55 * fall / tA), 1.0, core) * step(.0, z);
+  vec2 w = u_wind, n = vec2(-w.y, w.x);                  // downwind, crosswind
+  const float H = 140.0, D = 58.0;
+  vec3 P; float I, soft = 1.0;                           // spray and foam glow wide and soft, the column stays a crisp line
+  if (id < 2600.0) {
+    if (id < 500.0) {                                    // the boil at the nozzle
+      float a = r1 * 6.2832, rr = 3.5 * sqrt(r2);
+      P = vec3(vec2(cos(a), sin(a)) * rr, 7.0 * r3 * r3); I = .3;
+    } else {                                             // foam and mist where the veil lands
+      float al = D * (.05 + 1.0 * pow(r1, .8)) + 3.0 * fract(r0 + u_time / 12.0);
+      P = vec3(w * al + n * (r2 - .5) * (5.0 + 16.0 * al / D), 1.0 + 9.0 * r3 * r3); I = .08;
+    }
+  } else if (id < 6600.0) {                              // the column: ballistic, slowing towards the top
+    float v = 52.4 * mix(.93, 1.0, r1), tA = v / 9.81, tau = fract(r0 + u_time / tA) * tA;
+    float z = v * tau - 4.905 * tau * tau, h = z / H, a = r2 * 6.2832;
+    P = vec3(vec2(cos(a), sin(a)) * (.3 + .8 * pow(h, 3.0)) * mix(.5, 1.0, r3) + w * 4.0 * h * h, z); I = .85; soft = 0.0;
+  } else {                                               // the veil: drops leave the column, mostly at the top, and drift as they fall
+    float z0 = H * mix(.5, 1.0, pow(r1, .3)), s = fract(r0 + u_time / 10.0), fell = s * z0 / H, k = pow(r2, 1.4);    // dense against the column, thinning out downwind
+    float dn = D * k * pow(fell, .8) + 1.5 * sin(u_time * .8 + r3 * 40.0) * s;
+    P = vec3(w * (4.0 * pow(z0 / H, 2.0) + dn) + n * (r3 - .5) * (2.0 + 9.0 * s), z0 * (1.0 - s));
+    I = .18 * mix(.6, 1.0, s) * (1.0 - .5 * k);
   }
   P *= ${JET_SCALE.toFixed(2)};
   vec3 d = vec3(u_jet.xy + P.xy, u_jet.z * u_exag + P.z * max(u_exag, .02)) - u_cam;
   float zc = dot(d, u_f);
   gl_Position = vec4(dot(d, u_r) * u_proj.x, dot(d, u_u) * u_proj.y, zc * u_proj.z + u_proj.w, zc);
-  gl_PointSize = clamp(3000.0 / max(zc, 1.0), 1.0, 3.5) * u_dpr * (u_halo > .5 ? 3.5 : 1.0);
-  v_i = I * u_amp * exp(-zc / 26000.0) * min(1.0, zc / 300.0) * (u_halo > .5 ? .06 : 1.0);
+  float px = clamp(3000.0 / max(zc, 1.0), 1.0, 3.5), ppm = u_fpx / max(zc, 1.0);   // css px per point, per metre
+  // the spray keeps the same density on screen however small the jet is drawn (far away, or on a phone)
+  float dens = mix(1.0, clamp(ppm * ppm / (px * px) / .21, .06, 1.0), soft);
+  gl_PointSize = px * u_dpr * (u_halo > .5 ? mix(3.5, 5.0, soft) : 1.0);
+  v_i = I * dens * u_amp * exp(-zc / 26000.0) * min(1.0, zc / 300.0) * (u_halo > .5 ? mix(.06, .1, soft) : 1.0);
 }`;
 const FS = `#version 300 es
 precision mediump float; in float v_i; uniform float u_gain, u_round; out vec4 o;
@@ -313,9 +323,9 @@ export async function createFilm(canvas, base, portrait, v = '') {
       const J = meta.pins.jet;
       gl.uniform3f(PJ.U.u_jet, J[0], J[1], J[2]); gl.uniform2f(PJ.U.u_wind, .6, -.8);
       gl.uniform1f(PJ.U.u_time, time / 1000); gl.uniform1f(PJ.U.u_exag, S.exag); gl.uniform1f(PJ.U.u_amp, city);
-      gl.uniform1f(PJ.U.u_dpr, scale); gl.uniform1f(PJ.U.u_gain, 1.2); gl.uniform1f(PJ.U.u_round, 1);
-      gl.uniform1f(PJ.U.u_halo, 1); gl.drawArrays(gl.POINTS, 0, 14000);
-      gl.uniform1f(PJ.U.u_halo, 0); gl.drawArrays(gl.POINTS, 0, 14000);
+      gl.uniform1f(PJ.U.u_dpr, scale); gl.uniform1f(PJ.U.u_fpx, cssW / (2 * tanH)); gl.uniform1f(PJ.U.u_gain, 1.2); gl.uniform1f(PJ.U.u_round, 1);
+      gl.uniform1f(PJ.U.u_halo, 1); gl.drawArrays(gl.POINTS, 0, 20000);
+      gl.uniform1f(PJ.U.u_halo, 0); gl.drawArrays(gl.POINTS, 0, 20000);
     }
     gl.disable(gl.BLEND);
     gl.bindVertexArray(null);
