@@ -34,10 +34,11 @@ function pchip(xs, ys) {
 }
 
 // timing: scroll -> leg of the route (fast over the Alps, slow past the jet and in the city); height and pitch by leg
-const ROUTE = pchip([0, .06, .40, .50, .60, .68, .74, .80], [0, .2, 6, 7, 8, 9, 10, 11]);
-const ALT = pchip([0, 4, 6, 7, 8, 8.9, 9.6, 11], [12500, 9000, 4200, 1500, 850, 600, 650, 650]);
-const PIT = pchip([0, 4.4, 6, 7, 8, 8.9, 9.7, 10.4, 11], [-22, -29, -24, -12, -11, -15, -24, -20, -17]);
-const END = .80, PSI_M = rad(235), DV = 350, DU = 200, HALF_U = 75000, VS_MIN = -220000, VS_N = 1257;
+// the flight ends over the Old Town at .66; then a slow spiral in to Elysium's HQ, looking at it, and the rise above it
+const ROUTE = pchip([0, .06, .36, .45, .54, .61, .66], [0, .2, 6, 7, 8, 9, 10]);
+const ALT = pchip([0, 4, 6, 7, 8, 8.9, 9.6, 10], [12500, 9000, 4200, 1500, 850, 600, 650, 650]);
+const PIT = pchip([0, 4.4, 6, 7, 8, 8.9, 9.7, 10], [-22, -29, -24, -12, -11, -15, -24, -22]);
+const END = .66, ORBIT = .84, PSI_M = rad(235), DV = 350, DU = 200, HALF_U = 75000, VS_MIN = -220000, VS_N = 1257;
 const HV = [Math.sin(PSI_M), Math.cos(PSI_M)], AV = [Math.cos(PSI_M), -Math.sin(PSI_M)];   // along / across the scan lines
 
 const LINE_VS = `#version 300 es
@@ -89,6 +90,7 @@ void main() {
   if (u_faces > .5 && fade < .35) gl_Position = vec4(2.0, 2.0, 2.0, 1.0);   // faint edge buildings do not hide anything
   v_i = u_city * fade * exp(-zc / u_cfog) * min(1.0, zc / 180.0) * (a_f.y > .5 ? 2.4 : 1.0) * u_top * mix(.6, 1.0, a_f.x);
 }`;
+const JET_SCALE = 1.6;                                   // drawn larger than life so it reads from the approach
 const JET_VS = `#version 300 es
 precision highp float;
 uniform vec3 u_jet; uniform vec2 u_wind; uniform float u_time, u_exag, u_amp, u_dpr, u_halo;
@@ -96,30 +98,30 @@ uniform vec3 u_cam, u_f, u_r, u_u; uniform vec4 u_proj;
 out float v_i;
 float hash(float n) { return fract(sin(n * 12.9898) * 43758.5453); }
 void main() {
-  float id = float(gl_VertexID), r1 = hash(id + 1.0), r2 = hash(id + 7.3), r3 = hash(id + 19.1), r4 = hash(id + 41.7);
-  vec2 side = vec2(-u_wind.y, u_wind.x);
+  // the real thing: 500 l/s leave the nozzle at about 200 km/h and climb 140 m as one white column; past the top the
+  // stream breaks into spray, which spreads, drifts with the wind and falls back to the lake as a wide veil
+  float id = float(gl_VertexID), r0 = hash(id + 1.0), r1 = hash(id + 7.3), r2 = hash(id + 19.1), r3 = hash(id + 41.7);
   vec3 P; float I;
-  float g1 = (r2 + r3 + r4 - 1.5) * 1.15, g2 = (fract(r2 * 7.1) + fract(r3 * 5.3) + fract(r4 * 3.7) - 1.5) * 1.15;   // ~gaussian
-  if (id < 3600.0) {                                     // the shaft: a tight white column climbing 140 m, opening near the top
-    float s = fract(r1 + u_time * .30), z = 140.0 * pow(s, .92);
-    float w = .3 + 2.0 * pow(s, 3.4);
-    P = vec3(u_wind * (1.5 * pow(s, 3.0)) + vec2(g1, g2) * w * .5, z); I = 1.0 - .25 * s;
-  } else if (id < 5200.0) {                              // the crown: the top bends over and opens downwind
-    float s = r1;
-    P = vec3(u_wind * (2.0 + 14.0 * s) + side * g1 * (2.0 + 6.0 * s) + vec2(g2) * 1.5, 132.0 + 9.0 * r4 - 10.0 * s * s); I = .55;
-  } else if (id < 9800.0) {                              // the veil: a wide curtain of spray falling back to the lake downwind
-    float f = fract(r1 + u_time * .18);
-    float off = 5.0 + 26.0 * pow(f, 1.1) + g2 * (2.0 + 6.0 * f), spread = g1 * (3.0 + 15.0 * f);
-    P = vec3(u_wind * off + side * spread, 134.0 * (1.0 - pow(f, 1.45))); I = .26 * (1.0 - .45 * f);
-  } else {                                               // spray where it lands
-    float a = r2 * 6.2832, rr = 6.0 + 26.0 * sqrt(r3);
-    P = vec3(u_wind * 18.0 + vec2(cos(a), sin(a)) * rr * vec2(1.0, .6), 4.0 * r4 * r4); I = .18;
+  if (id < 1800.0) {                                     // mist over the water at the foot of the jet
+    float a = r1 * 6.2832, rr = 4.0 + 30.0 * sqrt(r2);
+    P = vec3(u_wind * 10.0 + vec2(cos(a), sin(a)) * rr * vec2(1.0, .7), 2.0 + 10.0 * r3 * r3); I = .09;
+  } else {
+    float g = 9.81, v = 52.4 * mix(.8, 1.0, pow(r1, .3));  // most of the water reaches near the top, some breaks off lower
+    float T = 2.0 * v / g, tA = v / g, tau = fract(r0 + u_time / 7.0) * T;
+    float z = v * tau - .5 * g * tau * tau, rise = min(tau, tA), fall = max(tau - tA, 0.0);
+    float ang = r2 * 6.2832;
+    float rad = .3 + 1.0 * pow(rise / tA, 4.0) + fall * (1.0 + 5.0 * r3);
+    vec2 xy = vec2(cos(ang), sin(ang)) * rad * mix(.55, 1.0, r3) + u_wind * (fall * fall * .6 + pow(rise / tA, 6.0) * 2.0);
+    P = vec3(xy, max(z, 0.0));
+    float core = 1.0 - smoothstep(.0, 2.2, fall);         // the rising stream is solid white, the falling spray is light
+    I = mix(.2 * (1.0 - .55 * fall / tA), 1.0, core) * step(.0, z);
   }
+  P *= ${JET_SCALE.toFixed(2)};
   vec3 d = vec3(u_jet.xy + P.xy, u_jet.z * u_exag + P.z * max(u_exag, .02)) - u_cam;
   float zc = dot(d, u_f);
   gl_Position = vec4(dot(d, u_r) * u_proj.x, dot(d, u_u) * u_proj.y, zc * u_proj.z + u_proj.w, zc);
-  gl_PointSize = clamp(2200.0 / max(zc, 1.0), 1.0, 3.0) * u_dpr * (u_halo > .5 ? 3.5 : 1.0);
-  v_i = I * u_amp * exp(-zc / 26000.0) * min(1.0, zc / 300.0) * (u_halo > .5 ? .07 : 1.0);
+  gl_PointSize = clamp(3000.0 / max(zc, 1.0), 1.0, 3.5) * u_dpr * (u_halo > .5 ? 3.5 : 1.0);
+  v_i = I * u_amp * exp(-zc / 26000.0) * min(1.0, zc / 300.0) * (u_halo > .5 ? .06 : 1.0);
 }`;
 const FS = `#version 300 es
 precision mediump float; in float v_i; uniform float u_gain, u_round; out vec4 o;
@@ -128,39 +130,58 @@ void main() {
   o = vec4(vec3(v_i * u_gain * a), 1.0);
 }`;
 
-export async function createFilm(canvas, base, portrait) {
+export async function createFilm(canvas, base, portrait, v = '') {
   const gl = canvas.getContext('webgl2', { antialias: true, alpha: false, depth: true, powerPreference: 'high-performance', preserveDrawingBuffer: false });
   if (!gl) throw new Error('no webgl2');
   const [meta, img, cityBuf] = await Promise.all([
-    fetch(base + 'meta.json').then(r => r.json()),
-    fetch(base + 'terrain.png').then(r => r.blob()).then(b => createImageBitmap(b, { colorSpaceConversion: 'none', premultiplyAlpha: 'none' })),
-    fetch(base + 'city.bin').then(r => r.arrayBuffer()),
+    fetch(base + 'meta.json' + v).then(r => r.json()),
+    fetch(base + 'terrain.png' + v).then(r => r.blob()).then(b => createImageBitmap(b, { colorSpaceConversion: 'none', premultiplyAlpha: 'none' })),
+    fetch(base + 'city.bin' + v).then(r => r.arrayBuffer()),
   ]);
-  const WP = meta.wp, NL = WP.length - 1, G = meta.geneva;
+  const WP = meta.wp.slice(0, 11), NL = WP.length - 1, G = meta.geneva, HQ = meta.pins.hq;   // route: Zürich to the Old Town
   const catmull = t => {
     const s = Math.min(t * NL, NL - 1e-6), i = Math.floor(s), u = s - i;
     const p0 = WP[Math.max(i - 1, 0)], p1 = WP[i], p2 = WP[i + 1], p3 = WP[Math.min(i + 2, NL)];
     return [0, 1].map(c => .5 * (2 * p1[c] + (-p0[c] + p2[c]) * u + (2 * p0[c] - 5 * p1[c] + 4 * p2[c] - p3[c]) * u * u + (-p0[c] + 3 * p1[c] - 3 * p2[c] + p3[c]) * u * u * u));
   };
-  const heading = t => { const a = catmull(Math.max(t - .03, 0)), b = catmull(Math.min(t + .03, 1)); return Math.atan2(b[0] - a[0], b[1] - a[1]); };
+  // heading over a wide window, so turns are taken in long curves, never as a snap
+  const heading = t => { const a = catmull(Math.max(t - .055, 0)), b = catmull(Math.min(t + .055, 1)); return Math.atan2(b[0] - a[0], b[1] - a[1]); };
   const pitchOff = portrait ? -8 : 0;
 
   // camera at scroll position t: position (E, N, alt), heading, pitch, and the scene parameters that go with it
+  const routeEnd = (() => { const p = catmull(.999); return { p, psi: heading(.97), alt: ALT(NL), pit: rad(PIT(NL)) }; })();
+  const lookAt = (p, alt) => {                            // heading and pitch that put the HQ in the middle of the frame
+    const dx = HQ[0] - p[0], dy = HQ[1] - p[1], dz = HQ[2] + 25 - alt;
+    return [Math.atan2(dx, dy), Math.atan2(dz, Math.hypot(dx, dy))];
+  };
   function state(t) {
-    const leg = ROUTE(Math.min(t, END)), sf = Math.min(leg / NL, 1);
-    let p = catmull(sf * .999), psi = heading(sf * .97), alt = ALT(leg);
-    let pit = rad(PIT(leg) + pitchOff * (1 - .5 * sm(7, 8, leg)));
-    if (portrait) psi += rad(12) * (1 - sm(.04, .14, t));      // a phone's narrow frame turns toward Zürich to open on it
-    const d = sm(.80, .92, t), top = [G[0] + HV[0] * 600, G[1] + HV[1] * 600], toc = [G[0] - p[0], G[1] - p[1]];
-    psi = angl(psi, Math.atan2(toc[0], toc[1]), sm(.78, .85, t));
-    p = [lerp(p[0], top[0], d), lerp(p[1], top[1], d)];
-    alt = lerp(alt, 15000, d ** 1.4);
-    pit = lerp(pit, -Math.PI / 2 + 1e-4, sm(.82, .93, t));
-    psi = angl(psi, PSI_M + Math.PI / 2, sm(.86, .95, t));
+    let p, psi, alt, pit;
+    if (t <= END) {
+      const leg = ROUTE(t), sf = Math.min(leg / NL, 1);
+      p = catmull(sf * .999); psi = heading(sf * .97); alt = ALT(leg);
+      pit = rad(PIT(leg) + pitchOff * (1 - .5 * sm(7, 8, leg)));
+      if (portrait) psi += rad(12) * (1 - sm(.04, .14, t));      // a phone's narrow frame turns toward Zürich to open on it
+    } else {
+      // spiral in to the HQ: closing from the Old Town to 650 m while circling 110 degrees, the office held in view
+      // it keeps going straight in at the speed it arrived with, then bends into the circle; nothing turns at once
+      const x = Math.min(Math.max((t - END) / (ORBIT - END), 0), 1), E = routeEnd;
+      const v0 = [E.p[0] - HQ[0], E.p[1] - HQ[1]], r0 = Math.hypot(v0[0], v0[1]), th0 = Math.atan2(v0[0], v0[1]);
+      const r = lerp(r0, 650, 1 - (1 - x) ** 2), th = th0 + rad(110) * sm(0, 1, x);
+      p = [HQ[0] + r * Math.sin(th), HQ[1] + r * Math.cos(th)];
+      alt = lerp(E.alt, 600, sm(0, 1, x));
+      const [lpsi, lpit] = lookAt(p, alt), k = sm(END, END + .06, t);
+      psi = angl(E.psi, lpsi, k); pit = lerp(E.pit + rad(pitchOff * .5), lpit, k);
+      // then rise straight up over the office, looking down; the map turns slowly to the grid's direction
+      const d = sm(ORBIT, .93, t);
+      p = [lerp(p[0], HQ[0], d), lerp(p[1], HQ[1], d)];
+      alt = lerp(alt, 15000, d ** 1.4);
+      pit = lerp(pit, -Math.PI / 2 + 1e-4, sm(ORBIT + .005, .93, t));
+      psi = angl(psi, PSI_M + Math.PI / 2, sm(.87, .955, t));
+    }
     const f = [Math.sin(psi) * Math.cos(pit), Math.cos(psi) * Math.cos(pit), Math.sin(pit)], r = [Math.cos(psi), -Math.sin(psi), 0];
     const u = [r[1] * f[2] - r[2] * f[1], r[2] * f[0] - r[0] * f[2], r[0] * f[1] - r[1] * f[0]];
-    const morph = sm(.93, .99, t);
-    return { C: [p[0], p[1], alt], psi, pit, f, r, u, morph, exag: lerp(1.75, 1, sm(.36, .50, t)) * (1 - sm(.82, .93, t)),
+    const morph = sm(.935, .99, t);
+    return { C: [p[0], p[1], alt], psi, pit, f, r, u, morph, exag: lerp(1.75, 1, sm(.36, .50, t)) * (1 - sm(.85, .93, t)),
       lat: meta.lat0 + p[1] / meta.ky, lon: meta.lon0 + p[0] / meta.kx, t };
   }
 
@@ -231,7 +252,8 @@ export async function createFilm(canvas, base, portrait) {
   }
   function project(key, t) {
     const S = state(t), P = meta.pins[key]; if (!P) return null;
-    const d = [P[0] - S.C[0], P[1] - S.C[1], P[2] * S.exag + P[3] * Math.max(S.exag, .02) - S.C[2]];
+    const top = key === 'jet' ? P[3] * JET_SCALE : P[3];
+    const d = [P[0] - S.C[0], P[1] - S.C[1], P[2] * S.exag + top * Math.max(S.exag, .02) - S.C[2]];
     const zc = d[0] * S.f[0] + d[1] * S.f[1] + d[2] * S.f[2];
     if (zc < 300) return null;
     const xc = d[0] * S.r[0] + d[1] * S.r[1], yc = d[0] * S.u[0] + d[1] * S.u[1] + d[2] * S.u[2];
@@ -281,7 +303,7 @@ export async function createFilm(canvas, base, portrait) {
     gl.drawArraysInstanced(gl.LINE_STRIP, 0, NU, nLines);
     if (city > 0) {
       gl.useProgram(PC.p); gl.bindVertexArray(cityVAO); gl.uniform1f(PC.U.u_faces, 0);
-      gl.uniform1f(PC.U.u_city, city); gl.uniform1f(PC.U.u_cfog, 3200 * Math.max(1, alt / 650)); gl.uniform1f(PC.U.u_top, 1 + .8 * sm(.82, .92, t));
+      gl.uniform1f(PC.U.u_city, city); gl.uniform1f(PC.U.u_cfog, 3200 * Math.max(1, alt / 650)); gl.uniform1f(PC.U.u_top, 1 + .8 * sm(.85, .93, t));
       gl.uniform1f(PC.U.u_gain, 1.15); gl.uniform1f(PC.U.u_round, 0);
       gl.blendEquation(gl.MAX);
       gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, eBuf); gl.drawElements(gl.LINES, IE, gl.UNSIGNED_INT, 0);
@@ -292,8 +314,8 @@ export async function createFilm(canvas, base, portrait) {
       gl.uniform3f(PJ.U.u_jet, J[0], J[1], J[2]); gl.uniform2f(PJ.U.u_wind, .6, -.8);
       gl.uniform1f(PJ.U.u_time, time / 1000); gl.uniform1f(PJ.U.u_exag, S.exag); gl.uniform1f(PJ.U.u_amp, city);
       gl.uniform1f(PJ.U.u_dpr, scale); gl.uniform1f(PJ.U.u_gain, 1.2); gl.uniform1f(PJ.U.u_round, 1);
-      gl.uniform1f(PJ.U.u_halo, 1); gl.drawArrays(gl.POINTS, 0, 10600);
-      gl.uniform1f(PJ.U.u_halo, 0); gl.drawArrays(gl.POINTS, 0, 10600);
+      gl.uniform1f(PJ.U.u_halo, 1); gl.drawArrays(gl.POINTS, 0, 14000);
+      gl.uniform1f(PJ.U.u_halo, 0); gl.drawArrays(gl.POINTS, 0, 14000);
     }
     gl.disable(gl.BLEND);
     gl.bindVertexArray(null);

@@ -254,7 +254,7 @@ const film = (() => {
   const pins = $$('.hf-pin', sec), hud = $('.hf-hud', sec), cue = $('.hf-cue', sec), scrim = $('.hf-scrim', sec);
   const rd = $$('.hf-read b', sec), fr = $('.hf-frame b', sec), dot = $('.hf-route em', sec);
   const nf = new Intl.NumberFormat(root.lang), df = new Intl.NumberFormat(root.lang, { minimumFractionDigits: 4, maximumFractionDigits: 4 });
-  const sm = (a, b, v) => { v = clamp01((v - a) / (b - a)); return v * v * (3 - 2 * v); };   // film times: flight to .8, crane to .92, grid by .99
+  const sm = (a, b, v) => { v = clamp01((v - a) / (b - a)); return v * v * (3 - 2 * v); };   // film times: flight to .66, spiral to the HQ to .84, rise to .93, grid by .99
   const WIN = pins.map(p => (p.dataset.win || '0,1').split(',').map(Number));   // when each pin may show, from its data-win
   const ORDER = pins.map((p, k) => k).sort((a, b) => pins[b].classList.contains('hf-pin-ely') - pins[a].classList.contains('hf-pin-ely') || a - b);
   const api = { mark: 1, onEnd: null };
@@ -269,7 +269,9 @@ const film = (() => {
     const g = $('.grid-bg>div>div').getBoundingClientRect(), n = innerWidth < 768 ? 4 : 12;
     return Array.from({ length: n + 1 }, (_, i) => g.left + g.width * i / n - (i === n ? 1 : 0));
   };
-  import('./film3d.js').then(m => m.createFilm(canvas, new URL('./assets/hero3d/', import.meta.url).href, portrait)).then(s => {
+  // the page's version stamp (?v=, added at publish) rides along, so the scene never mixes files from two publishes
+  const V = new URL(import.meta.url).search;
+  import('./film3d.js' + V).then(m => m.createFilm(canvas, new URL('./assets/hero3d/', import.meta.url).href, portrait, V)).then(s => {
     scene = s; scene.resize(vw, vh, grid()); lastT = -1; root.classList.add('film-ready'); run();
   }).catch(() => {});                                              // no WebGL2 or no data: the opening frame stays, the page works as before
   new IntersectionObserver(([e]) => { onScreen = e.isIntersecting; }).observe(stage);
@@ -293,7 +295,7 @@ const film = (() => {
   });
   function run() {
     const p = progress();
-    canvas.style.opacity = (1 - sm(.985, 1, p)).toFixed(3);          // the last frame is the grid underneath
+    media.style.opacity = (1 - sm(.97, 1, p)).toFixed(3);            // the city dissolves into the page grid; faded as one layer, the poster under the canvas never shows
     cue.style.opacity = (1 - sm(0, .03, p)).toFixed(3);
     hud.style.opacity = (sm(.06, .12, p) * (1 - sm(.88, .93, p))).toFixed(3);
     scrim.style.opacity = (1 - sm(.05, .12, p) * .45).toFixed(3);
@@ -307,7 +309,7 @@ const film = (() => {
     api.mark = 1 - sm(.88, .94, p);
     if (!ended && p > .95) { ended = true; api.onEnd?.(); }
     fr.textContent = String(Math.round(p * 299) + 1).padStart(3, '0');
-    dot.style.left = `${(100 * Math.min(p / .8, 1)).toFixed(2)}%`;   // the flight reaches Geneva at .8
+    dot.style.left = `${(100 * Math.min(p / .66, 1)).toFixed(2)}%`;   // the flight reaches Geneva at .66
     if (!scene) return;
     const S = scene.state(p);
     rd[0].textContent = `${df.format(Math.abs(S.lat))}° ${S.lat >= 0 ? 'N' : 'S'}`;

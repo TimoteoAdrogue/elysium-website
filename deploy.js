@@ -30,6 +30,13 @@ const COPY = ['index.html', 'styles.css', 'main.js', 'film3d.js', '404.html', 'f
 
 const NOINDEX = '<meta name="robots" content="noindex,nofollow">';
 
+// a version stamp on the page's stylesheet and script: Pages lets browsers keep files for 10 minutes, and a page from one
+// publish with a script from another breaks. main.js passes its stamp on to film3d.js and the hero's data.
+const STAMP = require('crypto').createHash('sha1')
+  .update(['main.js', 'film3d.js', 'styles.css', 'assets/hero3d/meta.json', 'assets/hero3d/terrain.png', 'assets/hero3d/city.bin']
+    .map(f => fs.readFileSync(path.join(ROOT, f))).reduce((a, b) => Buffer.concat([a, b])))
+  .digest('hex').slice(0, 10);
+
 fs.rmSync(OUT, { recursive: true, force: true });
 fs.mkdirSync(OUT, { recursive: true });
 
@@ -52,6 +59,7 @@ let touched = 0, files = 0;
 
     if (BASE) h = h.replace(/\b(src|href)="\/(?!\/)/g, (m, a) => { touched++; return `${a}="${BASE}/`; });
     h = h.replace(/(property="og:(?:image|url)" content=")https:\/\/elysium\.cc\//g, `$1${ORIGIN}${BASE}/`);
+    h = h.replace(/\b(src|href)="([^"?]*?(?:main\.js|styles\.css))"/g, `$1="$2?v=${STAMP}"`);
     if (!h.includes('name="robots"'))
       h = h.replace('<meta name="viewport"', `${NOINDEX}\n<meta name="viewport"`);
 
