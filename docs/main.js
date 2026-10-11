@@ -284,7 +284,9 @@ const film = (() => {
     h1.style.transform = saved;
     if (scene) { scene.resize(vw, vh, grid()); lastT = -1; }
   });
-  const progress = () => clamp01((scrollTop() - top) / span);
+  // film time from scroll: the flight, spiral and rise to .93 take 558vh; the city dissolving into the grid (.93 to 1) gets 192vh
+  const A = .744;
+  const progress = () => { const s = clamp01((scrollTop() - top) / span); return s < A ? s / A * .93 : .93 + (s - A) / (1 - A) * .07; };
   // the scene is drawn on the shared clock: every frame while the jet plays, otherwise only when the scroll moves
   tickers.add(() => {
     if (!scene || !onScreen || document.hidden) return;
@@ -295,7 +297,7 @@ const film = (() => {
   });
   function run() {
     const p = progress();
-    media.style.opacity = (1 - sm(.97, 1, p)).toFixed(3);            // the city dissolves into the page grid; faded as one layer, the poster under the canvas never shows
+    media.style.opacity = (1 - sm(.97, 1, p)).toFixed(3);            // faded as one layer, so the poster under the canvas never shows
     cue.style.opacity = (1 - sm(0, .03, p)).toFixed(3);
     hud.style.opacity = (sm(.06, .12, p) * (1 - sm(.88, .93, p))).toFixed(3);
     scrim.style.opacity = (1 - sm(.05, .12, p) * .45).toFixed(3);
