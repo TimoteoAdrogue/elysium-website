@@ -590,72 +590,47 @@ if (!reduce) for (const b of $$('.fig b')) {
   }
 }
 
-/* ---- record: one column per year slides past a fixed playhead, 2002 → 2026; on phones a rail fills down to the year ---- */
+/* ---- record: one column per year slides sideways past a fixed playhead, 2002 → 2026, on every screen. The strip is
+   pinned for the whole run; a year with more lines than the screen's height holds continues in the next column ---- */
 {
   const tl = $('#timeline');
-  // the horizontal form pins a stage the height of the screen: it is used only where that stage fits
-  let wide = false;
-  if (tl && !reduce && innerWidth >= 900) {
+  if (tl && !reduce) {
     tl.classList.add('tl-live');
-    wide = $('.span-r', tl).offsetHeight + nav.offsetTop + nav.offsetHeight <= innerHeight;
-    if (!wide) tl.classList.remove('tl-live');
-  }
-  if (wide) {
-    const pin = $('.tl-pin', tl), track = $('.tl-track', tl), list = $('.tl-list', tl), yr = $('.tl-yr', tl), items = $$('.tl-list li', tl);
+    const pin = $('.tl-pin', tl), head = $('.tl-head', tl), track = $('.tl-track', tl), list = $('.tl-list', tl), yr = $('.tl-yr', tl), items = $$('.tl-list li', tl);
     const years = items.map(li => $('time', li).getAttribute('datetime').slice(0, 4));
-    // one grid column per year; the first line of each year carries the year
-    let col = 0;
-    items.forEach((li, i) => {
-      if (i && years[i] !== years[i - 1]) col++;
-      li.style.setProperty('--c', col + 1);
-      if (!i || years[i] !== years[i - 1]) { li.classList.add('y0'); li.dataset.y = years[i]; }
+    let stops = [], top = 0, len = 1, ph = 0, xs = [0], cur = -1;
+    const layout = () => {
+      // the height a column may fill: the screen, less the nav, the stage's heading and the year row above the lines
+      const avail = innerHeight - nav.offsetTop - nav.offsetHeight - head.offsetHeight - parseFloat(getComputedStyle(list).paddingTop) - 72;
+      let col = 0, used = 0;
+      items.forEach((li, i) => {
+        const first = !i || years[i] !== years[i - 1], h = li.offsetHeight;
+        if (i && (first || used + h > avail)) { col++; used = 0; }
+        used += h;
+        li.style.setProperty('--c', col + 1);
+        li.classList.toggle('y0', first);
+        if (first) li.dataset.y = years[i];
+      });
+      // one stop per column: the strip rests with that column at the playhead
+      stops = items.filter((li, i) => !i || li.style.getPropertyValue('--c') !== items[i - 1].style.getPropertyValue('--c'));
+    };
+    measures.add(() => {
+      layout();
+      top = docTop(pin); len = Math.max(1, pin.offsetHeight - innerHeight); ph = track.clientWidth * parseFloat(getComputedStyle(track).getPropertyValue('--ph')) / 100; xs = stops.map(li => li.offsetLeft); cur = -1;
     });
-    const heads = items.filter(li => li.classList.contains('y0'));
-    let top = 0, len = 1, ph = 0, xs = [0], cur = -1;
-    measures.add(() => { top = docTop(pin); len = Math.max(1, pin.offsetHeight - innerHeight); ph = track.clientWidth * .24; xs = heads.map(li => li.offsetLeft); });
     scrollFns.add(() => {
-      const p = clamp01((scrollTop() - top) / len), at = xs[0] + p * (xs.at(-1) - xs[0]);
-      // the strip slides linearly with scroll, so the scrub is exactly reversible
-      list.style.transform = `translate3d(${(ph - at).toFixed(1)}px,0,0)`;
-      let k = 0; while (k < xs.length - 1 && at + 1 >= xs[k + 1]) k++;
+      // each column holds at the playhead for the first half of its share of the scroll, then glides to the next one.
+      // Position is a pure function of scroll, so the scrub is exactly reversible
+      const n = xs.length - 1, q = clamp01((scrollTop() - top) / len) * n, j = Math.min(Math.max(n - 1, 0), Math.floor(q));
+      const e = n ? T.ease.scrub(clamp01((q - j - .5) / .5)) : 0;
+      list.style.transform = `translate3d(${(ph - (xs[j] + ((xs[j + 1] ?? xs[j]) - xs[j]) * e)).toFixed(1)}px,0,0)`;
+      const k = e < .5 ? j : Math.min(j + 1, n);
       if (k === cur) return;
       cur = k;
-      const y = heads[k].dataset.y;
+      const y = years[items.indexOf(stops[k])];
       yr.textContent = y;
       // every line up to the playhead's year is lit; later years wait at a third of their brightness
       items.forEach((li, i) => li.classList.toggle('on', years[i] <= y));
-    });
-  } else if (tl && !reduce && CSS.supports('overflow', 'clip')) {
-    // phones and short screens: the list stays vertical. The year readout is pinned to the foot of the screen by CSS
-    // (sticky, so it holds still under a native touch scroll) and is the playhead: the rail fills down to it
-    tl.classList.add('tl-rail');
-    const track = $('.tl-track', tl), items = $$('.tl-list li', tl);
-    const ph = document.createElement('p'), yr = document.createElement('span');
-    ph.className = 'tl-ph mono'; ph.setAttribute('aria-hidden', 'true');
-    ph.append(document.createElement('i'), yr); track.append(ph);
-    const years = items.map(li => +$('time', li).getAttribute('datetime').slice(0, 4));
-    const kids = items.map(li => [...li.children]);
-    let marks = [], lift = 0;
-    const state = items.map(() => null);
-    // each event's mark is its node on the rail, level with the date
-    measures.add(() => { marks = items.map(li => docTop(li) + parseFloat(getComputedStyle(li, '::before').top) + 4.5); lift = 16 + ph.offsetHeight / 2; });
-    utils.set(kids.flat(), { opacity: 0 });
-    scrollFns.add(() => {
-      const y = scrollTop() + innerHeight - lift;                 // the playhead, in page coordinates
-      let i = 0;
-      while (i < marks.length - 1 && y >= marks[i + 1]) i++;
-      // the year runs through the gaps between events, so it reads each event's year exactly as the playhead reaches it
-      const t = y < marks[0] || i === marks.length - 1 ? years[i] : Math.floor(years[i] + (years[i + 1] - years[i]) * (y - marks[i]) / (marks[i + 1] - marks[i]));
-      if (yr.textContent !== String(t)) yr.textContent = t;
-      items.forEach((li, k) => {
-        const on = y >= marks[k];
-        if (state[k] === on) return;
-        state[k] = on;
-        li.classList.toggle('on', on);
-        // each event drops in as the playhead passes its node, and lifts out if the reader scrolls back
-        animate(kids[k], { opacity: on ? 1 : 0, duration: T.t.move, ease: 'linear' });
-        animate(kids[k], { translateY: on ? [-10, 0] : -10, duration: T.t.move, ease: T.ease.enter });
-      });
     });
   }
 }
