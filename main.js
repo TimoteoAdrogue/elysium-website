@@ -463,7 +463,6 @@ if (!reduce) {
 {
   const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.loading = 'eager'; io.unobserve(e.target); } }), { rootMargin: '200% 0px' });
   for (const img of $$('img[loading="lazy"]')) io.observe(img);
-  addEventListener('load', () => setTimeout(() => { for (const img of $$('.ix-th')) { img.loading = 'eager'; new Image().src = img.currentSrc || img.src; } }, 1500), { once: true });
 }
 
 /* ---- section overture: rule draws, index types, heading rises word by word, body follows ---- */
@@ -495,12 +494,13 @@ if (!reduce) for (const b of $$('.fig b')) {
   once(b, '92% top', () => {
     const sr = document.createElement('span'); sr.className = 'sr-only'; sr.textContent = final;
     const odo = document.createElement('span'); odo.className = 'odo'; odo.setAttribute('aria-hidden', 'true');
-    const strips = [...final].map(ch => {
+    const strips = [...final].flatMap(ch => {
+      if (!/\d/.test(ch)) { odo.append(ch); return []; }   // "+82": the sign stays put, the digits roll
       const col = document.createElement('span'); col.className = 'odo-col';
       const strip = document.createElement('span'); strip.className = 'odo-strip';
       strip.innerHTML = '<i>0</i><i>1</i><i>2</i><i>3</i><i>4</i><i>5</i><i>6</i><i>7</i><i>8</i><i>9</i>';
       col.append(strip); odo.append(col);
-      return [strip, +ch];
+      return [[strip, +ch]];
     });
     b.replaceChildren(sr, odo);
     strips.forEach(([s, dg], i) => animate(s, { translateY: ['0em', `${-dg}em`], ease: sp('glide'), delay: 120 * i }));
@@ -590,90 +590,6 @@ if (!reduce) for (const b of $$('.fig b')) {
   }
 }
 
-/* ---- record: one column per year slides past a fixed playhead, 2002 → 2026; on phones a rail fills down to the year ---- */
-{
-  const tl = $('#timeline');
-  // the horizontal form pins a stage the height of the screen: it is used only where that stage fits
-  let wide = false;
-  if (tl && !reduce && innerWidth >= 900) {
-    tl.classList.add('tl-live');
-    wide = $('.span-r', tl).offsetHeight + nav.offsetTop + nav.offsetHeight <= innerHeight;
-    if (!wide) tl.classList.remove('tl-live');
-  }
-  if (wide) {
-    const pin = $('.tl-pin', tl), track = $('.tl-track', tl), list = $('.tl-list', tl), yr = $('.tl-yr', tl), items = $$('.tl-list li', tl);
-    const years = items.map(li => $('time', li).getAttribute('datetime').slice(0, 4));
-    // one grid column per year; the first line of each year carries the year
-    let col = 0;
-    items.forEach((li, i) => {
-      if (i && years[i] !== years[i - 1]) col++;
-      li.style.setProperty('--c', col + 1);
-      if (!i || years[i] !== years[i - 1]) { li.classList.add('y0'); li.dataset.y = years[i]; }
-    });
-    const heads = items.filter(li => li.classList.contains('y0'));
-    let top = 0, len = 1, ph = 0, xs = [0], cur = -1;
-    measures.add(() => { top = docTop(pin); len = Math.max(1, pin.offsetHeight - innerHeight); ph = track.clientWidth * .24; xs = heads.map(li => li.offsetLeft); });
-    scrollFns.add(() => {
-      const p = clamp01((scrollTop() - top) / len), at = xs[0] + p * (xs.at(-1) - xs[0]);
-      // the strip slides linearly with scroll, so the scrub is exactly reversible
-      list.style.transform = `translate3d(${(ph - at).toFixed(1)}px,0,0)`;
-      let k = 0; while (k < xs.length - 1 && at + 1 >= xs[k + 1]) k++;
-      if (k === cur) return;
-      cur = k;
-      const y = heads[k].dataset.y;
-      yr.textContent = y;
-      // every line up to the playhead's year is lit; later years wait at a third of their brightness
-      items.forEach((li, i) => li.classList.toggle('on', years[i] <= y));
-    });
-  } else if (tl && !reduce && CSS.supports('overflow', 'clip')) {
-    // phones and short screens: the list stays vertical. The year readout is pinned to the foot of the screen by CSS
-    // (sticky, so it holds still under a native touch scroll) and is the playhead: the rail fills down to it
-    tl.classList.add('tl-rail');
-    const track = $('.tl-track', tl), items = $$('.tl-list li', tl);
-    const ph = document.createElement('p'), yr = document.createElement('span');
-    ph.className = 'tl-ph mono'; ph.setAttribute('aria-hidden', 'true');
-    ph.append(document.createElement('i'), yr); track.append(ph);
-    const years = items.map(li => +$('time', li).getAttribute('datetime').slice(0, 4));
-    const kids = items.map(li => [...li.children]);
-    let marks = [], lift = 0;
-    const state = items.map(() => null);
-    // each event's mark is its node on the rail, level with the date
-    measures.add(() => { marks = items.map(li => docTop(li) + parseFloat(getComputedStyle(li, '::before').top) + 4.5); lift = 16 + ph.offsetHeight / 2; });
-    utils.set(kids.flat(), { opacity: 0 });
-    scrollFns.add(() => {
-      const y = scrollTop() + innerHeight - lift;                 // the playhead, in page coordinates
-      let i = 0;
-      while (i < marks.length - 1 && y >= marks[i + 1]) i++;
-      // the year runs through the gaps between events, so it reads each event's year exactly as the playhead reaches it
-      const t = y < marks[0] || i === marks.length - 1 ? years[i] : Math.floor(years[i] + (years[i + 1] - years[i]) * (y - marks[i]) / (marks[i + 1] - marks[i]));
-      if (yr.textContent !== String(t)) yr.textContent = t;
-      items.forEach((li, k) => {
-        const on = y >= marks[k];
-        if (state[k] === on) return;
-        state[k] = on;
-        li.classList.toggle('on', on);
-        // each event drops in as the playhead passes its node, and lifts out if the reader scrolls back
-        animate(kids[k], { opacity: on ? 1 : 0, duration: T.t.move, ease: 'linear' });
-        animate(kids[k], { translateY: on ? [-10, 0] : -10, duration: T.t.move, ease: T.ease.enter });
-      });
-    });
-  }
-}
-
-/* ---- healthcare: the arc draws from Geneva to Freetown ---- */
-{
-  const arc = $('.hc-map .arc'), dates = $$('.hc-map text.d'), map = $('.hc-map svg');
-  if (arc && !reduce) {
-    const [drawable] = svg.createDrawable(arc);
-    if (belowFold(map)) { utils.set(drawable, { draw: '0 0' }); utils.set(dates, { opacity: 0 }); }
-    once(map, '75% top', () => createTimeline()
-      // the route of the 2022 pilot, drawn from Geneva to Freetown
-      .add(drawable, { draw: ['0 0', '0 1'], duration: T.t.draw, ease: T.ease.enter }, 0)
-      // the dates settle onto the arc once it reaches them
-      .add(dates, { opacity: [0, 1], duration: T.t.move, ease: 'linear', delay: stagger(240) }, 700));
-  }
-}
-
 /* ---- private AI: the perimeter draws, then the flow inside it, then the closed route out ---- */
 {
   const diag = $('.pai-diag');
@@ -716,8 +632,12 @@ if (!reduce) for (const b of $$('.fig b')) {
     root.classList.add('stack-live');
     measures.add(() => {
       // natural positions: sticky cases are measured from their flow order, not their stuck position
-      const list = cases[0].parentElement, gap = parseFloat(getComputedStyle(list).rowGap) || 0;
-      let y = docTop(list); tops = cases.map(c => { const t = y; y += c.offsetHeight + gap; return [t, c.offsetHeight]; });
+      // each list (Selected work, Startups, R&D) stacks on its own, so its first case starts at the list's own top
+      let list = null, gap = 0, y = 0;
+      tops = cases.map(c => {
+        if (c.parentElement !== list) { list = c.parentElement; gap = parseFloat(getComputedStyle(list).rowGap) || 0; y = docTop(list); }
+        const t = y; y += c.offsetHeight + gap; return [t, c.offsetHeight];
+      });
       // a case taller than the screen sticks only once its foot is in view, so none is covered before it has been seen
       for (const c of cases) c.style.setProperty('--case-h', `${c.offsetHeight}px`);
     });
@@ -728,7 +648,7 @@ if (!reduce) for (const b of $$('.fig b')) {
         // the image drifts at most 40 px inside its frame while the case is on screen
         const p = clamp01((st + vh - t) / (vh + h));
         for (const img of $$('img', c)) img.style.transform = `translateY(${((p - .5) * 40).toFixed(1)}px) scale(1.08)`;
-        if (i === cases.length - 1) return;
+        if (i === cases.length - 1 || cases[i + 1].parentElement !== c.parentElement) return;
         // the case steps back to .94 as the next one arrives over it
         const [tn] = tops[i + 1] || [0];
         const q = clamp01((st + vh - tn) / (vh - 80));
@@ -809,21 +729,8 @@ if (!reduce) for (const b of $$('.pill-btn')) {
   b.addEventListener('pointerleave', () => { box = null; animate(b, { x: 0, y: 0, ease: sp('float') }); });
 }
 
-/* ---- index: filtering is CSS (:target), so it works without JS and the address keeps it. JS marks the active chip
-   for assistive tech, and on touch screens a first tap on a line shows its picture, a second follows its link ---- */
-{
-  const chips = $$('.chip-f');
-  const mark = () => { const h = location.hash.startsWith('#f-') ? location.hash : '#f-all'; chips.forEach(a => a.hash === h ? a.setAttribute('aria-current', 'true') : a.removeAttribute('aria-current')); };
-  addEventListener('hashchange', mark); mark();
-  for (const li of $$('.ix-list li.has-th')) li.addEventListener('click', e => {
-    if (!matchMedia('(hover: none)').matches || li.classList.contains('peek')) return;
-    for (const x of $$('.ix-list li.peek')) x.classList.remove('peek');
-    li.classList.add('peek'); e.preventDefault();
-  });
-}
-
-/* in-page links go through Lenis so anchor jumps share the same clock; the index filters keep their native jump */
-if (lenis) for (const a of $$('a[href^="#"]:not(.chip-f)')) a.addEventListener('click', e => {
+/* in-page links go through Lenis so anchor jumps share the same clock */
+if (lenis) for (const a of $$('a[href^="#"]')) a.addEventListener('click', e => {
   const id = a.getAttribute('href'); if (id.length < 2) return;
   const t = $(id); if (!t) return;
   e.preventDefault(); lenis.scrollTo(t, { offset: id === '#top' ? 0 : -8 }); history.replaceState(null, '', id);

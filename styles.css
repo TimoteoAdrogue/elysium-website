@@ -182,8 +182,6 @@ main,footer{position:relative}
   font-size:clamp(1.75rem,3.6vw,3.25rem);font-weight:500;letter-spacing:-.035em;line-height:1.15;color:var(--text-2);
   transition:color var(--t-tick) linear}
 .mq-track button:hover,.mq-track button:focus-visible,.mq-track button.on{color:var(--text)}
-.mq-row-b .mq-track button{color:var(--text-3)}
-.mq-row-b .mq-track button:hover,.mq-row-b .mq-track button:focus-visible,.mq-row-b .mq-track button.on{color:var(--text)}
 .readout{min-height:3.2em;margin-top:24px;color:var(--text-2)}
 .readout b{color:var(--text);font-weight:400}
 
@@ -216,78 +214,22 @@ main,footer{position:relative}
 }
 
 
-/* ---- 6 record: the timeline ------------------------------------------------------ */
-.tl-head{display:flex;align-items:baseline;justify-content:space-between;gap:16px;padding-bottom:16px;border-bottom:1px solid var(--line)}
-.tl-yr{font:400 clamp(2.5rem,5vw,4.5rem)/1 "Geist Mono",monospace;letter-spacing:-.04em}
-.tl-list li{display:grid;grid-template-columns:7.5em 1fr;gap:4px 16px;padding-block:18px;border-bottom:1px solid var(--line)}
-.tl-list time{grid-row:1/3;font-family:"Geist Mono",monospace;font-size:15px;color:var(--text)}
-.tl-list h4{font-weight:500}
-.tl-list p{font-size:15px;color:var(--text-2)}
-/* desktop: one column per year on a strip that slides past a fixed playhead while the stage is pinned (main.js sets
-   --c, the year column, and .y0 on the first line of each year). Lines reached by the playhead light up */
-.tl-live .tl-pin{height:420vh}
-.tl-live .tl-stage{position:sticky;top:0;height:100vh;align-content:center;padding-top:var(--nav-h)}
-.tl-live .tl-head{margin-bottom:28px}
-.tl-live .tl-track{position:relative;overflow:hidden;
-  -webkit-mask-image:linear-gradient(to right,transparent,#000 6%,#000 88%,transparent);mask-image:linear-gradient(to right,transparent,#000 6%,#000 88%,transparent)}
-.tl-live .tl-track::after{content:"";position:absolute;left:24%;top:0;width:2px;height:17px;margin-left:-1px;background:var(--accent)}
-.tl-live .tl-track::before{content:"";position:absolute;left:24%;top:4px;z-index:1;width:9px;height:9px;margin-left:-4.5px;border-radius:50%;background:var(--accent)}
-.tl-live .tl-list{display:grid;grid-auto-flow:column;grid-auto-columns:clamp(220px,19vw,280px);align-content:start;width:max-content;
-  padding-top:64px;border-top:1px solid var(--line);margin-top:8px}
-.tl-live .tl-list li{grid-column:var(--c);display:block;padding:0 28px 22px 0;border:0;position:relative;opacity:.32;transition:opacity var(--t-move) linear}
-.tl-live .tl-list li.on{opacity:1}
-.tl-live .tl-list li.y0::before{content:attr(data-y);position:absolute;top:-64px;left:0;font:400 28px/1 "Geist Mono",monospace;letter-spacing:-.03em;color:var(--text)}
-.tl-live .tl-list li.y0::after{content:"";position:absolute;top:-77px;left:-4px;width:9px;height:9px;border-radius:50%;background:var(--void);box-shadow:inset 0 0 0 1px var(--text-3)}
-.tl-live .tl-list li.y0.on::after{background:var(--accent);box-shadow:none}
-.tl-live .tl-list time{display:block;font-size:13px;color:var(--accent)}
-.tl-live .tl-list h4{font-size:16px;line-height:1.3;margin-top:4px}
-.tl-live .tl-list p{font-size:14px;line-height:1.45;color:var(--text-2);margin-top:2px}
-/* vertical form — phones and short screens: a rail beside the list. The year readout is pinned to the foot of the screen
-   (sticky, so it holds still under a native touch scroll) and is the playhead; the rail's fill hangs from it and is
-   clipped at the top of the track. Rail centre: x 4.5 px in the track. */
-@supports (overflow:clip){
-  .tl-rail .tl-yr{display:none}                        /* the count moves into the playhead */
-  .tl-rail .tl-track{position:relative;overflow-x:visible;overflow-y:clip;padding-bottom:32px}
-  .tl-rail .tl-list{margin-left:4px;border-left:1px solid var(--line)}
-  .tl-rail .tl-list li{position:relative;grid-template-columns:6.5em 1fr;padding-left:22px}
-  .tl-rail .tl-list li::before{content:"";position:absolute;left:-5px;top:26px;width:9px;height:9px;border-radius:50%;background:var(--void);
-    box-shadow:inset 0 0 0 1px var(--text-3);transition:background-color var(--t-move) linear,box-shadow var(--t-move) linear}
-  .tl-rail .tl-list li.on::before{background:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
-  .tl-rail .tl-ph{position:sticky;bottom:16px;z-index:2;display:flex;align-items:center;gap:10px;width:fit-content;
-    margin:16px 0 0 -12px;padding:8px 18px 8px 11px;font-size:17px;line-height:1.2;color:var(--text)}
-  .tl-rail .tl-ph::after{content:"";position:absolute;inset:0;z-index:-1;border-radius:999px;background:var(--fill-2);box-shadow:0 8px 24px rgba(0,0,0,.5)}
-  .tl-rail .tl-ph::before{content:"";position:absolute;z-index:-2;left:15.5px;bottom:50%;width:2px;height:300vh;background:var(--accent)}
-  .tl-rail .tl-ph i{flex:none;width:11px;height:11px;border-radius:50%;background:var(--accent)}
-}
-
-
 /* ---- 5 work: cases ------------------------------------------------------------- */
 .facts{margin-top:28px;display:grid;grid-template-columns:auto 1fr;gap:0 20px}
 .facts dt,.facts dd{padding-block:12px;border-top:1px solid var(--line)}
 .facts dt{padding-top:15px}
 .facts dd{color:var(--text)}
-.hc-map svg{width:100%;height:auto;max-height:78vh}
-.hc-map .dots{stroke:var(--node);stroke-width:4.2;stroke-linecap:round;fill:none}
-.hc-map .arc{stroke:var(--accent);stroke-width:2.4;fill:none;stroke-linecap:round}
-.hc-map .pt{fill:var(--text)}
-.hc-map .ring{fill:none;stroke:var(--accent);stroke-width:1.5}
-.hc-map text{fill:var(--text-2);font:15px "Geist Mono",monospace;letter-spacing:.06em}
-.hc-map text.d{fill:var(--accent);font-size:14px}
-.hc-map svg{width:100%;height:auto;max-height:70vh}
-.hc-map .dots{stroke:var(--node);stroke-width:4.2;stroke-linecap:round;fill:none}
-.hc-map .arc{stroke:var(--accent);stroke-width:2.4;fill:none;stroke-linecap:round}
-.hc-map .pt{fill:var(--text)}
-.hc-map .ring{fill:none;stroke:var(--accent);stroke-width:1.5}
-.hc-map text{fill:var(--text-2);font:15px "Geist Mono",monospace;letter-spacing:.06em}
-.hc-map text.d{fill:var(--accent);font-size:14px}
 .cases{display:grid;gap:clamp(56px,8vw,112px)}
 .case{display:grid;gap:28px;align-content:start;background:var(--void)}
 .case-text{padding-inline:var(--pad)}
 .case-meta{color:var(--text-3)}
 .case h3{font-size:clamp(1.5rem,2.6vw,2.4rem);font-weight:500;letter-spacing:-.03em;line-height:1.08;margin-top:12px}
-.case-dl{margin-top:20px;max-width:52ch}
-.case-dl dt{margin-top:16px}
-.case-dl dd{margin:6px 0 0;color:var(--text-2)}
+.case-sum{margin-top:18px;max-width:52ch;color:var(--text);font-size:clamp(1.02rem,1.2vw,1.12rem);line-height:1.5}
+.case-body{margin-top:14px;max-width:60ch;color:var(--text-2);font-size:.94rem;line-height:1.6}
+.case-tags{margin-top:18px}
+.case-link{margin-top:10px}
+.grp-head{margin-top:clamp(96px,12vw,168px)}
+.idx-sub{color:var(--text)}
 .frame{background:var(--raised);border-radius:14px;padding:10px;overflow:hidden}
 .frame .bar{display:flex;align-items:center;gap:6px;padding:4px 6px 12px}
 .frame .bar i{width:9px;height:9px;border-radius:50%;background:var(--fill-2)}
@@ -301,11 +243,9 @@ main,footer{position:relative}
 .frame.trio{align-items:stretch}
 .frame.trio>:nth-child(3){grid-column:2;grid-row:2/4}
 .frame.trio>:nth-child(3) img{height:100%;object-fit:cover;object-position:50% 0}
-.frame .hc-map{align-self:center;padding:8px}
 @media (max-width:699px){
   .frame.duo,.frame.trio{grid-template-columns:1fr}
   .frame.trio>:nth-child(3){grid-column:auto;grid-row:auto}
-  .frame .hc-map svg{max-height:56vh;margin-inline:auto}
 }
 /* a project with no image to show is set in type: year, client, what we made */
 .frame.type{display:grid;align-content:end;gap:12px;min-height:clamp(280px,34vw,480px);padding:clamp(22px,3vw,44px);box-shadow:inset 0 0 0 1px var(--line)}
@@ -320,61 +260,6 @@ main,footer{position:relative}
 }
 /* cases stack at every width: each sticks under the nav, or, when taller than the screen, once its foot is in view (--case-h from main.js) */
 .stack-live .case{position:sticky;top:calc(var(--nav-h) + 24px);top:min(calc(var(--nav-h) + 24px),calc(100svh - var(--case-h,0px) - 24px));transform-origin:50% 0}
-
-/* ---- 5 work: the index. Filters are links to empty anchors; :target hides what does not match, so the filter works
-   without JS and the address keeps it ---- */
-.ix{position:relative;margin-top:clamp(96px,11vw,160px)}
-.ix>*{grid-column:1/-1}
-.ix-head{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:8px 24px;margin-bottom:20px}
-.ix-head h3{font-size:clamp(1.5rem,2.6vw,2.4rem);font-weight:500;letter-spacing:-.03em}
-.ix-t{position:absolute;top:0;left:0;scroll-margin-top:calc(var(--nav-h) + 16px)}
-.ix-chips{display:flex;gap:8px;padding-block:4px 20px;white-space:nowrap}
-.ix .ix-chips{--fade:var(--gut);padding-inline:calc(var(--gut) + var(--pad))}   /* the row bleeds to the screen edge, never past it */
-.chip-f{flex:none;display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 16px;border-radius:999px;background:var(--fill-2);color:var(--text-2);
-  text-decoration:none;font-size:15px}
-.chip-f:hover{color:var(--text)}
-.chip-f .mono{font-size:13px}
-.chip-sep{flex:none;width:1px;margin-inline:6px;background:var(--line)}
-.ix:not(:has(.ix-t:target)) .ix-chips a[href="#f-all"],#f-all:target~.ix-chips a[href="#f-all"]{background:var(--text);color:var(--void)}
-.ix-list li{position:relative;display:grid;grid-template-columns:4.2em 1fr;gap:2px 16px;padding-block:14px;border-top:1px solid var(--line);scroll-margin-top:calc(var(--nav-h) + 24px)}
-.ix-list li:last-child{border-bottom:1px solid var(--line)}
-.ix-y{grid-row:1/4;color:var(--text-3);font-size:15px}
-.ix-c{color:var(--text);font-weight:500}
-.ix-c a{color:inherit;text-decoration:underline;text-decoration-color:var(--text-3);text-decoration-thickness:1px;text-underline-offset:4px}
-.ix-c a:hover{text-decoration-color:var(--text)}
-.ix-w{color:var(--text-2)}
-.ix-k{color:var(--text-3)}
-.ix-th{display:none;position:absolute;right:0;top:50%;z-index:3;width:auto;max-width:min(240px,40%);max-height:180px;object-fit:cover;border-radius:6px;
-  transform:translateY(-50%);box-shadow:0 10px 30px rgba(0,0,0,.6);pointer-events:none}
-.ix-list li:hover .ix-th,.ix-list li:focus-within .ix-th{display:block}
-.has-th .ix-c::after{content:"";display:inline-block;width:6px;height:6px;margin-left:10px;border-radius:50%;background:var(--text-3);vertical-align:2px}
-@media (min-width:900px){
-  .ix-list li{grid-template-columns:5em minmax(0,13em) minmax(0,1fr) 11em;align-items:baseline}
-  .ix-y{grid-row:auto}
-  .ix-k{text-align:right}
-}
-@media (hover:none){.ix-list li.peek .ix-th{display:block;position:static;grid-column:2/-1;transform:none;max-width:min(240px,100%);margin-top:10px}}
-.ix-arch-h{margin-top:40px;margin-bottom:12px}
-.ix-arch{display:grid;grid-template-columns:repeat(auto-fill,minmax(76px,1fr));gap:2px}
-.ix-arch img{width:100%;height:auto;max-width:130px}
-@media (min-width:900px){.ix-arch{grid-template-columns:repeat(auto-fill,130px)}}
-/* ix:start */
-#f-s-co:target~.ix-list>li:not([data-f~="s-co"]),#f-s-co:target~.ix-arch>li:not([data-f~="s-co"]){display:none}#f-s-co:target~.ix-chips a[href="#f-s-co"]{background:var(--text);color:var(--void)}
-#f-s-io:target~.ix-list>li:not([data-f~="s-io"]),#f-s-io:target~.ix-arch>li:not([data-f~="s-io"]){display:none}#f-s-io:target~.ix-chips a[href="#f-s-io"]{background:var(--text);color:var(--void)}
-#f-s-he:target~.ix-list>li:not([data-f~="s-he"]),#f-s-he:target~.ix-arch>li:not([data-f~="s-he"]){display:none}#f-s-he:target~.ix-chips a[href="#f-s-he"]{background:var(--text);color:var(--void)}
-#f-s-cu:target~.ix-list>li:not([data-f~="s-cu"]),#f-s-cu:target~.ix-arch>li:not([data-f~="s-cu"]){display:none}#f-s-cu:target~.ix-chips a[href="#f-s-cu"]{background:var(--text);color:var(--void)}
-#f-k-sw:target~.ix-list>li:not([data-f~="k-sw"]),#f-k-sw:target~.ix-arch>li:not([data-f~="k-sw"]){display:none}#f-k-sw:target~.ix-chips a[href="#f-k-sw"]{background:var(--text);color:var(--void)}
-#f-k-web:target~.ix-list>li:not([data-f~="k-web"]),#f-k-web:target~.ix-arch>li:not([data-f~="k-web"]){display:none}#f-k-web:target~.ix-chips a[href="#f-k-web"]{background:var(--text);color:var(--void)}
-#f-k-mob:target~.ix-list>li:not([data-f~="k-mob"]),#f-k-mob:target~.ix-arch>li:not([data-f~="k-mob"]){display:none}#f-k-mob:target~.ix-chips a[href="#f-k-mob"]{background:var(--text);color:var(--void)}
-#f-k-3d:target~.ix-list>li:not([data-f~="k-3d"]),#f-k-3d:target~.ix-arch>li:not([data-f~="k-3d"]){display:none}#f-k-3d:target~.ix-chips a[href="#f-k-3d"]{background:var(--text);color:var(--void)}
-#f-k-vid:target~.ix-list>li:not([data-f~="k-vid"]),#f-k-vid:target~.ix-arch>li:not([data-f~="k-vid"]){display:none}#f-k-vid:target~.ix-chips a[href="#f-k-vid"]{background:var(--text);color:var(--void)}
-#f-k-pub:target~.ix-list>li:not([data-f~="k-pub"]),#f-k-pub:target~.ix-arch>li:not([data-f~="k-pub"]){display:none}#f-k-pub:target~.ix-chips a[href="#f-k-pub"]{background:var(--text);color:var(--void)}
-#f-k-it:target~.ix-list>li:not([data-f~="k-it"]),#f-k-it:target~.ix-arch>li:not([data-f~="k-it"]){display:none}#f-k-it:target~.ix-chips a[href="#f-k-it"]{background:var(--text);color:var(--void)}
-#f-k-brand:target~.ix-list>li:not([data-f~="k-brand"]),#f-k-brand:target~.ix-arch>li:not([data-f~="k-brand"]){display:none}#f-k-brand:target~.ix-chips a[href="#f-k-brand"]{background:var(--text);color:var(--void)}
-#f-k-prod:target~.ix-list>li:not([data-f~="k-prod"]),#f-k-prod:target~.ix-arch>li:not([data-f~="k-prod"]){display:none}#f-k-prod:target~.ix-chips a[href="#f-k-prod"]{background:var(--text);color:var(--void)}
-#f-k-ill:target~.ix-list>li:not([data-f~="k-ill"]),#f-k-ill:target~.ix-arch>li:not([data-f~="k-ill"]){display:none}#f-k-ill:target~.ix-chips a[href="#f-k-ill"]{background:var(--text);color:var(--void)}
-.ix-t[id^="f-s-"]:target~.ix-arch-h{display:none}
-/* ix:end */
 
 /* ---- 8 cities ---------------------------------------------------------------- */
 .cities{row-gap:40px;align-items:center}
@@ -428,7 +313,6 @@ footer{padding-block:56px 72px;box-shadow:inset 0 1px var(--line)}
 .foot p,.foot address{font-style:normal;font-size:15px;color:var(--text-2);line-height:1.6}
 .foot a{text-decoration:none}
 .foot a:hover{color:var(--text)}
-.foot .slot{display:inline-block;min-width:9em;border-bottom:1px dashed var(--text-3);color:var(--text-3)}
 .foot-base{margin-top:48px;display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px}
 @media (min-width:900px){
   .foot>div:nth-child(1){grid-column:1/4}.foot>div:nth-child(2){grid-column:4/7}

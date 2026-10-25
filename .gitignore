@@ -16,3 +16,6 @@ tools/hero-film/dem.npz
 tools/hero-film/png-*/
 tools/hero-film/png-*.json
 tools/hero-film/test-*/
+
+# Verbatim text of the live elysium.cc, the only copy source for the new site.
+SOURCE-elysium-cc.txt
