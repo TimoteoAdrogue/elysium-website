@@ -177,9 +177,17 @@
   <div class="wrap cols sec-head">
     <p class="label idx">03 / Ausgewählte Arbeiten</p>
     <h2 id="h-work">Portfolio</h2>
-    <p class="lede">Kundenmandate, ausgewählt nach dem Gewicht des Auftrags und der Messbarkeit des Ergebnisses.</p>
+    <p class="lede" data-for="pf-selected">Kundenmandate, ausgewählt nach dem Gewicht des Auftrags und der Messbarkeit des Ergebnisses.</p>
+    <p class="lede" data-for="pf-startups">Produkt- und Plattformentwicklungen mit jungen Teams und Betreibern: enge Umfänge, Live-Systeme und die Disziplin, dort zu liefern, wo Regulierung oder Verfügbarkeit zählen.</p>
+    <p class="lede" data-for="pf-rd">Angewandte Forschung von Elysium Labs: Experimente und Prototypen, die schärfen, wie wir für Kunden entwickeln.</p>
   </div>
-  <div class="wrap cases">
+  <div class="pf-bar" hidden><div class="wrap cols"><div class="pf-tabs" role="tablist" aria-label="Portfolio">
+    <button type="button" role="tab" id="t-selected" aria-controls="pf-selected" aria-selected="true">Auswahl <span class="mono">8</span></button>
+    <button type="button" role="tab" id="t-startups" aria-controls="pf-startups" aria-selected="false" tabindex="-1">Start-ups <span class="mono">4</span></button>
+    <button type="button" role="tab" id="t-rd" aria-controls="pf-rd" aria-selected="false" tabindex="-1">F&amp;E <span class="mono">4</span></button>
+    <i class="pf-pill" aria-hidden="true"></i>
+  </div></div></div>
+  <div class="wrap cases" id="pf-selected" role="tabpanel" aria-labelledby="t-selected">
     <article class="case" id="case-wipo">
       <div class="case-text">
         <p class="label case-meta">01 · Internationale Organisationen</p>
@@ -273,13 +281,9 @@
     </article>
   </div>
 
-  <div class="wrap cols sec-head grp-head" id="startups">
-    <p class="label idx-sub">Start-ups</p>
-    <p class="lede">Produkt- und Plattformentwicklungen mit jungen Teams und Betreibern: enge Umfänge, Live-Systeme und die Disziplin, dort zu liefern, wo Regulierung oder Verfügbarkeit zählen.</p>
-  </div>
-  <div class="wrap su-grid">
-    <article class="su su-wide" id="case-striker">
-      <div class="su-in">
+  <div class="wrap cases" id="pf-startups" role="tabpanel" aria-labelledby="t-startups">
+    <article class="case" id="case-striker">
+      <div class="case-text">
         <p class="label case-meta">01 · Mobiles Produkt</p>
         <h3>Striker</h3>
         <p class="case-sum">Plattformübergreifende App, um Amateurfussball in europäischen Städten zu organisieren, vom Zusammenstellen der Spiele bis zur Logistik.</p>
@@ -287,14 +291,17 @@
         <p class="label case-tags">iOS · Android · Sport</p>
         <p class="label case-link"><a class="link" href="https://www.striker.football/" rel="noopener">www.striker.football</a></p>
       </div>
-      <div class="phones su-media">
-        <div class="shot"><picture><source type="image/avif" srcset="../assets/work/striker_1_v2-324.avif 324w, ../assets/work/striker_1_v2-647.avif 647w" sizes="(min-width:900px) 17vw, 30vw"><source type="image/webp" srcset="../assets/work/striker_1_v2-324.webp 324w, ../assets/work/striker_1_v2-647.webp 647w" sizes="(min-width:900px) 17vw, 30vw"><img src="../assets/work/striker_1_v2-324.jpg" srcset="../assets/work/striker_1_v2-324.jpg 324w, ../assets/work/striker_1_v2-647.jpg 647w" sizes="(min-width:900px) 17vw, 30vw" width="647" height="1400" loading="lazy" decoding="async" alt="Striker: ein Matchticket auf einem Handy, beschriftet mit «Wanna play soccer in Geneva or Zurich?»."></picture></div>
+      <div class="frame">
+        <div class="bar"><i></i><i></i><i></i><span class="label">Striker</span></div>
+        <div class="phones">
+          <div class="shot"><picture><source type="image/avif" srcset="../assets/work/striker_1_v2-324.avif 324w, ../assets/work/striker_1_v2-647.avif 647w" sizes="(min-width:900px) 17vw, 30vw"><source type="image/webp" srcset="../assets/work/striker_1_v2-324.webp 324w, ../assets/work/striker_1_v2-647.webp 647w" sizes="(min-width:900px) 17vw, 30vw"><img src="../assets/work/striker_1_v2-324.jpg" srcset="../assets/work/striker_1_v2-324.jpg 324w, ../assets/work/striker_1_v2-647.jpg 647w" sizes="(min-width:900px) 17vw, 30vw" width="647" height="1400" loading="lazy" decoding="async" alt="Striker: ein Matchticket auf einem Handy, beschriftet mit «Wanna play soccer in Geneva or Zurich?»."></picture></div>
           <div class="shot"><picture><source type="image/avif" srcset="../assets/work/striker_2_v2-324.avif 324w, ../assets/work/striker_2_v2-647.avif 647w" sizes="(min-width:900px) 17vw, 30vw"><source type="image/webp" srcset="../assets/work/striker_2_v2-324.webp 324w, ../assets/work/striker_2_v2-647.webp 647w" sizes="(min-width:900px) 17vw, 30vw"><img src="../assets/work/striker_2_v2-324.jpg" srcset="../assets/work/striker_2_v2-324.jpg 324w, ../assets/work/striker_2_v2-647.jpg 647w" sizes="(min-width:900px) 17vw, 30vw" width="647" height="1400" loading="lazy" decoding="async" alt="Striker: «7 on 7 games all summer!»."></picture></div>
           <div class="shot"><picture><source type="image/avif" srcset="../assets/work/striker_3_v2-324.avif 324w, ../assets/work/striker_3_v2-647.avif 647w" sizes="(min-width:900px) 17vw, 30vw"><source type="image/webp" srcset="../assets/work/striker_3_v2-324.webp 324w, ../assets/work/striker_3_v2-647.webp 647w" sizes="(min-width:900px) 17vw, 30vw"><img src="../assets/work/striker_3_v2-324.jpg" srcset="../assets/work/striker_3_v2-324.jpg 324w, ../assets/work/striker_3_v2-647.jpg 647w" sizes="(min-width:900px) 17vw, 30vw" width="647" height="1400" loading="lazy" decoding="async" alt="Striker: die Liste der nächsten Spiele, beschriftet mit «Grab your spot and come have fun!»."></picture></div>
+        </div>
       </div>
     </article>
-    <article class="su" id="case-minga">
-      <div class="su-in">
+    <article class="case" id="case-minga">
+      <div class="case-text">
         <p class="label case-meta">02 · Fitness · KI-Coaching</p>
         <h3>Minga RUNNER</h3>
         <p class="case-sum">Consumer-Plattform, die den Verlauf aus Garmin und Strava übernimmt, ein umfassendes Leistungsaudit (Belastung, Schlaf, HRV) durchführt und KI-generierte Pläne sowie optionale Abläufe mit menschlichen Coaches liefert.</p>
@@ -302,78 +309,75 @@
         <p class="label case-tags">Garmin · Strava · KI · Coaching</p>
         <p class="label case-link"><a class="link" href="https://mingarunner.com/" rel="noopener">mingarunner.com</a></p>
       </div>
+      <div class="frame type" aria-hidden="true"><p class="t-c">Minga RUNNER</p><p class="t-w label">Garmin · Strava · KI · Coaching</p></div>
     </article>
-    <article class="su" id="case-pizza">
-      <div class="su-in">
+    <article class="case" id="case-pizza">
+      <div class="case-text">
         <p class="label case-meta">03 · Gastronomie · KMU</p>
         <h3>Pizza Brothers</h3>
         <p class="case-sum">Mobile App, Software für Live-Lieferzeiten und Bestellung über WhatsApp. Ein vollständig digitaler Ablauf für eine kleine Pizzeria, vom ersten Antippen bis in die Küche.</p>
         <p class="case-body">Wir haben spontane Telefonbestellungen und handgeschriebene Zettel durch eine mobile App ersetzt, in der man das Menü durchsieht, den Warenkorb zusammenstellt und bezahlt oder Bezahlung bei Abholung wählt, mit WhatsApp als vollwertigem Kanal, damit Stammkunden im Chat bestellen können, den sie ohnehin nutzen, und alles in denselben Ablauf bis in die Küche fliesst. Die Software für Live-Lieferzeiten gibt Kunden ehrliche Zubereitungs- und Lieferfenster und dem Personal eine einzige Live-Übersicht darüber, was gerade zubereitet wird, was unterwegs ist und was sich verspätet. Die Ansichten für die Küche bleiben synchron, sodass ein Team an einem einzigen Standort mit wenig IT-Kapazität den ganzen Tag ohne parallele Tabellen bewältigen kann.</p>
         <p class="label case-tags">Mobile · WhatsApp · Live-Lieferzeit · Gastronomie</p>
       </div>
+      <div class="frame type" aria-hidden="true"><p class="t-c">Pizza Brothers</p><p class="t-w label">Mobile · WhatsApp · Live-Lieferzeit · Gastronomie</p></div>
     </article>
-    <article class="su" id="case-blu">
-      <div class="su-in">
+    <article class="case" id="case-blu">
+      <div class="case-text">
         <p class="label case-meta">04 · Digitale Gesundheit</p>
         <h3>BLU Healthcare</h3>
         <p class="case-sum">Produkt- und Integrationsarbeit für ein junges Unternehmen im Gesundheitswesen: verlässliche Abläufe, rollengerechte Oberflächen und Software, die lesbar bleibt, wenn klinische und administrative Beteiligte schnell handeln.</p>
         <p class="case-body">BLU Healthcare steht in derselben Reihe wie unsere anderen Start-up-Projekte: enge Zusammenarbeit mit den Gründern, schrittweise Releases und Ehrlichkeit darüber, was «MVP» bedeutet, wenn Haftung und Verfügbarkeit beide zählen. Im Vordergrund stehen sichere Abläufe, klare Einwilligungs- und Zugriffsmuster, Protokollierung und Wiederherstellung, auf die man sich verlassen kann, und Oberflächen, die sich nicht gegen die Nutzer stellen, auch nicht um 23 Uhr. In der Umsetzung bleiben wir konkret, in öffentlichen Texten bewusst allgemein.</p>
         <p class="label case-tags">Gesundheit · Produkt · Integration · Sicherheit</p>
       </div>
+      <div class="frame type" aria-hidden="true"><p class="t-c">BLU Healthcare</p><p class="t-w label">Gesundheit · Produkt · Integration · Sicherheit</p></div>
     </article>
   </div>
 
-  <div class="wrap cols sec-head grp-head" id="rd">
-    <p class="label idx-sub">F&amp;E</p>
-    <p class="lede">Angewandte Forschung von Elysium Labs: Experimente und Prototypen, die schärfen, wie wir für Kunden entwickeln.</p>
+  <div class="wrap cases" id="pf-rd" role="tabpanel" aria-labelledby="t-rd">
+    <article class="case" id="case-echo">
+      <div class="case-text">
+        <p class="label case-meta">01 · Deep Learning · medizinische Bildgebung</p>
+        <h3>Anwendungen von Deep Learning — ein Beispiel aus der Medizin</h3>
+        <p class="case-sum">Medizinische Videosegmentierung im Herzultraschall, aus einem akademischen Umfeld hin zu einem möglichen Einsatz im Spital — ein konkretes Beispiel für die Deep-Learning-Praxis, die wir ernst nehmen.</p>
+        <p class="case-body">Das Projekt befasste sich mit der automatischen Abgrenzung der Mitralklappe in 2D-Echokardiographie-Sequenzen — einem routinemässigen Bildgebungsverfahren, bei dem einheitliche Masken für die nachfolgende Analyse und Planung wichtig sind. Herkunft und Qualität der Annotationen waren unterschiedlich, deshalb musste die Modellierung verrauschtere Annotationen mit strengeren klinischen Referenzdaten in Einklang bringen, wo es darauf ankam; spärliche Annotationen, Regionshinweise und Vorhersagen über ganze Sequenzen mussten in einer einzigen Pipeline zusammenpassen. Die Arbeit gehört zu einer breiteren Deep-Learning-Praxis: Zeit, die wir mit Experimenten an neuronalen Netzen verbringen, um ein Gespür dafür zu entwickeln, wo sie wirklich helfen und wo sie bloss überanpassen, wie Architekturentscheidungen die Optimierung prägen und wann einfachere, klassische Methoden sie noch übertreffen. Die Medizin ist eines der Gebiete, in denen diese Disziplin zählt — ein flüssiges Ergebnis ist nicht dasselbe wie ein richtiges.</p>
+        <p class="label case-tags">Deep Learning · Segmentierung · Echokardiographie · Medizinische Bildgebung</p>
+      </div>
+      <div class="frame">
+        <div class="bar"><i></i><i></i><i></i><span class="label">Echokardiographie</span></div>
+        <div class="phones"><div class="shot echo"><img src="../assets/work/echo-00-560.jpg" width="560" height="560" loading="lazy" decoding="async" alt="Ein Bild aus einer 2D-Echokardiographie-Sequenz: eine Ultraschallaufnahme des Herzens."><img class="echo-b" src="../assets/work/echo-15-560.jpg" width="560" height="560" loading="lazy" decoding="async" alt=""></div></div>
+      </div>
+    </article>
+    <article class="case" id="case-rag">
+      <div class="case-text">
+        <p class="label case-meta">02 · NLP · Informationssysteme</p>
+        <h3>LLM-Chat-Oberflächen &amp; RAG-Stacks</h3>
+        <p class="case-sum">Retrieval-augmentierte Pipelines, mit denen Nutzer Kundenkorpora in natürlicher Sprache abfragen können, gestützt auf die zugrunde liegenden Quellen.</p>
+        <p class="case-body">Wir bauen wiederverwendbare Chat-Komponenten zusammen mit den Retrieval-Augmented-Generation-Pipelines dahinter: Aufnahme von PDFs, strukturierten Datensätzen und SaaS-Exporten; Chunking, hybrides Sparse/Dense-Retrieval und Reranking; Antworten mit Quellenangaben, die auf die Originalpassagen zurückführen; und Evaluationsumgebungen für Treue, Enthaltung und Latenz unter Token-Budgets. Im Vordergrund steht ein einheitliches Interaktionsmuster, das ehrlich bleibt, wenn Korpora wachsen, Mandantenregeln sich ändern und Governance-Anforderungen strenger werden — statt einer einmaligen Demo, die an Schärfe verliert, sobald man sich wirklich auf sie verlässt.</p>
+        <p class="label case-tags">Chat-UI · RAG · LLM · Quellenbindung</p>
+      </div>
+      <div class="frame type" aria-hidden="true"><p class="t-c">LLM-Chat-Oberflächen &amp; RAG-Stacks</p><p class="t-w label">Chat-UI · RAG · LLM · Quellenbindung</p></div>
+    </article>
+    <article class="case" id="case-diffusion">
+      <div class="case-text">
+        <p class="label case-meta">03 · Generative Modellierung · Roadmap</p>
+        <h3>Diffusionsmodelle</h3>
+        <p class="case-sum">Auf der Roadmap für Forschung und Marktreife; noch nicht Teil unseres aktuellen Leistungsangebots.</p>
+        <p class="case-body">Wir befassen uns intern mit Diffusionsmodellen, um zu verstehen, was unter der Haube tatsächlich passiert, wie Conditioning funktioniert, warum bestimmte Artefakte auftreten und wie teuer es ist, die Bildqualität weiter zu steigern. Es ist ein technisch spannendes Gebiet, und unser Designteam nutzt bestehende KI-Werkzeuge bereits im Arbeitsalltag. Auf der F&amp;E-Seite geht es eher darum, die Funktionsweise dieser Systeme zu zerlegen, als sie nur zu nutzen. Derzeit gibt es dazu kein Produkt und keine Dienstleistung; es geht schlicht darum, die Technologie nicht als Blackbox zu behandeln.</p>
+        <p class="label case-tags">Diffusion · Generative KI · Roadmap</p>
+      </div>
+      <div class="frame type" aria-hidden="true"><p class="t-c">Diffusionsmodelle</p><p class="t-w label">Diffusion · Generative KI · Roadmap</p></div>
+    </article>
+    <article class="case" id="case-robotics">
+      <div class="case-text">
+        <p class="label case-meta">04 · Wahrnehmung · verkörperte Systeme · Roadmap</p>
+        <h3>Robotik &amp; Integration von Computer Vision</h3>
+        <p class="case-sum">Auf der Roadmap für Forschung und Marktreife; noch nicht Teil unseres aktuellen Leistungsangebots.</p>
+        <p class="case-body">Robotik und integrierte Computer-Vision-Pipelines sind ein Gebiet, das wir umkreisen, statt es zu verkaufen: Mehrkamerageometrie, Erkennung und Verfolgung, Zeitsynchronisation und die firmwarenahen Probleme, die entscheiden, ob eine Demo den Kontakt mit der Realität übersteht. Die Richtung ist vielversprechend für Industriekunden und räumliche Anwendungen, doch wir werden sie erst als Produktivleistung anbieten, wenn wir sowohl die technische Tiefe als auch das Signal der Marktreife haben, um das ehrlich zu tun.</p>
+        <p class="label case-tags">Computer Vision · Robotik · Roadmap</p>
+      </div>
+      <div class="frame type" aria-hidden="true"><p class="t-c">Robotik &amp; Integration von Computer Vision</p><p class="t-w label">Computer Vision · Robotik · Roadmap</p></div>
+    </article>
   </div>
-  <ol class="wrap rd-list">
-    <li class="rd" id="case-echo">
-      <details open>
-        <summary><span class="rd-no mono" aria-hidden="true">01</span><span class="rd-h"><span class="label">Deep Learning · medizinische Bildgebung</span><h3>Anwendungen von Deep Learning — ein Beispiel aus der Medizin</h3><span class="rd-sum">Medizinische Videosegmentierung im Herzultraschall, aus einem akademischen Umfeld hin zu einem möglichen Einsatz im Spital — ein konkretes Beispiel für die Deep-Learning-Praxis, die wir ernst nehmen.</span></span><i class="rd-x" aria-hidden="true"></i></summary>
-        <div class="rd-body">
-          <div class="rd-in">
-            <p class="case-body">Das Projekt befasste sich mit der automatischen Abgrenzung der Mitralklappe in 2D-Echokardiographie-Sequenzen — einem routinemässigen Bildgebungsverfahren, bei dem einheitliche Masken für die nachfolgende Analyse und Planung wichtig sind. Herkunft und Qualität der Annotationen waren unterschiedlich, deshalb musste die Modellierung verrauschtere Annotationen mit strengeren klinischen Referenzdaten in Einklang bringen, wo es darauf ankam; spärliche Annotationen, Regionshinweise und Vorhersagen über ganze Sequenzen mussten in einer einzigen Pipeline zusammenpassen. Die Arbeit gehört zu einer breiteren Deep-Learning-Praxis: Zeit, die wir mit Experimenten an neuronalen Netzen verbringen, um ein Gespür dafür zu entwickeln, wo sie wirklich helfen und wo sie bloss überanpassen, wie Architekturentscheidungen die Optimierung prägen und wann einfachere, klassische Methoden sie noch übertreffen. Die Medizin ist eines der Gebiete, in denen diese Disziplin zählt — ein flüssiges Ergebnis ist nicht dasselbe wie ein richtiges.</p>
-            <p class="label case-tags">Deep Learning · Segmentierung · Echokardiographie · Medizinische Bildgebung</p>
-          </div>
-          <figure class="rd-echo"><img src="../assets/work/echo-00-560.jpg" width="560" height="560" loading="lazy" decoding="async" alt="Ein Bild aus einer 2D-Echokardiographie-Sequenz: eine Ultraschallaufnahme des Herzens."><img class="rd-echo-b" src="../assets/work/echo-15-560.jpg" width="560" height="560" loading="lazy" decoding="async" alt=""></figure>
-        </div>
-      </details>
-    </li>
-    <li class="rd" id="case-rag">
-      <details>
-        <summary><span class="rd-no mono" aria-hidden="true">02</span><span class="rd-h"><span class="label">NLP · Informationssysteme</span><h3>LLM-Chat-Oberflächen &amp; RAG-Stacks</h3><span class="rd-sum">Retrieval-augmentierte Pipelines, mit denen Nutzer Kundenkorpora in natürlicher Sprache abfragen können, gestützt auf die zugrunde liegenden Quellen.</span></span><i class="rd-x" aria-hidden="true"></i></summary>
-        <div class="rd-body">
-          <div class="rd-in">
-            <p class="case-body">Wir bauen wiederverwendbare Chat-Komponenten zusammen mit den Retrieval-Augmented-Generation-Pipelines dahinter: Aufnahme von PDFs, strukturierten Datensätzen und SaaS-Exporten; Chunking, hybrides Sparse/Dense-Retrieval und Reranking; Antworten mit Quellenangaben, die auf die Originalpassagen zurückführen; und Evaluationsumgebungen für Treue, Enthaltung und Latenz unter Token-Budgets. Im Vordergrund steht ein einheitliches Interaktionsmuster, das ehrlich bleibt, wenn Korpora wachsen, Mandantenregeln sich ändern und Governance-Anforderungen strenger werden — statt einer einmaligen Demo, die an Schärfe verliert, sobald man sich wirklich auf sie verlässt.</p>
-            <p class="label case-tags">Chat-UI · RAG · LLM · Quellenbindung</p>
-          </div>
-        </div>
-      </details>
-    </li>
-    <li class="rd" id="case-diffusion">
-      <details>
-        <summary><span class="rd-no mono" aria-hidden="true">03</span><span class="rd-h"><span class="label">Generative Modellierung · Roadmap</span><h3>Diffusionsmodelle</h3><span class="rd-sum">Auf der Roadmap für Forschung und Marktreife; noch nicht Teil unseres aktuellen Leistungsangebots.</span></span><i class="rd-x" aria-hidden="true"></i></summary>
-        <div class="rd-body">
-          <div class="rd-in">
-            <p class="case-body">Wir befassen uns intern mit Diffusionsmodellen, um zu verstehen, was unter der Haube tatsächlich passiert, wie Conditioning funktioniert, warum bestimmte Artefakte auftreten und wie teuer es ist, die Bildqualität weiter zu steigern. Es ist ein technisch spannendes Gebiet, und unser Designteam nutzt bestehende KI-Werkzeuge bereits im Arbeitsalltag. Auf der F&amp;E-Seite geht es eher darum, die Funktionsweise dieser Systeme zu zerlegen, als sie nur zu nutzen. Derzeit gibt es dazu kein Produkt und keine Dienstleistung; es geht schlicht darum, die Technologie nicht als Blackbox zu behandeln.</p>
-            <p class="label case-tags">Diffusion · Generative KI · Roadmap</p>
-          </div>
-        </div>
-      </details>
-    </li>
-    <li class="rd" id="case-robotics">
-      <details>
-        <summary><span class="rd-no mono" aria-hidden="true">04</span><span class="rd-h"><span class="label">Wahrnehmung · verkörperte Systeme · Roadmap</span><h3>Robotik &amp; Integration von Computer Vision</h3><span class="rd-sum">Auf der Roadmap für Forschung und Marktreife; noch nicht Teil unseres aktuellen Leistungsangebots.</span></span><i class="rd-x" aria-hidden="true"></i></summary>
-        <div class="rd-body">
-          <div class="rd-in">
-            <p class="case-body">Robotik und integrierte Computer-Vision-Pipelines sind ein Gebiet, das wir umkreisen, statt es zu verkaufen: Mehrkamerageometrie, Erkennung und Verfolgung, Zeitsynchronisation und die firmwarenahen Probleme, die entscheiden, ob eine Demo den Kontakt mit der Realität übersteht. Die Richtung ist vielversprechend für Industriekunden und räumliche Anwendungen, doch wir werden sie erst als Produktivleistung anbieten, wenn wir sowohl die technische Tiefe als auch das Signal der Marktreife haben, um das ehrlich zu tun.</p>
-            <p class="label case-tags">Computer Vision · Robotik · Roadmap</p>
-          </div>
-        </div>
-      </details>
-    </li>
-  </ol>
 </section>
 
 <!-- ================================ 6 RECORD ================================ -->

@@ -177,9 +177,17 @@
   <div class="wrap cols sec-head">
     <p class="label idx">03 / Réalisations choisies</p>
     <h2 id="h-work">Portfolio</h2>
-    <p class="lede">Des mandats choisis pour leur importance et pour la mesurabilité de leur résultat.</p>
+    <p class="lede" data-for="pf-selected">Des mandats choisis pour leur importance et pour la mesurabilité de leur résultat.</p>
+    <p class="lede" data-for="pf-startups">Des produits et des plateformes construits avec des équipes et des exploitants à leurs débuts : des périmètres resserrés, des systèmes en production et la discipline de livrer là où la réglementation ou la disponibilité comptent.</p>
+    <p class="lede" data-for="pf-rd">La recherche appliquée d’Elysium Labs : des expériences et des prototypes qui affinent notre façon de construire pour nos clients.</p>
   </div>
-  <div class="wrap cases">
+  <div class="pf-bar" hidden><div class="wrap cols"><div class="pf-tabs" role="tablist" aria-label="Portfolio">
+    <button type="button" role="tab" id="t-selected" aria-controls="pf-selected" aria-selected="true">Sélection <span class="mono">8</span></button>
+    <button type="button" role="tab" id="t-startups" aria-controls="pf-startups" aria-selected="false" tabindex="-1">Startups <span class="mono">4</span></button>
+    <button type="button" role="tab" id="t-rd" aria-controls="pf-rd" aria-selected="false" tabindex="-1">R&amp;D <span class="mono">4</span></button>
+    <i class="pf-pill" aria-hidden="true"></i>
+  </div></div></div>
+  <div class="wrap cases" id="pf-selected" role="tabpanel" aria-labelledby="t-selected">
     <article class="case" id="case-wipo">
       <div class="case-text">
         <p class="label case-meta">01 · Organisations internationales</p>
@@ -273,13 +281,9 @@
     </article>
   </div>
 
-  <div class="wrap cols sec-head grp-head" id="startups">
-    <p class="label idx-sub">Startups</p>
-    <p class="lede">Des produits et des plateformes construits avec des équipes et des exploitants à leurs débuts : des périmètres resserrés, des systèmes en production et la discipline de livrer là où la réglementation ou la disponibilité comptent.</p>
-  </div>
-  <div class="wrap su-grid">
-    <article class="su su-wide" id="case-striker">
-      <div class="su-in">
+  <div class="wrap cases" id="pf-startups" role="tabpanel" aria-labelledby="t-startups">
+    <article class="case" id="case-striker">
+      <div class="case-text">
         <p class="label case-meta">01 · Produit mobile</p>
         <h3>Striker</h3>
         <p class="case-sum">Application multiplateforme pour organiser le football amateur dans plusieurs villes européennes, de la composition des matchs à la logistique.</p>
@@ -287,14 +291,17 @@
         <p class="label case-tags">iOS · Android · Sport</p>
         <p class="label case-link"><a class="link" href="https://www.striker.football/" rel="noopener">www.striker.football</a></p>
       </div>
-      <div class="phones su-media">
-        <div class="shot"><picture><source type="image/avif" srcset="../assets/work/striker_1_v2-324.avif 324w, ../assets/work/striker_1_v2-647.avif 647w" sizes="(min-width:900px) 17vw, 30vw"><source type="image/webp" srcset="../assets/work/striker_1_v2-324.webp 324w, ../assets/work/striker_1_v2-647.webp 647w" sizes="(min-width:900px) 17vw, 30vw"><img src="../assets/work/striker_1_v2-324.jpg" srcset="../assets/work/striker_1_v2-324.jpg 324w, ../assets/work/striker_1_v2-647.jpg 647w" sizes="(min-width:900px) 17vw, 30vw" width="647" height="1400" loading="lazy" decoding="async" alt="Striker : un billet de match sur un téléphone, légendé « Wanna play soccer in Geneva or Zurich? »."></picture></div>
+      <div class="frame">
+        <div class="bar"><i></i><i></i><i></i><span class="label">Striker</span></div>
+        <div class="phones">
+          <div class="shot"><picture><source type="image/avif" srcset="../assets/work/striker_1_v2-324.avif 324w, ../assets/work/striker_1_v2-647.avif 647w" sizes="(min-width:900px) 17vw, 30vw"><source type="image/webp" srcset="../assets/work/striker_1_v2-324.webp 324w, ../assets/work/striker_1_v2-647.webp 647w" sizes="(min-width:900px) 17vw, 30vw"><img src="../assets/work/striker_1_v2-324.jpg" srcset="../assets/work/striker_1_v2-324.jpg 324w, ../assets/work/striker_1_v2-647.jpg 647w" sizes="(min-width:900px) 17vw, 30vw" width="647" height="1400" loading="lazy" decoding="async" alt="Striker : un billet de match sur un téléphone, légendé « Wanna play soccer in Geneva or Zurich? »."></picture></div>
           <div class="shot"><picture><source type="image/avif" srcset="../assets/work/striker_2_v2-324.avif 324w, ../assets/work/striker_2_v2-647.avif 647w" sizes="(min-width:900px) 17vw, 30vw"><source type="image/webp" srcset="../assets/work/striker_2_v2-324.webp 324w, ../assets/work/striker_2_v2-647.webp 647w" sizes="(min-width:900px) 17vw, 30vw"><img src="../assets/work/striker_2_v2-324.jpg" srcset="../assets/work/striker_2_v2-324.jpg 324w, ../assets/work/striker_2_v2-647.jpg 647w" sizes="(min-width:900px) 17vw, 30vw" width="647" height="1400" loading="lazy" decoding="async" alt="Striker : « 7 on 7 games all summer! »."></picture></div>
           <div class="shot"><picture><source type="image/avif" srcset="../assets/work/striker_3_v2-324.avif 324w, ../assets/work/striker_3_v2-647.avif 647w" sizes="(min-width:900px) 17vw, 30vw"><source type="image/webp" srcset="../assets/work/striker_3_v2-324.webp 324w, ../assets/work/striker_3_v2-647.webp 647w" sizes="(min-width:900px) 17vw, 30vw"><img src="../assets/work/striker_3_v2-324.jpg" srcset="../assets/work/striker_3_v2-324.jpg 324w, ../assets/work/striker_3_v2-647.jpg 647w" sizes="(min-width:900px) 17vw, 30vw" width="647" height="1400" loading="lazy" decoding="async" alt="Striker : la liste des prochains matchs, légendée « Grab your spot and come have fun! »."></picture></div>
+        </div>
       </div>
     </article>
-    <article class="su" id="case-minga">
-      <div class="su-in">
+    <article class="case" id="case-minga">
+      <div class="case-text">
         <p class="label case-meta">02 · Fitness · coaching par IA</p>
         <h3>Minga RUNNER</h3>
         <p class="case-sum">Plateforme grand public qui importe l’historique Garmin et Strava, réalise un audit approfondi des performances (charge, sommeil, VFC) et fournit des plans générés par IA, avec en option un suivi par un coach humain.</p>
@@ -302,78 +309,75 @@
         <p class="label case-tags">Garmin · Strava · IA · Coaching</p>
         <p class="label case-link"><a class="link" href="https://mingarunner.com/" rel="noopener">mingarunner.com</a></p>
       </div>
+      <div class="frame type" aria-hidden="true"><p class="t-c">Minga RUNNER</p><p class="t-w label">Garmin · Strava · IA · Coaching</p></div>
     </article>
-    <article class="su" id="case-pizza">
-      <div class="su-in">
+    <article class="case" id="case-pizza">
+      <div class="case-text">
         <p class="label case-meta">03 · Restauration · PME</p>
         <h3>Pizza Brothers</h3>
         <p class="case-sum">Application mobile, logiciel d’heure d’arrivée en direct et commande par WhatsApp. Un parcours entièrement numérique pour une petite pizzeria, du premier clic jusqu’à la cuisine.</p>
         <p class="case-body">Nous avons remplacé les commandes improvisées par téléphone et les bons manuscrits par une application mobile pour consulter le menu, composer son panier et payer ou choisir le paiement au retrait, avec WhatsApp comme canal à part entière pour que les habitués commandent dans la conversation qu’ils utilisent déjà, le tout alimentant la même chaîne jusqu’à la cuisine. Le logiciel d’heure d’arrivée en direct donne aux clients des délais de préparation et de livraison honnêtes, et au personnel un tableau unique en direct de ce qui est en cuisson, en livraison ou en retard. Les vues de l’arrière-cuisine restent synchronisées, pour qu’une équipe sur un seul site, aux moyens informatiques limités, puisse tenir toute la journée sans tableurs parallèles.</p>
         <p class="label case-tags">Mobile · WhatsApp · Heure d’arrivée en direct · Restauration</p>
       </div>
+      <div class="frame type" aria-hidden="true"><p class="t-c">Pizza Brothers</p><p class="t-w label">Mobile · WhatsApp · Heure d’arrivée en direct · Restauration</p></div>
     </article>
-    <article class="su" id="case-blu">
-      <div class="su-in">
+    <article class="case" id="case-blu">
+      <div class="case-text">
         <p class="label case-meta">04 · Santé numérique</p>
         <h3>BLU Healthcare</h3>
         <p class="case-sum">Travail de produit et d’intégration pour une jeune entreprise du secteur de la santé : des parcours fiables, des interfaces adaptées à chaque rôle et un logiciel qui reste lisible quand les équipes cliniques et administratives vont vite.</p>
         <p class="case-body">BLU Healthcare s’inscrit dans la même lignée que nos autres réalisations pour des startups : une collaboration étroite avec les fondateurs, des versions incrémentales et de l’honnêteté sur ce que « MVP » signifie quand la responsabilité et la disponibilité comptent toutes deux. L’accent porte sur des parcours sécurisés, des schémas de consentement et d’accès clairs, une journalisation et une reprise sur lesquelles on peut compter, et des interfaces qui ne combattent pas les utilisateurs à 23 heures. Nous restons concrets dans la réalisation et volontairement généraux dans nos textes publics.</p>
         <p class="label case-tags">Santé · Produit · Intégration · Sécurité</p>
       </div>
+      <div class="frame type" aria-hidden="true"><p class="t-c">BLU Healthcare</p><p class="t-w label">Santé · Produit · Intégration · Sécurité</p></div>
     </article>
   </div>
 
-  <div class="wrap cols sec-head grp-head" id="rd">
-    <p class="label idx-sub">R&amp;D</p>
-    <p class="lede">La recherche appliquée d’Elysium Labs : des expériences et des prototypes qui affinent notre façon de construire pour nos clients.</p>
+  <div class="wrap cases" id="pf-rd" role="tabpanel" aria-labelledby="t-rd">
+    <article class="case" id="case-echo">
+      <div class="case-text">
+        <p class="label case-meta">01 · Deep learning · imagerie médicale</p>
+        <h3>Applications du deep learning — un exemple tiré de la médecine</h3>
+        <p class="case-sum">Segmentation vidéo médicale sur des échographies cardiaques, d’un cadre académique vers une possible utilisation à l’hôpital — un exemple concret de la pratique du deep learning que nous prenons au sérieux.</p>
+        <p class="case-body">Le projet portait sur la délimitation automatique de la valve mitrale dans des séquences d’échocardiographie 2D — une modalité d’imagerie courante où des masques cohérents comptent pour l’analyse et la planification qui suivent. Les annotations variaient en provenance et en qualité : la modélisation devait donc concilier des annotations plus bruitées avec une vérité terrain clinique plus stricte quand c’était nécessaire ; annotations éparses, indices de région et prédictions sur des séquences entières devaient tous tenir ensemble dans une même chaîne de traitement. Ce travail s’inscrit dans une pratique plus large du deep learning : du temps passé à expérimenter avec des réseaux de neurones pour comprendre où ils aident vraiment et où ils ne font que surapprendre, comment les choix d’architecture façonnent l’optimisation, et quand des méthodes classiques plus simples font encore mieux. La médecine est l’un des domaines où cette discipline compte — un résultat fluide n’est pas la même chose qu’un résultat juste.</p>
+        <p class="label case-tags">Deep learning · Segmentation · Échocardiographie · Imagerie médicale</p>
+      </div>
+      <div class="frame">
+        <div class="bar"><i></i><i></i><i></i><span class="label">Échocardiographie</span></div>
+        <div class="phones"><div class="shot echo"><img src="../assets/work/echo-00-560.jpg" width="560" height="560" loading="lazy" decoding="async" alt="Une image d’une séquence d’échocardiographie 2D : une échographie du cœur."><img class="echo-b" src="../assets/work/echo-15-560.jpg" width="560" height="560" loading="lazy" decoding="async" alt=""></div></div>
+      </div>
+    </article>
+    <article class="case" id="case-rag">
+      <div class="case-text">
+        <p class="label case-meta">02 · TAL · systèmes d’information</p>
+        <h3>Interfaces de chat LLM &amp; stacks RAG</h3>
+        <p class="case-sum">Des chaînes de génération augmentée par la recherche qui permettent d’interroger en langage naturel les corpus des clients, en s’appuyant sur les sources sous-jacentes.</p>
+        <p class="case-body">Nous construisons des composants de chat réutilisables, associés aux chaînes de génération augmentée par la recherche (RAG) qui les alimentent : ingestion de PDF, d’enregistrements structurés et d’exports SaaS ; découpage, recherche hybride creuse/dense et reclassement ; réponses avec citations qui renvoient aux passages sources ; et bancs d’évaluation couvrant la fidélité, l’abstention et la latence sous budget de tokens. L’accent porte sur un mode d’interaction cohérent qui reste honnête quand les corpus grandissent, que les règles de cloisonnement changent et que les exigences de gouvernance se renforcent — plutôt qu’une démo ponctuelle qui perd de son intérêt dès qu’on en dépend vraiment.</p>
+        <p class="label case-tags">Interface de chat · RAG · LLM · Ancrage dans les sources</p>
+      </div>
+      <div class="frame type" aria-hidden="true"><p class="t-c">Interfaces de chat LLM &amp; stacks RAG</p><p class="t-w label">Interface de chat · RAG · LLM · Ancrage dans les sources</p></div>
+    </article>
+    <article class="case" id="case-diffusion">
+      <div class="case-text">
+        <p class="label case-meta">03 · Modélisation générative · Feuille de route</p>
+        <h3>Modèles de diffusion</h3>
+        <p class="case-sum">Sur la feuille de route de la recherche et de l’adéquation au marché ; ne fait pas encore partie de nos prestations.</p>
+        <p class="case-body">Nous étudions les modèles de diffusion en interne pour comprendre ce qui se passe réellement sous le capot, comment fonctionne le conditionnement, pourquoi certains artefacts apparaissent et combien coûte une meilleure qualité d’image. C’est un domaine techniquement intéressant, et notre équipe de design utilise déjà des outils d’IA existants au quotidien. Côté R&amp;D, il s’agit plutôt de décortiquer le fonctionnement de ces systèmes que de simplement les utiliser. Il n’existe pour l’instant aucun produit ni service autour de ce sujet ; il s’agit simplement de ne pas traiter la technologie comme une boîte noire.</p>
+        <p class="label case-tags">Diffusion · IA générative · Feuille de route</p>
+      </div>
+      <div class="frame type" aria-hidden="true"><p class="t-c">Modèles de diffusion</p><p class="t-w label">Diffusion · IA générative · Feuille de route</p></div>
+    </article>
+    <article class="case" id="case-robotics">
+      <div class="case-text">
+        <p class="label case-meta">04 · Perception · systèmes incarnés · Feuille de route</p>
+        <h3>Robotique &amp; intégration de la vision par ordinateur</h3>
+        <p class="case-sum">Sur la feuille de route de la recherche et de l’adéquation au marché ; ne fait pas encore partie de nos prestations.</p>
+        <p class="case-body">La robotique et les chaînes intégrées de vision par ordinateur sont un domaine que nous observons de près sans encore le vendre : géométrie multicaméra, détection et suivi, synchronisation temporelle, et les problèmes proches du firmware qui décident si une démo survit au contact de la réalité. La direction est prometteuse pour des clients industriels et des projets spatialisés, mais nous ne la proposerons comme prestation en production qu’une fois réunies la profondeur technique et l’adéquation au marché qui permettent de le faire honnêtement.</p>
+        <p class="label case-tags">Vision par ordinateur · Robotique · Feuille de route</p>
+      </div>
+      <div class="frame type" aria-hidden="true"><p class="t-c">Robotique &amp; intégration de la vision par ordinateur</p><p class="t-w label">Vision par ordinateur · Robotique · Feuille de route</p></div>
+    </article>
   </div>
-  <ol class="wrap rd-list">
-    <li class="rd" id="case-echo">
-      <details open>
-        <summary><span class="rd-no mono" aria-hidden="true">01</span><span class="rd-h"><span class="label">Deep learning · imagerie médicale</span><h3>Applications du deep learning — un exemple tiré de la médecine</h3><span class="rd-sum">Segmentation vidéo médicale sur des échographies cardiaques, d’un cadre académique vers une possible utilisation à l’hôpital — un exemple concret de la pratique du deep learning que nous prenons au sérieux.</span></span><i class="rd-x" aria-hidden="true"></i></summary>
-        <div class="rd-body">
-          <div class="rd-in">
-            <p class="case-body">Le projet portait sur la délimitation automatique de la valve mitrale dans des séquences d’échocardiographie 2D — une modalité d’imagerie courante où des masques cohérents comptent pour l’analyse et la planification qui suivent. Les annotations variaient en provenance et en qualité : la modélisation devait donc concilier des annotations plus bruitées avec une vérité terrain clinique plus stricte quand c’était nécessaire ; annotations éparses, indices de région et prédictions sur des séquences entières devaient tous tenir ensemble dans une même chaîne de traitement. Ce travail s’inscrit dans une pratique plus large du deep learning : du temps passé à expérimenter avec des réseaux de neurones pour comprendre où ils aident vraiment et où ils ne font que surapprendre, comment les choix d’architecture façonnent l’optimisation, et quand des méthodes classiques plus simples font encore mieux. La médecine est l’un des domaines où cette discipline compte — un résultat fluide n’est pas la même chose qu’un résultat juste.</p>
-            <p class="label case-tags">Deep learning · Segmentation · Échocardiographie · Imagerie médicale</p>
-          </div>
-          <figure class="rd-echo"><img src="../assets/work/echo-00-560.jpg" width="560" height="560" loading="lazy" decoding="async" alt="Une image d’une séquence d’échocardiographie 2D : une échographie du cœur."><img class="rd-echo-b" src="../assets/work/echo-15-560.jpg" width="560" height="560" loading="lazy" decoding="async" alt=""></figure>
-        </div>
-      </details>
-    </li>
-    <li class="rd" id="case-rag">
-      <details>
-        <summary><span class="rd-no mono" aria-hidden="true">02</span><span class="rd-h"><span class="label">TAL · systèmes d’information</span><h3>Interfaces de chat LLM &amp; stacks RAG</h3><span class="rd-sum">Des chaînes de génération augmentée par la recherche qui permettent d’interroger en langage naturel les corpus des clients, en s’appuyant sur les sources sous-jacentes.</span></span><i class="rd-x" aria-hidden="true"></i></summary>
-        <div class="rd-body">
-          <div class="rd-in">
-            <p class="case-body">Nous construisons des composants de chat réutilisables, associés aux chaînes de génération augmentée par la recherche (RAG) qui les alimentent : ingestion de PDF, d’enregistrements structurés et d’exports SaaS ; découpage, recherche hybride creuse/dense et reclassement ; réponses avec citations qui renvoient aux passages sources ; et bancs d’évaluation couvrant la fidélité, l’abstention et la latence sous budget de tokens. L’accent porte sur un mode d’interaction cohérent qui reste honnête quand les corpus grandissent, que les règles de cloisonnement changent et que les exigences de gouvernance se renforcent — plutôt qu’une démo ponctuelle qui perd de son intérêt dès qu’on en dépend vraiment.</p>
-            <p class="label case-tags">Interface de chat · RAG · LLM · Ancrage dans les sources</p>
-          </div>
-        </div>
-      </details>
-    </li>
-    <li class="rd" id="case-diffusion">
-      <details>
-        <summary><span class="rd-no mono" aria-hidden="true">03</span><span class="rd-h"><span class="label">Modélisation générative · Feuille de route</span><h3>Modèles de diffusion</h3><span class="rd-sum">Sur la feuille de route de la recherche et de l’adéquation au marché ; ne fait pas encore partie de nos prestations.</span></span><i class="rd-x" aria-hidden="true"></i></summary>
-        <div class="rd-body">
-          <div class="rd-in">
-            <p class="case-body">Nous étudions les modèles de diffusion en interne pour comprendre ce qui se passe réellement sous le capot, comment fonctionne le conditionnement, pourquoi certains artefacts apparaissent et combien coûte une meilleure qualité d’image. C’est un domaine techniquement intéressant, et notre équipe de design utilise déjà des outils d’IA existants au quotidien. Côté R&amp;D, il s’agit plutôt de décortiquer le fonctionnement de ces systèmes que de simplement les utiliser. Il n’existe pour l’instant aucun produit ni service autour de ce sujet ; il s’agit simplement de ne pas traiter la technologie comme une boîte noire.</p>
-            <p class="label case-tags">Diffusion · IA générative · Feuille de route</p>
-          </div>
-        </div>
-      </details>
-    </li>
-    <li class="rd" id="case-robotics">
-      <details>
-        <summary><span class="rd-no mono" aria-hidden="true">04</span><span class="rd-h"><span class="label">Perception · systèmes incarnés · Feuille de route</span><h3>Robotique &amp; intégration de la vision par ordinateur</h3><span class="rd-sum">Sur la feuille de route de la recherche et de l’adéquation au marché ; ne fait pas encore partie de nos prestations.</span></span><i class="rd-x" aria-hidden="true"></i></summary>
-        <div class="rd-body">
-          <div class="rd-in">
-            <p class="case-body">La robotique et les chaînes intégrées de vision par ordinateur sont un domaine que nous observons de près sans encore le vendre : géométrie multicaméra, détection et suivi, synchronisation temporelle, et les problèmes proches du firmware qui décident si une démo survit au contact de la réalité. La direction est prometteuse pour des clients industriels et des projets spatialisés, mais nous ne la proposerons comme prestation en production qu’une fois réunies la profondeur technique et l’adéquation au marché qui permettent de le faire honnêtement.</p>
-            <p class="label case-tags">Vision par ordinateur · Robotique · Feuille de route</p>
-          </div>
-        </div>
-      </details>
-    </li>
-  </ol>
 </section>
 
 <!-- ================================ 6 RECORD ================================ -->

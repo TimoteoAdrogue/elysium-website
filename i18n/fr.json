@@ -227,13 +227,10 @@
  "Robotics &amp; computer vision integration": "Robotique &amp; intégration de la vision par ordinateur",
  "Robotics and integrated computer-vision pipelines are an area we are circling rather than selling: multi-camera geometry, detection and tracking, time sync, and the firmware-adjacent problems that decide whether a demo survives contact with reality. The direction is promising for industrial and spatial clients, but we will not position it as production delivery until we have both the engineering depth and the market-fit signal to do so honestly.": "La robotique et les chaînes intégrées de vision par ordinateur sont un domaine que nous observons de près sans encore le vendre : géométrie multicaméra, détection et suivi, synchronisation temporelle, et les problèmes proches du firmware qui décident si une démo survit au contact de la réalité. La direction est prometteuse pour des clients industriels et des projets spatialisés, mais nous ne la proposerons comme prestation en production qu’une fois réunies la profondeur technique et l’adéquation au marché qui permettent de le faire honnêtement.",
  "Computer vision · Robotics · Roadmap": "Vision par ordinateur · Robotique · Feuille de route",
- "04 / Private AI": "04 / IA privée",
- "05 / Offices": "05 / Bureaux",
  "Geneva · Zürich": "Genève · Zurich",
  "R&amp;D · Elysium Labs": "R&amp;D · Elysium Labs",
  "Schaffhauserstrasse 449, 8052 Zürich ZH, Switzerland": "Schaffhauserstrasse 449, 8052 Zurich ZH, Suisse",
  "8052 Zürich ZH, Switzerland": "8052 Zurich ZH, Suisse",
- "06 / Get in touch": "06 / Contact",
  "Ready to begin?": "Prêts à commencer ?",
  "We work with a small number of clients at a time. If your challenge is serious, we'd like to hear about it.": "Nous travaillons avec un petit nombre de clients à la fois. Si votre défi est sérieux, nous aimerions en entendre parler.",
  "Start a conversation": "Engager la conversation",
@@ -341,8 +338,5 @@
  "05 / Private AI": "05 / IA privée",
  "06 / Offices": "06 / Bureaux",
  "07 / Get in touch": "07 / Contact",
- "Deep learning · medical imaging": "Deep learning · imagerie médicale",
- "NLP · information systems": "TAL · systèmes d’information",
- "Generative modelling · Roadmap": "Modélisation générative · Feuille de route",
- "Perception · embodied systems · Roadmap": "Perception · systèmes incarnés · Feuille de route"
+ "Selected work": "Sélection"
 }

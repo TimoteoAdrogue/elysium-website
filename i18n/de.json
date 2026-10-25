@@ -227,13 +227,10 @@
  "Robotics &amp; computer vision integration": "Robotik &amp; Integration von Computer Vision",
  "Robotics and integrated computer-vision pipelines are an area we are circling rather than selling: multi-camera geometry, detection and tracking, time sync, and the firmware-adjacent problems that decide whether a demo survives contact with reality. The direction is promising for industrial and spatial clients, but we will not position it as production delivery until we have both the engineering depth and the market-fit signal to do so honestly.": "Robotik und integrierte Computer-Vision-Pipelines sind ein Gebiet, das wir umkreisen, statt es zu verkaufen: Mehrkamerageometrie, Erkennung und Verfolgung, Zeitsynchronisation und die firmwarenahen Probleme, die entscheiden, ob eine Demo den Kontakt mit der Realität übersteht. Die Richtung ist vielversprechend für Industriekunden und räumliche Anwendungen, doch wir werden sie erst als Produktivleistung anbieten, wenn wir sowohl die technische Tiefe als auch das Signal der Marktreife haben, um das ehrlich zu tun.",
  "Computer vision · Robotics · Roadmap": "Computer Vision · Robotik · Roadmap",
- "04 / Private AI": "04 / Private KI",
- "05 / Offices": "05 / Büros",
  "Geneva · Zürich": "Genf · Zürich",
  "R&amp;D · Elysium Labs": "F&amp;E · Elysium Labs",
  "Schaffhauserstrasse 449, 8052 Zürich ZH, Switzerland": "Schaffhauserstrasse 449, 8052 Zürich ZH, Schweiz",
  "8052 Zürich ZH, Switzerland": "8052 Zürich ZH, Schweiz",
- "06 / Get in touch": "06 / Kontakt",
  "Ready to begin?": "Bereit loszulegen?",
  "We work with a small number of clients at a time. If your challenge is serious, we'd like to hear about it.": "Wir arbeiten jeweils mit wenigen Kunden. Wenn Ihre Herausforderung ernst ist, möchten wir davon hören.",
  "Start a conversation": "Gespräch beginnen",
@@ -341,8 +338,5 @@
  "05 / Private AI": "05 / Private KI",
  "06 / Offices": "06 / Büros",
  "07 / Get in touch": "07 / Kontakt",
- "Deep learning · medical imaging": "Deep Learning · medizinische Bildgebung",
- "NLP · information systems": "NLP · Informationssysteme",
- "Generative modelling · Roadmap": "Generative Modellierung · Roadmap",
- "Perception · embodied systems · Roadmap": "Wahrnehmung · verkörperte Systeme · Roadmap"
+ "Selected work": "Auswahl"
 }
