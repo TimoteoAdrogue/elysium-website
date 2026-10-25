@@ -728,6 +728,61 @@ if (!reduce) for (const b of $$('.fig b')) {
   }
 }
 
+/* ---- startups: each tile opens like a lens as it arrives, Striker's screens are dealt out, a soft light follows the pointer ---- */
+{
+  const tiles = $$('.su');
+  if (tiles.length && !reduce) {
+    const lens = 'inset(10% 10% 10% 10% round 40px)';
+    for (const t of tiles) {
+      if (belowFold(t)) utils.set(t, { clipPath: lens, opacity: 0 });
+      once(t, '85% top', () => {
+        // tiles that share a row open one after another, left to right
+        const row = tiles.filter(x => Math.abs(x.offsetTop - t.offsetTop) < 4);
+        animate(t, { clipPath: [lens, 'inset(0% 0% 0% 0% round 14px)'], opacity: [0, 1], duration: T.t.draw, ease: T.ease.enter, delay: row.indexOf(t) * 140 });
+      });
+      t.addEventListener('pointermove', e => {
+        const r = t.getBoundingClientRect();
+        t.style.setProperty('--mx', `${(e.clientX - r.left).toFixed(0)}px`); t.style.setProperty('--my', `${(e.clientY - r.top).toFixed(0)}px`);
+      });
+    }
+    // the three screens start stacked on the middle one, tilted, and spread to their places
+    const phones = $$('.su-media .shot');
+    if (phones.length) {
+      const host = phones[0].closest('.su'), mid = (phones.length - 1) / 2;
+      if (belowFold(host)) utils.set(phones, { x: (_, i) => `${(mid - i) * 104}%`, rotate: (_, i) => (i - mid) * 7, y: 40 });
+      once(host, '70% top', () => animate(phones, { x: '0%', rotate: 0, y: 0, ease: sp('glide'), delay: stagger(70, { start: 300 }) }));
+    }
+  }
+}
+
+/* ---- R&D: a lab notebook. Each rule draws as its entry arrives; an entry unfolds on a spring ---- */
+{
+  const rows = $$('.rd');
+  if (rows.length && !reduce) {
+    for (const r of rows) {
+      const no = $('.rd-no', r), head = $$('.rd-h > *', r), x = $('.rd-x', r);
+      if (belowFold(r)) { r.style.setProperty('--rule', 0); utils.set([no, ...head, x], { opacity: 0 }); }
+      once(r, '88% top', () => createTimeline()
+        // the rule is drawn left to right, then the entry is written along it
+        .add(r, { '--rule': [0, 1], duration: T.t.draw * .6, ease: T.ease.enter }, 0)
+        .add(no, { opacity: [0, 1], x: [-18, 0], duration: T.t.move, ease: T.ease.enter }, 160)
+        .add(head, { opacity: [0, 1], y: [14, 0], duration: T.t.reveal, ease: T.ease.enter, delay: stagger(70) }, 240)
+        .add(x, { opacity: [0, 1], duration: T.t.tick, ease: 'linear' }, 520));
+    }
+    for (const d of $$('.rd details')) {
+      const b = $('.rd-body', d);
+      $('summary', d).addEventListener('click', e => {
+        e.preventDefault();
+        if (!d.open) {
+          d.open = true;
+          animate(b, { height: [0, b.scrollHeight], opacity: [0, 1], ease: sp('glide'), onComplete: () => { b.style.height = ''; } });
+        } else animate(b, { height: [b.offsetHeight, 0], opacity: [1, 0], duration: T.t.move, ease: T.ease.enter,
+          onComplete: () => { d.open = false; b.style.height = b.style.opacity = ''; } });
+      });
+    }
+  }
+}
+
 /* ---- cities: Switzerland's outline is traced, then the two offices light up ---- */
 {
   const ch = $('.ch svg');
