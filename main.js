@@ -471,19 +471,21 @@ const overture = sec => {
   if (!rule || !idx || !h2) return;
   const words = splitText(h2, { words: { wrap: 'clip' } }).words;
   const n = idx.textContent.length;
-  const play = () => createTimeline()
-    // the top hairline draws left to right: a new section starts here
-    .add(rule, { clipPath: ['inset(0% 100% 0% 0%)', 'inset(0% 0% 0% 0%)'], duration: 600, ease: T.ease.enter }, 0)
-    // the index label types in, one character per 18 ms
-    .add(idx, { clipPath: ['inset(0% 100% 0% 0%)', 'inset(0% 0% 0% 0%)'], duration: n * 18, ease: steps(n) }, 200)
-    // the heading rises out of its own measure, 40 ms per word
-    .add(words, { y: ['105%', '0%'], duration: T.t.reveal, ease: T.ease.enter, delay: stagger(40) }, 360)
-    // the body follows once the heading has landed
-    .add(body, { opacity: [0, 1], y: [12, 0], duration: T.t.reveal, ease: T.ease.enter }, 360 + words.length * 40 + 120);
+  const play = () => {
+    const tl = createTimeline()
+      // the top hairline draws left to right: a new section starts here
+      .add(rule, { clipPath: ['inset(0% 100% 0% 0%)', 'inset(0% 0% 0% 0%)'], duration: 600, ease: T.ease.enter }, 0)
+      // the index label types in, one character per 18 ms
+      .add(idx, { clipPath: ['inset(0% 100% 0% 0%)', 'inset(0% 0% 0% 0%)'], duration: n * 18, ease: steps(n) }, 200)
+      // the heading rises out of its own measure, 40 ms per word
+      .add(words, { y: ['105%', '0%'], duration: T.t.reveal, ease: T.ease.enter, delay: stagger(40) }, 360);
+    // the body follows once the heading has landed (a heading may stand alone)
+    if (body.length) tl.add(body, { opacity: [0, 1], y: [12, 0], duration: T.t.reveal, ease: T.ease.enter }, 360 + words.length * 40 + 120);
+  };
   if (!belowFold(sec)) return;
   utils.set([rule, idx], { clipPath: 'inset(0% 100% 0% 0%)' });
   utils.set(words, { y: '105%' });
-  utils.set(body, { opacity: 0 });
+  if (body.length) utils.set(body, { opacity: 0 });
   once(sec, '85% top', play);
 };
 if (!reduce) $$('.sec').forEach(overture);
@@ -599,6 +601,13 @@ if (!reduce) for (const b of $$('.fig b')) {
     const pin = $('.tl-pin', tl), head = $('.tl-head', tl), track = $('.tl-track', tl), list = $('.tl-list', tl), yr = $('.tl-yr', tl), items = $$('.tl-list li', tl);
     const years = items.map(li => $('time', li).getAttribute('datetime').slice(0, 4));
     let stops = [], top = 0, len = 1, ph = 0, xs = [0], cur = -1;
+    // the year readout rolls on the snap spring like the site's other counters, as one number through the timeline's own
+    // years, so between two stops it only ever shows years that are on the timeline, in order
+    const ys = [...new Set(years)], col = document.createElement('span'), strip = document.createElement('span');
+    col.className = 'odo-col'; strip.className = 'odo-strip';
+    strip.innerHTML = ys.map(y => `<i>${y}</i>`).join('');
+    col.append(strip); yr.replaceChildren(col);
+    const roll = (y, now) => { const o = { translateY: `${-ys.indexOf(y)}em` }; now ? utils.set(strip, o) : animate(strip, { ...o, ease: sp('snap') }); };
     const layout = () => {
       // the height a column may fill: the screen, less the nav, the stage's heading and the year row above the lines
       const avail = innerHeight - nav.offsetTop - nav.offsetHeight - head.offsetHeight - parseFloat(getComputedStyle(list).paddingTop) - 72;
@@ -611,24 +620,24 @@ if (!reduce) for (const b of $$('.fig b')) {
         li.classList.toggle('y0', first);
         if (first) li.dataset.y = years[i];
       });
-      // one stop per column: the strip rests with that column at the playhead
+      // the first line of each column, to know which column, and so which year, is at the playhead
       stops = items.filter((li, i) => !i || li.style.getPropertyValue('--c') !== items[i - 1].style.getPropertyValue('--c'));
     };
     measures.add(() => {
       layout();
-      top = docTop(pin); len = Math.max(1, pin.offsetHeight - innerHeight); ph = track.clientWidth * parseFloat(getComputedStyle(track).getPropertyValue('--ph')) / 100; xs = stops.map(li => li.offsetLeft); cur = -1;
+      top = docTop(pin); len = Math.max(1, pin.offsetHeight - innerHeight); ph = Math.max(track.clientWidth < 600 ? 0 : track.clientWidth * .24, stops[0].offsetWidth);
+      // the playhead sits at least one column in, so the column being read is always whole on screen
+      track.style.setProperty('--ph', `${ph.toFixed(1)}px`); xs = stops.map(li => li.offsetLeft); cur = -1;
     });
     scrollFns.add(() => {
-      // each column holds at the playhead for the first half of its share of the scroll, then glides to the next one.
-      // Position is a pure function of scroll, so the scrub is exactly reversible
-      const n = xs.length - 1, q = clamp01((scrollTop() - top) / len) * n, j = Math.min(Math.max(n - 1, 0), Math.floor(q));
-      const e = n ? T.ease.scrub(clamp01((q - j - .5) / .5)) : 0;
-      list.style.transform = `translate3d(${(ph - (xs[j] + ((xs[j + 1] ?? xs[j]) - xs[j]) * e)).toFixed(1)}px,0,0)`;
-      const k = e < .5 ? j : Math.min(j + 1, n);
+      const p = clamp01((scrollTop() - top) / len), at = xs[0] + p * (xs.at(-1) - xs[0]);
+      // the strip slides linearly with scroll, like every other scrub on the page, so it is exactly reversible
+      list.style.transform = `translate3d(${(ph - at).toFixed(1)}px,0,0)`;
+      let k = 0; while (k < xs.length - 1 && at + 1 >= xs[k + 1]) k++;
       if (k === cur) return;
-      cur = k;
+      const first = cur < 0; cur = k;
       const y = years[items.indexOf(stops[k])];
-      yr.textContent = y;
+      roll(y, first);
       // every line up to the playhead's year is lit; later years wait at a third of their brightness
       items.forEach((li, i) => li.classList.toggle('on', years[i] <= y));
     });
@@ -746,6 +755,15 @@ if (!reduce) for (const b of $$('.fig b')) {
       const d = { ArrowRight: 1, ArrowLeft: -1 }[e.key];
       if (d) { e.preventDefault(); show((cur + d + tabs.length) % tabs.length, true); }
     });
+    // the bar leaves with the stack: from the moment the group's last card is pushed up by the end of its list, the bar
+    // rides up with it instead of covering the card's title
+    const tabsEl = $('.pf-tabs', bar);
+    let leaveAt = Infinity;
+    measures.add(() => {
+      const last = $$('.case', panels[cur]).at(-1);
+      leaveAt = last ? docTop(panels[cur]) + panels[cur].offsetHeight - last.offsetHeight - parseFloat(getComputedStyle(last).top) : Infinity;
+    });
+    scrollFns.add(() => { const d = Math.min(0, leaveAt - scrollTop()); tabsEl.style.transform = d ? `translate3d(0,${d.toFixed(1)}px,0)` : ''; });
     mark(0); remeasure();
     measures.add(() => place(cur, true));
     place(0, true);
