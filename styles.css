@@ -305,6 +305,8 @@ main,footer{position:relative}
 .pf-tabs .mono{font-size:12px;color:var(--text-3)}
 .pf-tabs button[aria-selected="true"] .mono{color:var(--accent)}
 .pf-pill{position:absolute;top:4px;bottom:4px;left:0;width:0;border-radius:999px;background:var(--fill-2)}
+/* phones: the tabs stay at the top of the portfolio instead of following the reader, and the cards pin under the nav */
+@media (max-width:599px){#work{--pf-h:0px}.pf-bar{position:static}}
 /* short laptop screens: the cards' type tightens so each card fits under the pinned tabs */
 @media (min-width:900px) and (max-height:860px){
   #work .case h3{font-size:clamp(1.35rem,2.1vw,1.9rem);margin-top:8px}

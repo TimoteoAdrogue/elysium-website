@@ -761,7 +761,8 @@ if (!reduce) for (const b of $$('.fig b')) {
     let leaveAt = Infinity;
     measures.add(() => {
       const last = $$('.case', panels[cur]).at(-1);
-      leaveAt = last ? docTop(panels[cur]) + panels[cur].offsetHeight - last.offsetHeight - parseFloat(getComputedStyle(last).top) : Infinity;
+      // only a pinned bar has to leave with the stack (on phones it stays at the top of the portfolio)
+      leaveAt = last && getComputedStyle(bar).position === 'sticky' ? docTop(panels[cur]) + panels[cur].offsetHeight - last.offsetHeight - parseFloat(getComputedStyle(last).top) : Infinity;
     });
     scrollFns.add(() => { const d = Math.min(0, leaveAt - scrollTop()); tabsEl.style.transform = d ? `translate3d(0,${d.toFixed(1)}px,0)` : ''; });
     mark(0); remeasure();
