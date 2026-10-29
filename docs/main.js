@@ -671,20 +671,39 @@ if (!reduce) for (const b of $$('.fig b')) {
   });
 }
 
+/* ---- card pictures: a screen is drawn bottom-up as it rises into place; a phone view slides in from the right a beat
+   later and settles upright on the glide spring. Armed for the page on load, and for a portfolio group when its tab opens ---- */
+const revealShot = s => {
+  const img = $('img', s);
+  return (img && !img.complete ? img.decode().catch(() => {}) : Promise.resolve()).then(() => animate(s, {
+    clipPath: ['inset(100% 0% 0% 0%)', 'inset(0% 0% 0% 0%)'], ...(s.classList.contains('desk') ? { y: [40, 0] } : {}),
+    duration: T.t.reveal, ease: T.ease.enter }));
+};
+const slidePhone = (ph, delay) => animate(ph, { opacity: [0, 1], x: [80, 0], y: [40, 0], rotate: [6, 0], ease: sp('glide'), delay });
+const armReveal = scope => {
+  if (reduce) return;
+  for (const s of $$('.case .shot:not(.phone)', scope)) {
+    if (!belowFold(s)) continue;
+    utils.set(s, { clipPath: 'inset(100% 0% 0% 0%)', ...(s.classList.contains('desk') ? { y: 40 } : {}) });
+    once(s, '75% top', () => revealShot(s));        // late enough that the reader sees it happen
+  }
+  for (const ph of $$('.case .shot.phone', scope)) {
+    if (!belowFold(ph)) continue;
+    utils.set(ph, { opacity: 0, x: 80, y: 40, rotate: 6 });
+    once(ph.parentElement, '70% top', () => slidePhone(ph, 380));
+  }
+};
+
 /* ---- work: screenshots unmask, drift inside their frames, and cases stack as the next arrives ---- */
 {
   // only the portfolio group on screen is stacked: hidden groups are measured again when their tab opens
   let cases = [];
   const shots = $$('.case .shot');
   if (!reduce) {
-    for (const s of shots) {
-      if (belowFold(s)) utils.set(s, { clipPath: 'inset(100% 0% 0% 0%)' });
-      // the screenshot is revealed bottom-up, like a screen being drawn
-      once(s, '90% top', () => { const img = $('img', s); (img && !img.complete ? img.decode().catch(() => {}) : Promise.resolve()).then(() => animate(s, { clipPath: ['inset(100% 0% 0% 0%)', 'inset(0% 0% 0% 0%)'], duration: T.t.reveal, ease: T.ease.enter })); });
-    }
+    armReveal(document);
     const imgs = shots.map(s => $('img', s));
     utils.set(imgs, { scale: 1.08 });
-    let tops = [];
+    let tops = [], phs = [];
     root.classList.add('stack-live');
     measures.add(() => {
       // natural positions: sticky cases are measured from their flow order, not their stuck position
@@ -697,6 +716,7 @@ if (!reduce) for (const b of $$('.fig b')) {
       });
       // a case taller than the screen sticks only once its foot is in view, so none is covered before it has been seen
       for (const c of cases) c.style.setProperty('--case-h', `${c.offsetHeight}px`);
+      phs = cases.map(c => $$('.shot.phone', c));
     });
     scrollFns.add(() => {
       const st = scrollTop(), vh = innerHeight;
@@ -705,6 +725,8 @@ if (!reduce) for (const b of $$('.fig b')) {
         // the image drifts at most 40 px inside its frame while the case is on screen
         const p = clamp01((st + vh - t) / (vh + h));
         for (const img of $$('img', c)) img.style.transform = `translateY(${((p - .5) * 40).toFixed(1)}px) scale(1.08)`;
+        // a phone view floats against the desktop view: it travels the other way, so the pair reads in depth
+        for (const ph of phs[i] || []) ph.style.translate = `0 ${((p - .5) * -56).toFixed(1)}px`;
         if (i === cases.length - 1 || cases[i + 1].parentElement !== c.parentElement) return;
         // the case steps back to .94 as the next one arrives over it
         const [tn] = tops[i + 1] || [0];
@@ -745,7 +767,9 @@ if (!reduce) for (const b of $$('.fig b')) {
         const first = $$('.case', panels[i]).slice(0, 2);
         if (reduce) { busy = false; return; }
         animate(first, { opacity: [0, 1], y: [56, 0], duration: T.t.reveal, ease: T.ease.enter, delay: stagger(110), onComplete: () => { busy = false; } });
-        animate($$('.shot', first[0]), { clipPath: ['inset(100% 0% 0% 0%)', 'inset(0% 0% 0% 0%)'], duration: T.t.reveal, ease: T.ease.enter, delay: stagger(90, { start: 220 }) });
+        $$('.shot:not(.phone)', first[0]).forEach((sh, k) => setTimeout(() => revealShot(sh), 220 + k * 90));
+        first.forEach((c, k) => $$('.shot.phone', c).forEach(ph => slidePhone(ph, 650 + k * 110)));
+        armReveal(panels[i]);
         animate(ledes.filter(l => !l.hidden), { opacity: [0, 1], y: [10, 0], duration: T.t.move, ease: T.ease.enter });
       };
       reduce ? swap() : animate(from, { opacity: [1, 0], y: [0, 28], duration: T.t.move * .6, ease: T.ease.enter, onComplete: swap });

@@ -273,6 +273,18 @@ main,footer{position:relative}
 .frame.duo .bar,.frame.trio .bar{grid-column:1/-1}
 .frame.trio{align-items:stretch}
 .frame.trio>:nth-child(3){grid-column:2;grid-row:2/4}
+/* a client site shown as a pair: the desktop view, and the phone view standing in front of its lower right corner.
+   One composition for every pair, so the cards read as a set */
+.frame.pair{padding-bottom:16px}
+/* a single picture sits in the middle of its panel, under the bar, when the card is taller than the picture */
+.case .frame:not(.type):not(.duo):not(.trio){display:flex;flex-direction:column}
+.case .frame:not(.type):not(.duo):not(.trio)>:not(.bar){margin-block:auto}
+@media (max-width:899px){.pair-in .phone{width:28%}}
+.pair-in{position:relative;padding:0 13% 12% 0}
+.pair-in .desk{border-radius:10px;box-shadow:0 1px 0 rgba(255,255,255,.06) inset,0 28px 60px -24px rgba(0,0,0,.85)}
+.pair-in .phone{position:absolute;right:2%;bottom:0;width:23%;border-radius:clamp(12px,1.4vw,20px);background:#0d0f12;
+  box-shadow:0 0 0 clamp(4px,.45vw,7px) #0d0f12,0 0 0 calc(clamp(4px,.45vw,7px) + 1px) rgba(255,255,255,.12),0 34px 70px -18px rgba(0,0,0,.9)}
+.pair-in .phone img{border-radius:inherit}
 .frame.trio>:nth-child(3) img{height:100%;object-fit:cover;object-position:50% 0}
 @media (max-width:699px){
   .frame.duo,.frame.trio{grid-template-columns:1fr}
