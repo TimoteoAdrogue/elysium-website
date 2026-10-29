@@ -27,7 +27,9 @@ const clamp01 = v => v < 0 ? 0 : v > 1 ? 1 : v;
 let lenis = null;
 const tickers = new Set();
 if (!reduce && window.Lenis) {
-  lenis = new Lenis({ autoRaf: false });
+  // the browser scrolls (on its own thread, so a busy frame never holds the page back); Lenis only reads the position and
+  // speed for the animations, and still runs the smooth jumps to anchors
+  lenis = new Lenis({ autoRaf: false, smoothWheel: false });
   engine.useDefaultMainLoop = false;
 }
 {
@@ -132,46 +134,53 @@ if (!reduce) {
 }
 
 /* ---- sky: sparse stars in three depths behind the grid. Nearer stars slide further with scroll; now and then one
-   brightens and fades. Hidden until the hero has gone by, redrawn only when the scroll moves or a star twinkles ---- */
+   brightens and fades. Each depth is drawn once, on a canvas twice the screen's height with its stars repeated in the
+   lower half, and scrolling only moves the three layers, so the sky is never repainted while the page moves ---- */
 {
-  const cv = $('.sky'), ctx = cv?.getContext('2d');
-  if (ctx) {
+  const base = $('.sky');
+  if (base && base.getContext) {
     const LAYERS = [{ per: 9000, r: [.6, .9], a: [.14, .28], f: .03 }, { per: 26000, r: [.9, 1.2], a: [.26, .42], f: .08 }, { per: 80000, r: [1.1, 1.5], a: [.38, .55], f: .16 }];
-    let seed, W = 0, H = 0, dpr = 1, stars = [], from = 0, op = -1, lastY = NaN, tw = null, wait = 3000;
+    const cvs = [base];
+    while (cvs.length < LAYERS.length) { const c = base.cloneNode(); cvs.at(-1).after(c); cvs.push(c); }
+    for (const c of cvs) c.classList.add('sky-l');
+    const dot = document.createElement('i'); dot.className = 'sky-tw'; dot.setAttribute('aria-hidden', 'true'); cvs.at(-1).after(dot);
+    let seed, W = 0, H = 0, stars = [], from = 0, op = -1, offs = [], tw = null, wait = 3000;
     const rnd = () => (seed = seed * 16807 % 2147483647) / 2147483647;     // seeded: the same sky on every visit
     measures.add(() => {
-      dpr = Math.min(2, devicePixelRatio || 1); W = innerWidth; H = innerHeight;
-      cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
+      const dpr = Math.min(2, devicePixelRatio || 1); W = innerWidth; H = innerHeight;
       seed = 11; stars = [];
-      LAYERS.forEach((L, l) => { for (let i = Math.round(W * H / L.per); i--;) stars.push({ x: rnd() * W, y: rnd() * H, r: L.r[0] + rnd() * (L.r[1] - L.r[0]), a: L.a[0] + rnd() * (L.a[1] - L.a[0]), f: reduce ? 0 : L.f, l }); });
+      LAYERS.forEach((L, l) => { for (let i = Math.round(W * H / L.per); i--;) stars.push({ x: rnd() * W, y: rnd() * H, r: L.r[0] + rnd() * (L.r[1] - L.r[0]), a: L.a[0] + rnd() * (L.a[1] - L.a[0]), l }); });
+      cvs.forEach((c, l) => {
+        c.width = Math.round(W * dpr); c.height = Math.round(2 * H * dpr);
+        const ctx = c.getContext('2d'); ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.fillStyle = '#FFFFFF';
+        for (const st of stars) if (st.l === l) for (const y of [st.y, st.y + H]) {
+          ctx.globalAlpha = st.a;
+          if (l < 2) ctx.fillRect(st.x, y, st.r, st.r); else { ctx.beginPath(); ctx.arc(st.x, y, st.r * .6, 0, 6.2832); ctx.fill(); }
+        }
+      });
       const first = $('main > section:not(.hero-film)');
       from = first ? docTop(first) - H : 0;                                // the film's stage lets go here
-      lastY = NaN;
+      offs = cvs.map(() => NaN);
     });
-    const draw = y => {
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      ctx.clearRect(0, 0, W, H);
-      ctx.fillStyle = '#FFFFFF';
-      for (const s of stars) {
-        let sy = (s.y - y * s.f) % H; if (sy < 0) sy += H;
-        ctx.globalAlpha = tw && tw.s === s ? s.a + (.95 - s.a) * Math.sin(Math.PI * tw.p) ** 2 : s.a;
-        if (s.l < 2) ctx.fillRect(s.x, sy, s.r, s.r);
-        else { ctx.beginPath(); ctx.arc(s.x, sy, s.r * .6, 0, 6.2832); ctx.fill(); }
-      }
-    };
+    const wrap = v => ((v % H) + H) % H;
     tickers.add(dt => {
       if (document.hidden || !W) return;
       const y = scrollTop(), o = reduce ? 1 : clamp01((y - from) / (H * .6));
-      if (o !== op) { op = o; cv.style.opacity = o.toFixed(3); }
+      if (o !== op) { op = o; for (const c of cvs) c.style.opacity = o.toFixed(3); }
       if (!o) return;
-      // one star at a time brightens over 1.6 s, every 3 to 7 s
-      if (!reduce && (tw || (wait -= dt) <= 0)) {
-        if (!tw) tw = { s: stars[stars.length - 1 - Math.floor(Math.random() * stars.length * .4)], p: 0 };
-        if ((tw.p += dt / 1600) >= 1) { tw = null; wait = 3000 + Math.random() * 4000; }
-        lastY = NaN;
-      }
       const yk = reduce ? 0 : y;                                          // reduced motion: one still sky
-      if (yk !== lastY) { draw(yk); lastY = yk; }
+      LAYERS.forEach((L, l) => {
+        const off = Math.round(wrap(yk * L.f) * 2) / 2;
+        if (off !== offs[l]) { offs[l] = off; cvs[l].style.transform = `translate3d(0,${-off}px,0)`; }
+      });
+      // one star at a time brightens over 1.6 s, every 3 to 7 s: a single dot laid over it
+      if (reduce || (!tw && (wait -= dt) > 0)) return;
+      if (!tw) { const near = stars.filter(st => st.l === 2); tw = { s: near[Math.floor(Math.random() * near.length)], p: 0 }; }
+      if ((tw.p += dt / 1600) >= 1) { tw = null; wait = 3000 + Math.random() * 4000; dot.style.opacity = 0; return; }
+      const st = tw.s, d = st.r * 1.4;
+      dot.style.width = dot.style.height = `${d}px`;
+      dot.style.transform = `translate3d(${(st.x - d / 2).toFixed(1)}px,${(wrap(st.y - yk * LAYERS[2].f) - d / 2).toFixed(1)}px,0)`;
+      dot.style.opacity = (o * (.95 - st.a) * Math.sin(Math.PI * tw.p) ** 2).toFixed(3);
     });
   }
 }
