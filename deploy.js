@@ -32,6 +32,7 @@ const NOINDEX = '<meta name="robots" content="noindex,nofollow">';
 
 // a version stamp on the page's stylesheet and script: Pages lets browsers keep files for 10 minutes, and a page from one
 // publish with a script from another breaks. main.js passes its stamp on to film3d.js and the hero's data.
+const OG = require('crypto').createHash('sha1').update(fs.readFileSync(path.join(ROOT, 'assets/og.png'))).digest('hex').slice(0, 8);
 const STAMP = require('crypto').createHash('sha1')
   .update(['main.js', 'film3d.js', 'styles.css', 'assets/hero3d/meta.json', 'assets/hero3d/terrain.png', 'assets/hero3d/city.bin']
     .map(f => fs.readFileSync(path.join(ROOT, f))).reduce((a, b) => Buffer.concat([a, b])))
@@ -60,6 +61,8 @@ let touched = 0, files = 0;
     if (BASE) h = h.replace(/\b(src|href)="\/(?!\/)/g, (m, a) => { touched++; return `${a}="${BASE}/`; });
     h = h.replace(/(property="og:(?:image|url)" content=")https:\/\/elysium\.cc\//g, `$1${ORIGIN}${BASE}/`);
     h = h.replace(/\b(src|href)="([^"?]*?(?:main\.js|styles\.css))"/g, `$1="$2?v=${STAMP}"`);
+    // the share image is versioned by its own content, so apps that cached an older link preview fetch the new one
+    h = h.replace(/(property="og:image" content="[^"]*?og\.png)"/g, `$1?v=${OG}"`);
     if (!h.includes('name="robots"'))
       h = h.replace('<meta name="viewport"', `${NOINDEX}\n<meta name="viewport"`);
 
