@@ -290,8 +290,21 @@ main,footer{position:relative}
   .frame.duo,.frame.trio{grid-template-columns:1fr}
   .frame.trio>:nth-child(3){grid-column:auto;grid-row:auto}
 }
-/* a project with no image to show is set in type: year, client, what we made */
-.frame.type{display:grid;align-content:end;gap:12px;min-height:clamp(280px,34vw,480px);padding:clamp(22px,3vw,44px);box-shadow:inset 0 0 0 1px var(--line)}
+/* a project with no picture to show gets a cover: its number and field over the Alpine contours, lit from one corner;
+   main.js drifts the contours and the number against each other while the card is on screen */
+.frame.type{position:relative;isolation:isolate;display:grid;grid-template-rows:1fr auto auto;gap:12px;min-height:clamp(280px,34vw,480px);padding:clamp(22px,3vw,44px);
+  background:radial-gradient(90% 70% at 100% 0%,rgba(31,79,216,.28),transparent 62%),radial-gradient(70% 60% at 0% 100%,rgba(159,196,255,.08),transparent 70%),var(--raised);
+  box-shadow:inset 0 0 0 1px var(--line),inset 0 1px 0 rgba(255,255,255,.06)}
+.frame.type::before{content:"";position:absolute;inset:-12% -8%;z-index:-1;background:url("assets/topo-card.svg") var(--tp,50% 50%)/var(--ts,150%) auto no-repeat;opacity:.34;
+  translate:0 calc(var(--drift,0) * 70px);transition:opacity var(--t-draw) linear;
+  -webkit-mask:radial-gradient(120% 100% at 70% 30%,#000 30%,transparent 80%);mask:radial-gradient(120% 100% at 70% 30%,#000 30%,transparent 80%)}
+.frame.type::after{content:attr(data-n);position:absolute;z-index:-1;top:clamp(10px,2vw,24px);right:clamp(16px,2.4vw,34px);font:400 clamp(6rem,14vw,13rem)/.8 "Geist Mono",monospace;
+  letter-spacing:-.06em;color:transparent;-webkit-text-stroke:1px rgba(255,255,255,.14);translate:0 calc(var(--drift,0) * -36px);transition:opacity var(--t-draw) linear}
+.frame.type.dim::before,.frame.type.dim::after{opacity:0}
+.cases>.case:nth-child(2n) .frame.type{--tp:10% 80%;--ts:170%}
+.cases>.case:nth-child(3n) .frame.type{--tp:90% 20%;--ts:140%}
+.t-k{align-self:start;color:var(--text-2)}
+.t-k::before{content:"";display:inline-block;width:6px;height:6px;margin-right:10px;border-radius:50%;background:var(--accent);vertical-align:.15em}
 .t-y{font:400 clamp(4rem,10vw,9rem)/.9 "Geist Mono",monospace;letter-spacing:-.05em;color:var(--text)}
 .t-c{font-size:clamp(1.6rem,3.2vw,2.8rem);font-weight:600;letter-spacing:-.035em;line-height:1.05;color:var(--text)}
 .t-w{color:var(--text-2)}
@@ -535,8 +548,66 @@ footer{padding-block:56px 72px;box-shadow:inset 0 1px var(--line)}
 @media (max-width:767px){.hf-frame,.hf-route,.hf-x{display:none}}
 @media (max-width:899px){.film-live .flag{display:none}}   /* below 900 the flag sits under the text; the stage has no room for it */
 
-/* Ask Elysium: the widget's open panel is 28rem × 40rem; on a phone it fills the screen inside the gutters instead of running off its left edge */
+/* ---- Ask Elysium: Vapi's chat window, restyled from outside as liquid glass. The widget sets inline styles, so these
+   overrides need !important; class names come from widget 0.1.1 and may move if the pinned version is ever changed.
+   main.js feeds the glass from the scroll: --ask-a turns the rim's light with the page, --ask-x slides the sheen with the
+   speed of travel, --ask-sx/--ask-sy/--ask-y give the pill its liquid squash ---- */
+vapi-widget{--ask-a:135deg;--ask-x:30%;--ask-sx:1;--ask-sy:1;--ask-y:0px}
+.vapi-widget-wrapper,.vapi-widget-wrapper input,.vapi-widget-wrapper button{font-family:"Geist",system-ui,sans-serif!important}
+.vapi-widget-wrapper [class*="hover:scale-105"],.vapi-widget-wrapper div[style*="28rem"]{position:relative;isolation:isolate;
+  background:linear-gradient(160deg,rgba(255,255,255,.13),rgba(255,255,255,.03) 42%,rgba(255,255,255,.015) 64%,rgba(255,255,255,.07))!important;
+  -webkit-backdrop-filter:blur(16px) saturate(1.9) brightness(1.06);backdrop-filter:blur(16px) saturate(1.9) brightness(1.06);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.34),inset 0 -1px 0 rgba(255,255,255,.06),inset 0 -14px 28px -18px rgba(255,255,255,.22),0 18px 44px rgba(0,0,0,.42)!important}
+/* the rim: a 1 px gradient ring whose light turns as the page scrolls */
+.vapi-widget-wrapper [class*="hover:scale-105"]::after,.vapi-widget-wrapper div[style*="28rem"]::after{content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;pointer-events:none;z-index:2;
+  background:linear-gradient(var(--ask-a),rgba(255,255,255,.7),rgba(255,255,255,.06) 32%,rgba(255,255,255,.04) 62%,rgba(159,196,255,.55));
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box exclude,linear-gradient(#000 0 0)}
+/* the sheen: a soft highlight that slides across the glass with the speed of travel */
+.vapi-widget-wrapper [class*="hover:scale-105"]::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:-1;
+  background:radial-gradient(70% 140% at var(--ask-x) -20%,rgba(255,255,255,.28),transparent 60%);mix-blend-mode:screen}
+@supports not ((-webkit-backdrop-filter:blur(1px)) or (backdrop-filter:blur(1px))){
+  .vapi-widget-wrapper [class*="hover:scale-105"],.vapi-widget-wrapper div[style*="28rem"]{background:rgba(16,18,22,.94)!important}}
+/* the button: a glass pill with the site's blue dot in place of Vapi's logo */
+.vapi-widget-wrapper [class*="hover:scale-105"]{height:48px!important;padding:0 20px 0 16px!important;border-radius:999px!important;
+  scale:var(--ask-sx) var(--ask-sy);translate:0 var(--ask-y);animation:ask-in var(--t-reveal) var(--ease-enter) both;transition:transform var(--t-tick) var(--ease-enter)!important}
+.vapi-widget-wrapper [class*="hover:scale-105"]:hover{transform:translateY(-2px)!important}
+.vapi-widget-wrapper [class*="hover:scale-105"] .relative{width:8px!important;height:8px!important;border-radius:50%;background:var(--accent);box-shadow:0 0 12px var(--accent);animation:breathe 2.4s ease-in-out infinite}
+.vapi-widget-wrapper [class*="hover:scale-105"] .relative svg{display:none}
+.vapi-widget-wrapper [class*="hover:scale-105"] span{font-size:15px!important;letter-spacing:-.005em;text-shadow:0 1px 8px rgba(0,0,0,.35)}
+@keyframes ask-in{from{opacity:0;transform:translateY(16px)}}
+/* the open panel: darker glass so the conversation stays readable over the film and the cards */
+.vapi-widget-wrapper div[style*="28rem"]{height:min(40rem,calc(100svh - 120px))!important;border-radius:22px!important;border:0!important;
+  background:linear-gradient(160deg,rgba(255,255,255,.1),rgba(255,255,255,.02) 30%,rgba(255,255,255,.01) 70%,rgba(255,255,255,.05)),rgba(10,12,15,.62)!important;
+  -webkit-backdrop-filter:blur(28px) saturate(1.8);backdrop-filter:blur(28px) saturate(1.8);
+  transform-origin:100% 100%;animation:ask-open var(--t-move) var(--ease-enter) both}
+@keyframes ask-open{from{opacity:0;transform:translateY(14px) scale(.96)}}
+.vapi-widget-wrapper div[style*="28rem"] > div,.vapi-widget-wrapper .vapi-conversation-area{background:transparent!important;filter:none!important}
+.vapi-widget-wrapper div[style*="28rem"] > div:first-child{padding:16px 16px 16px 20px!important;border-color:rgba(255,255,255,.08)!important}
+.vapi-widget-wrapper div[style*="28rem"] > div:first-child .relative{width:8px!important;height:8px!important;border-radius:50%;background:var(--accent);box-shadow:0 0 12px var(--accent);margin-right:2px}
+.vapi-widget-wrapper div[style*="28rem"] > div:first-child .relative svg{display:none}
+.vapi-widget-wrapper .font-medium{font-size:16px;font-weight:500;letter-spacing:-.01em;color:var(--text)}
+.vapi-widget-wrapper .text-gray-300{font:400 11px/1.6 "Geist Mono",ui-monospace,monospace!important;letter-spacing:.14em;text-transform:uppercase;color:var(--text-3)!important}
+.vapi-widget-wrapper .text-red-600{font:400 11px/1.6 "Geist Mono",ui-monospace,monospace!important;letter-spacing:.14em;text-transform:uppercase;color:var(--text-3)!important;border:0!important;transition:color var(--t-tick) linear}
+.vapi-widget-wrapper .text-red-600:hover,.vapi-widget-wrapper button.w-8:hover{color:var(--text)!important}
+.vapi-widget-wrapper button.w-8{color:var(--text-2)!important;background:transparent!important}
+.vapi-widget-wrapper .vapi-conversation-area{padding:20px!important;gap:10px!important}
+.vapi-widget-wrapper .vapi-conversation-area .max-w-xs{max-width:85%!important;padding:10px 14px!important;font-size:14.5px!important;line-height:1.55!important;filter:none!important}
+.vapi-widget-wrapper .justify-start .max-w-xs{background:rgba(255,255,255,.07)!important;color:var(--text)!important;border-radius:16px 16px 16px 5px!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.1)}
+.vapi-widget-wrapper .justify-end .max-w-xs{background:linear-gradient(160deg,#3A6BF0,var(--accent-fill))!important;color:#fff!important;border-radius:16px 16px 5px 16px!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.3);animation:ask-in var(--t-move) var(--ease-enter) both}
+.vapi-widget-wrapper .markdown-content a{text-decoration-color:rgba(255,255,255,.4);text-underline-offset:3px}
+.vapi-widget-wrapper .markdown-content em{color:var(--text-2)}
+.vapi-widget-wrapper div[style*="28rem"] > div:last-child{padding:14px 16px 16px!important;border-color:rgba(255,255,255,.08)!important}
+.vapi-widget-wrapper input{height:44px;padding:0 18px!important;border-radius:999px!important;border:0!important;box-shadow:inset 0 0 0 1px rgba(255,255,255,.12),inset 0 2px 6px rgba(0,0,0,.35)!important;
+  background:rgba(0,0,0,.28)!important;filter:none!important;color:var(--text)!important;font-size:15px!important;transition:box-shadow var(--t-tick) linear}
+.vapi-widget-wrapper input:focus{box-shadow:inset 0 0 0 1px var(--accent),inset 0 2px 6px rgba(0,0,0,.35)!important;outline:0}
+.vapi-widget-wrapper input::placeholder{color:var(--text-3)!important}
+.vapi-widget-wrapper input + button{width:44px!important;height:44px!important;border-radius:50%!important;background:linear-gradient(160deg,#3A6BF0,var(--accent-fill))!important;color:#fff!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.3)}
+/* phones: the open panel fills the screen inside the gutters instead of running off its left edge */
 @media (max-width:599px){
+  .vapi-widget-wrapper > div{bottom:16px!important;right:16px!important}
   .vapi-widget-wrapper > div:has(> div[style*="28rem"]){left:12px!important;right:12px!important;bottom:12px!important}
-  .vapi-widget-wrapper > div > div[style*="28rem"]{width:auto!important;height:min(40rem,calc(100svh - 24px))!important}
+  .vapi-widget-wrapper div[style*="28rem"]{width:auto!important;height:min(40rem,calc(100svh - 24px))!important}
+  .vapi-widget-wrapper [class*="hover:scale-105"]{height:44px!important;padding:0 16px 0 14px!important}
 }
+@media (prefers-reduced-motion:reduce){.vapi-widget-wrapper *{animation:none!important}}

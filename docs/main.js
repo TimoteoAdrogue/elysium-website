@@ -696,12 +696,18 @@ const armReveal = scope => {
   for (const s of $$('.case .shot:not(.phone)', scope)) {
     if (!belowFold(s)) continue;
     utils.set(s, { clipPath: 'inset(100% 0% 0% 0%)', ...(s.classList.contains('desk') ? { y: 40 } : {}) });
-    once(s, '75% top', () => revealShot(s));        // late enough that the reader sees it happen
+    once(s, '95% top', () => revealShot(s));        // as it enters, so no frame ever slides in empty
+  }
+  // a cover: its contours and number fade up while its words rise in turn
+  for (const f of $$('.case .frame.type', scope)) {
+    if (!belowFold(f)) continue;
+    f.classList.add('dim'); utils.set([...f.children], { opacity: 0, y: 24 });
+    once(f, '95% top', () => { f.classList.remove('dim'); animate([...f.children], { opacity: [0, 1], y: [24, 0], duration: T.t.reveal, ease: T.ease.enter, delay: stagger(90) }); });
   }
   for (const ph of $$('.case .shot.phone', scope)) {
     if (!belowFold(ph)) continue;
     utils.set(ph, { opacity: 0, x: 80, y: 40, rotate: 6 });
-    once(ph.parentElement, '70% top', () => slidePhone(ph, 380));
+    once(ph.parentElement, '90% top', () => slidePhone(ph, 240));
   }
 };
 
@@ -714,7 +720,7 @@ const armReveal = scope => {
     armReveal(document);
     const imgs = shots.map(s => $('img', s));
     utils.set(imgs, { scale: 1.08 });
-    let tops = [], phs = [];
+    let tops = [], phs = [], covers = [];
     root.classList.add('stack-live');
     measures.add(() => {
       // natural positions: sticky cases are measured from their flow order, not their stuck position
@@ -728,6 +734,7 @@ const armReveal = scope => {
       // a case taller than the screen sticks only once its foot is in view, so none is covered before it has been seen
       for (const c of cases) c.style.setProperty('--case-h', `${c.offsetHeight}px`);
       phs = cases.map(c => $$('.shot.phone', c));
+      covers = cases.map(c => $('.frame.type', c));
     });
     scrollFns.add(() => {
       const st = scrollTop(), vh = innerHeight;
@@ -738,6 +745,7 @@ const armReveal = scope => {
         for (const img of $$('img', c)) img.style.transform = `translateY(${((p - .5) * 40).toFixed(1)}px) scale(1.08)`;
         // a phone view floats against the desktop view: it travels the other way, so the pair reads in depth
         for (const ph of phs[i] || []) ph.style.translate = `0 ${((p - .5) * -56).toFixed(1)}px`;
+        covers[i]?.style.setProperty('--drift', (p - .5).toFixed(3));
         if (i === cases.length - 1 || cases[i + 1].parentElement !== c.parentElement) return;
         // the case steps back to .94 as the next one arrives over it
         const [tn] = tops[i + 1] || [0];
@@ -896,6 +904,25 @@ addEventListener('load', remeasure);
 
 /* ---- Ask Elysium: Elysium's Vapi assistant (the <vapi-widget> in the page), fetched 1.5 s after load so it never competes with the film ---- */
 {
+  const w = $('vapi-widget');
+  // Vapi only takes messages from elysium.cc, so on this preview the greeting says the assistant will answer once the site moves there
+  if (w && !/(^|\.)elysium\.cc$/.test(location.hostname)) w.setAttribute('chat-first-message', `${w.getAttribute('chat-first-message')}\n\n_${w.dataset.preview}_`);
+  // the widget's own status words, in the page's language; React keeps its text nodes, so they are edited in place
+  const en = ['End Chat', 'Chat active', 'Assistant is typing...', 'Connecting...'], ui = (w?.dataset.ui || '').split('|');
+  // once the widget has read its title, the attribute goes, so no browser tooltip floats over the panel
+  const say = () => { if (w.hasAttribute('title') && w.firstElementChild) w.removeAttribute('title'); const t = document.createTreeWalker(w, NodeFilter.SHOW_TEXT); for (let n; (n = t.nextNode());) { const i = en.indexOf(n.data.trim()); if (i >= 0 && ui[i]) n.data = ui[i]; } };
+  if (w) new MutationObserver(say).observe(w, { childList: true, subtree: true, characterData: true });
+  // the glass follows the page: its rim's light turns once over the whole page; the sheen and a slight squash follow the speed of travel
+  if (w && !reduce) {
+    let sv = 0, last = '';
+    tickers.add(() => {
+      sv += (utils.clamp((lenis ? lenis.velocity : 0) / 40, -1, 1) - sv) * .12;
+      const k = Math.abs(sv), max = Math.max(1, document.documentElement.scrollHeight - innerHeight);
+      const v = [`${(135 + 360 * scrollTop() / max).toFixed(1)}deg`, `${(30 + sv * 40).toFixed(1)}%`, (1 + k * .05).toFixed(3), (1 - k * .07).toFixed(3), `${(sv * -6).toFixed(1)}px`];
+      const key = v.join(); if (key === last) return; last = key;
+      ['--ask-a', '--ask-x', '--ask-sx', '--ask-sy', '--ask-y'].forEach((n, i) => w.style.setProperty(n, v[i]));
+    });
+  }
   const load = () => setTimeout(() => document.body.append(Object.assign(document.createElement('script'), { src: 'https://unpkg.com/@vapi-ai/client-sdk-react@0.1.1/dist/embed/widget.umd.js', async: true })), 1500);
-  if (document.readyState === 'complete') load(); else addEventListener('load', load);
+  if (w) { if (document.readyState === 'complete') load(); else addEventListener('load', load); }
 }

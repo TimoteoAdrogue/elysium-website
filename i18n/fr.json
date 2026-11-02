@@ -361,5 +361,13 @@
  "Elysium assistant": "Assistant d’Elysium",
  "Ask Elysium": "Demandez à Elysium",
  "Type your message…": "Écrivez votre message…",
- "Hi! I'm Elysium's assistant. Ask me anything about our work, or tell me about your project.&#10;&#10;By chatting, you accept our [privacy policy](https://www.elysium.cc/privacy_policy.html).": "Bonjour ! Je suis l’assistant d’Elysium. Posez-moi vos questions sur nos travaux, ou parlez-moi de votre projet.&#10;&#10;En utilisant ce chat, vous acceptez notre [politique de confidentialité](https://www.elysium.cc/privacy_policy.html)."
+ "Hi! I'm Elysium's assistant. Ask me anything about our work, or tell me about your project.&#10;&#10;By chatting, you accept our [privacy policy](https://www.elysium.cc/privacy_policy.html).": "Bonjour ! Je suis l’assistant d’Elysium. Posez-moi vos questions sur nos travaux, ou parlez-moi de votre projet.&#10;&#10;En utilisant ce chat, vous acceptez notre [politique de confidentialité](https://www.elysium.cc/privacy_policy.html).",
+ "This preview is not connected to the assistant yet. It will answer once the site runs on elysium.cc.": "Cet aperçu n’est pas encore relié à l’assistant. Il répondra dès que le site sera en ligne sur elysium.cc.",
+ "End chat|Online|Typing…|Connecting…": "Terminer|En ligne|Rédaction…|Connexion…",
+ "International organisations": "Organisations internationales",
+ "Data &amp; integrations": "Données &amp; intégrations",
+ "Hospitality · SMB": "Restauration · PME",
+ "NLP · information systems": "TAL · systèmes d’information",
+ "Generative modelling · Roadmap": "Modélisation générative · Feuille de route",
+ "Perception · embodied systems · Roadmap": "Perception · systèmes incarnés · Feuille de route"
 }

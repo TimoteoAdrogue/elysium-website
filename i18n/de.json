@@ -361,5 +361,13 @@
  "Elysium assistant": "Elysium-Assistent",
  "Ask Elysium": "Elysium fragen",
  "Type your message…": "Ihre Nachricht…",
- "Hi! I'm Elysium's assistant. Ask me anything about our work, or tell me about your project.&#10;&#10;By chatting, you accept our [privacy policy](https://www.elysium.cc/privacy_policy.html).": "Hallo! Ich bin der Assistent von Elysium. Fragen Sie mich alles zu unserer Arbeit, oder erzählen Sie mir von Ihrem Projekt.&#10;&#10;Mit der Nutzung des Chats akzeptieren Sie unsere [Datenschutzerklärung](https://www.elysium.cc/privacy_policy.html)."
+ "Hi! I'm Elysium's assistant. Ask me anything about our work, or tell me about your project.&#10;&#10;By chatting, you accept our [privacy policy](https://www.elysium.cc/privacy_policy.html).": "Hallo! Ich bin der Assistent von Elysium. Fragen Sie mich alles zu unserer Arbeit, oder erzählen Sie mir von Ihrem Projekt.&#10;&#10;Mit der Nutzung des Chats akzeptieren Sie unsere [Datenschutzerklärung](https://www.elysium.cc/privacy_policy.html).",
+ "This preview is not connected to the assistant yet. It will answer once the site runs on elysium.cc.": "Diese Vorschau ist noch nicht mit dem Assistenten verbunden. Er antwortet, sobald die Website auf elysium.cc läuft.",
+ "End chat|Online|Typing…|Connecting…": "Beenden|Online|Schreibt…|Verbinde…",
+ "International organisations": "Internationale Organisationen",
+ "Data &amp; integrations": "Daten &amp; Integrationen",
+ "Hospitality · SMB": "Gastronomie · KMU",
+ "NLP · information systems": "NLP · Informationssysteme",
+ "Generative modelling · Roadmap": "Generative Modellierung · Roadmap",
+ "Perception · embodied systems · Roadmap": "Wahrnehmung · verkörperte Systeme · Roadmap"
 }
