@@ -25,7 +25,7 @@
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="preload" href="assets/fonts/geist-var.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/geist-mono-400.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="styles.css?v=fe6519e3f9">
+<link rel="stylesheet" href="styles.css?v=1bc05f28b5">
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"Organization","name":"Elysium","url":"https://elysium.cc/",
 "email":"info@elysium.cc","telephone":"+41 44 505 39 00",
@@ -66,8 +66,22 @@
       <li><a href="/elysium-website/de/" lang="de" hreflang="de">DE</a></li>
       <li><a href="/elysium-website/" lang="en" hreflang="en" aria-current="true">EN</a></li>
     </ul>
+    <button class="menu-btn" type="button" aria-expanded="false" aria-controls="menu" aria-label="Menu"><i></i><i></i></button>
   </div>
 </header>
+<!-- phones and tablets: the sections, opened from the glass button in the bar (main.js) -->
+<nav class="menu" id="menu" aria-label="Menu" hidden>
+  <ol class="menu-list">
+    <li style="--i:0"><a href="#about"><span class="label">01</span>Trusted by</a></li>
+    <li style="--i:1"><a href="#services"><span class="label">02</span>What we do</a></li>
+    <li style="--i:2"><a href="#work"><span class="label">03</span>Portfolio</a></li>
+    <li style="--i:3"><a href="#record"><span class="label">04</span>Record</a></li>
+    <li style="--i:4"><a href="#private-ai"><span class="label">05</span>Private AI</a></li>
+    <li style="--i:5"><a href="#cities"><span class="label">06</span>Offices</a></li>
+    <li style="--i:6"><a href="#contact"><span class="label">07</span>Get in touch</a></li>
+  </ol>
+  <p class="menu-foot label"><a href="mailto:info@elysium.cc">info@elysium.cc</a><a href="tel:+41445053900">+41 44 505 39 00</a></p>
+</nav>
 <nav class="sky-nav" aria-label="Sections" hidden></nav>
 
 <main id="main">
@@ -599,7 +613,7 @@
 </footer>
 
 <script src="assets/vendor/lenis.min.js" defer></script>
-<script type="module" src="main.js?v=fe6519e3f9"></script>
+<script type="module" src="main.js?v=1bc05f28b5"></script>
 <!-- the lens behind the Ask Elysium glass: a soft displacement of the page seen through it (Chromium only, see main.js) -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><filter id="ask-lens" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
   <feTurbulence type="fractalNoise" baseFrequency=".006 .011" numOctaves="2" seed="11" result="n"/><feGaussianBlur in="n" stdDeviation="2" result="m"/>

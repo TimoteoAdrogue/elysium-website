@@ -78,7 +78,7 @@ if (!reduce) {
     const y = scrollTop(), d = y - last;
     if (Math.abs(d) < 4) return;
     last = y;
-    const hide = d > 0 && y > navHoldUntil && !nav.contains(document.activeElement);
+    const hide = d > 0 && y > navHoldUntil && !nav.contains(document.activeElement) && $('.menu-btn')?.getAttribute('aria-expanded') !== 'true';   // never while the phone menu hangs from it
     if (hide === hidden) return;
     hidden = hide;
     // the bar slides out of the reading area and returns when the reader turns back
@@ -99,6 +99,7 @@ if (!reduce) {
     const a = links.find(l => l.hash === '#' + id) || null;
     if (a === current) return;
     links.forEach(l => l === a ? l.setAttribute('aria-current', 'true') : l.removeAttribute('aria-current'));
+    for (const l of $$('.menu-list a')) l.hash === '#' + id ? l.setAttribute('aria-current', 'true') : l.removeAttribute('aria-current');
     const was = current; current = a;
     if (!ul.offsetParent) return;
     if (!a) { utils.set(pill, { clipPath: hide }); return; }
@@ -913,6 +914,7 @@ addEventListener('load', remeasure);
   const say = () => { if (w.hasAttribute('title') && w.firstElementChild) w.removeAttribute('title'); const t = document.createTreeWalker(w, NodeFilter.SHOW_TEXT); for (let n; (n = t.nextNode());) { const i = en.indexOf(n.data.trim()); if (i >= 0 && ui[i]) n.data = ui[i]; } };
   if (w) new MutationObserver(say).observe(w, { childList: true, subtree: true, characterData: true });
   // the glass follows the page: its rim's light turns once over the whole page; the sheen and a slight squash follow the speed of travel
+  const lit = [w, $('.menu-btn'), $('#menu')].filter(Boolean);
   if (w && !reduce) {
     let sv = 0, last = '';
     tickers.add(() => {
@@ -920,10 +922,10 @@ addEventListener('load', remeasure);
       const k = Math.abs(sv), max = Math.max(1, document.documentElement.scrollHeight - innerHeight);
       const v = [`${(135 + 360 * scrollTop() / max).toFixed(1)}deg`, `${(30 + sv * 40).toFixed(1)}%`, (1 + k * .05).toFixed(3), (1 - k * .07).toFixed(3), `${(sv * -6).toFixed(1)}px`];
       const key = v.join(); if (key === last) return; last = key;
-      ['--ask-a', '--ask-x', '--ask-sx', '--ask-sy', '--ask-y'].forEach((n, i) => w.style.setProperty(n, v[i]));
+      for (const el of lit) ['--ask-a', '--ask-x', '--ask-sx', '--ask-sy', '--ask-y'].forEach((n, i) => el.style.setProperty(n, v[i]));
     });
   }
-  if (w && navigator.userAgentData?.brands?.some(b => b.brand === 'Chromium')) w.classList.add('ask-refract');
+  if (navigator.userAgentData?.brands?.some(b => b.brand === 'Chromium')) root.classList.add('lens');
   // open: the pill's size is read on press, so the panel's clip starts as the pill itself and flows out of it (styles.css)
   // close: the widget would drop the panel at once, so the press is held while the panel flows back into the pill
   const PANEL = 'div[style*="28rem"]';
@@ -949,4 +951,28 @@ addEventListener('load', remeasure);
   if (w && ro) new MutationObserver(() => { const el = $(PANEL, w); if (el && !tall.has(el)) { el.style.height = 'auto'; tall.set(el, el.offsetHeight); ro.observe(el); } }).observe(w, { childList: true, subtree: true });
   const load = () => setTimeout(() => document.body.append(Object.assign(document.createElement('script'), { src: 'https://unpkg.com/@vapi-ai/client-sdk-react@0.1.1/dist/embed/widget.umd.js', async: true })), 1500);
   if (w) { if (document.readyState === 'complete') load(); else addEventListener('load', load); }
+}
+
+/* ---- menu (phones and tablets): the glass button flows open into the sections and back; a link, Escape, a tap outside or
+   a screen wide enough for the nav links closes it ---- */
+{
+  const btn = $('.menu-btn'), m = $('#menu');
+  if (btn && m) {
+    const isOpen = () => btn.getAttribute('aria-expanded') === 'true';
+    const open = () => { m.classList.remove('shut'); m.hidden = false; btn.setAttribute('aria-expanded', 'true'); $('a', m).focus({ preventScroll: true }); };
+    const close = (back = true) => {
+      if (!isOpen()) return;
+      btn.setAttribute('aria-expanded', 'false');
+      if (back) btn.focus({ preventScroll: true });
+      if (reduce) { m.hidden = true; return; }
+      m.classList.add('shut');
+      const done = e => { if (e.target !== m) return; m.removeEventListener('animationend', done); if (!isOpen()) m.hidden = true; m.classList.remove('shut'); };
+      m.addEventListener('animationend', done);
+    };
+    btn.addEventListener('click', () => (isOpen() ? close() : open()));
+    m.addEventListener('click', e => { if (e.target.closest('a')) close(false); });
+    addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
+    document.addEventListener('pointerdown', e => { if (isOpen() && !m.contains(e.target) && !btn.contains(e.target)) close(false); });
+    matchMedia('(min-width:1101px)').addEventListener('change', e => { if (e.matches) { btn.setAttribute('aria-expanded', 'false'); m.hidden = true; } });
+  }
 }
