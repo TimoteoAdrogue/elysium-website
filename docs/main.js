@@ -923,6 +923,30 @@ addEventListener('load', remeasure);
       ['--ask-a', '--ask-x', '--ask-sx', '--ask-sy', '--ask-y'].forEach((n, i) => w.style.setProperty(n, v[i]));
     });
   }
+  if (w && navigator.userAgentData?.brands?.some(b => b.brand === 'Chromium')) w.classList.add('ask-refract');
+  // open: the pill's size is read on press, so the panel's clip starts as the pill itself and flows out of it (styles.css)
+  // close: the widget would drop the panel at once, so the press is held while the panel flows back into the pill
+  const PANEL = 'div[style*="28rem"]';
+  let shutting = false;
+  if (w) document.addEventListener('click', e => {
+    const pill = e.target.closest?.('vapi-widget [class*="hover:scale-105"]');
+    if (pill) { const r = pill.getBoundingClientRect(); w.style.setProperty('--ask-pw', `${r.width}px`); w.style.setProperty('--ask-ph', `${r.height}px`); return; }
+    const x = e.target.closest?.(`vapi-widget ${PANEL} > div:first-child button:last-child`);
+    if (!x || shutting || reduce) return;
+    e.preventDefault(); e.stopPropagation(); shutting = true;
+    x.closest(PANEL).classList.add('ask-closing');
+    setTimeout(() => { w.classList.add('ask-back'); x.click(); shutting = false; setTimeout(() => w.classList.remove('ask-back'), 400); }, 400);
+  }, true);
+  // the panel is as tall as its conversation; when a message changes its height, it glides there instead of jumping
+  const tall = new WeakMap(), ro = !reduce && new ResizeObserver(es => {
+    for (const { target: el } of es) {
+      const h = el.offsetHeight, was = tall.get(el); tall.set(el, h);
+      if (was === undefined || Math.abs(h - was) < 2 || el.classList.contains('ask-closing') || el.getAnimations().some(a => a.id === 'ask-grow')) continue;
+      el.animate([{ height: `${was}px` }, { height: `${h}px` }], { id: 'ask-grow', duration: 460, easing: 'cubic-bezier(.16,1,.3,1)' });
+    }
+  });
+  if (w && reduce) new MutationObserver(() => { const el = $(PANEL, w); if (el) el.style.height = 'auto'; }).observe(w, { childList: true, subtree: true });
+  if (w && ro) new MutationObserver(() => { const el = $(PANEL, w); if (el && !tall.has(el)) { el.style.height = 'auto'; tall.set(el, el.offsetHeight); ro.observe(el); } }).observe(w, { childList: true, subtree: true });
   const load = () => setTimeout(() => document.body.append(Object.assign(document.createElement('script'), { src: 'https://unpkg.com/@vapi-ai/client-sdk-react@0.1.1/dist/embed/widget.umd.js', async: true })), 1500);
   if (w) { if (document.readyState === 'complete') load(); else addEventListener('load', load); }
 }

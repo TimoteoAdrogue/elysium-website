@@ -25,7 +25,7 @@
 <link rel="icon" href="../favicon.svg" type="image/svg+xml">
 <link rel="preload" href="../assets/fonts/geist-var.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="../assets/fonts/geist-mono-400.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="../styles.css?v=0106dd610d">
+<link rel="stylesheet" href="../styles.css?v=fe6519e3f9">
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"Organization","name":"Elysium","url":"https://elysium.cc/",
 "email":"info@elysium.cc","telephone":"+41 44 505 39 00",
@@ -599,7 +599,11 @@
 </footer>
 
 <script src="../assets/vendor/lenis.min.js" defer></script>
-<script type="module" src="../main.js?v=0106dd610d"></script>
+<script type="module" src="../main.js?v=fe6519e3f9"></script>
+<!-- the lens behind the Ask Elysium glass: a soft displacement of the page seen through it (Chromium only, see main.js) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><filter id="ask-lens" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
+  <feTurbulence type="fractalNoise" baseFrequency=".006 .011" numOctaves="2" seed="11" result="n"/><feGaussianBlur in="n" stdDeviation="2" result="m"/>
+  <feDisplacementMap in="SourceGraphic" in2="m" scale="28" xChannelSelector="R" yChannelSelector="G"/></filter></svg>
 <!-- Ask Elysium: Elysium's own Vapi chat assistant, the same one elysium.cc runs; main.js loads the widget once the page is done -->
 <vapi-widget data-lenis-prevent
   data-preview="Diese Vorschau ist noch nicht mit dem Assistenten verbunden. Er antwortet, sobald die Website auf elysium.cc läuft."

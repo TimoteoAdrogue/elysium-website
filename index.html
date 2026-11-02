@@ -599,6 +599,10 @@
 
 <script src="assets/vendor/lenis.min.js" defer></script>
 <script type="module" src="main.js"></script>
+<!-- the lens behind the Ask Elysium glass: a soft displacement of the page seen through it (Chromium only, see main.js) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><filter id="ask-lens" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
+  <feTurbulence type="fractalNoise" baseFrequency=".006 .011" numOctaves="2" seed="11" result="n"/><feGaussianBlur in="n" stdDeviation="2" result="m"/>
+  <feDisplacementMap in="SourceGraphic" in2="m" scale="28" xChannelSelector="R" yChannelSelector="G"/></filter></svg>
 <!-- Ask Elysium: Elysium's own Vapi chat assistant, the same one elysium.cc runs; main.js loads the widget once the page is done -->
 <vapi-widget data-lenis-prevent
   data-preview="This preview is not connected to the assistant yet. It will answer once the site runs on elysium.cc."

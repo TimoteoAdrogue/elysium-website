@@ -550,64 +550,89 @@ footer{padding-block:56px 72px;box-shadow:inset 0 1px var(--line)}
 
 /* ---- Ask Elysium: Vapi's chat window, restyled from outside as liquid glass. The widget sets inline styles, so these
    overrides need !important; class names come from widget 0.1.1 and may move if the pinned version is ever changed.
-   main.js feeds the glass from the scroll: --ask-a turns the rim's light with the page, --ask-x slides the sheen with the
-   speed of travel, --ask-sx/--ask-sy/--ask-y give the pill its liquid squash ---- */
-vapi-widget{--ask-a:135deg;--ask-x:30%;--ask-sx:1;--ask-sy:1;--ask-y:0px}
+   main.js feeds the glass from the scroll (--ask-a turns the rim's light with the page, --ask-x slides the sheen with the
+   speed of travel, --ask-sx/--ask-sy/--ask-y give the pill its squash) and measures the pill (--ask-pw/--ask-ph) so the
+   panel can flow open out of it and back into it ---- */
+vapi-widget{--ask-a:135deg;--ask-x:30%;--ask-sx:1;--ask-sy:1;--ask-y:0px;--ask-pw:170px;--ask-ph:48px;--ask-spring:linear(0, 0.027 2.5%, 0.096 5%, 0.193 7.5%, 0.306 10%, 0.425 12.5%, 0.542 15%, 0.652 17.5%, 0.751 20%, 0.837 22.5%, 0.909 25%, 0.967 27.5%, 1.011 30%, 1.043 32.5%, 1.065 35%, 1.078 37.5%, 1.083 40%, 1.083 42.5%, 1.078 45%, 1.071 47.5%, 1.062 50%, 1.052 52.5%, 1.043 55%, 1.033 57.5%, 1.024 60%, 1.017 62.5%, 1.01 65%, 1.005 67.5%, 1.001 70%, 0.997 72.5%, 0.995 75%, 0.993 80%, 0.993 85%, 0.994 90%, 0.996 95%, 1);
+  --ask-glass:linear-gradient(155deg,rgba(255,255,255,.16),rgba(255,255,255,.05) 38%,rgba(255,255,255,.02) 62%,rgba(255,255,255,.09));
+  --ask-lift:inset 1px 1px 0 rgba(255,255,255,.42),inset -1px -1px 0 rgba(255,255,255,.1),inset 0 0 18px rgba(255,255,255,.05)}
 .vapi-widget-wrapper,.vapi-widget-wrapper input,.vapi-widget-wrapper button{font-family:"Geist",system-ui,sans-serif!important}
 .vapi-widget-wrapper [class*="hover:scale-105"],.vapi-widget-wrapper div[style*="28rem"]{position:relative;isolation:isolate;
-  background:linear-gradient(160deg,rgba(255,255,255,.13),rgba(255,255,255,.03) 42%,rgba(255,255,255,.015) 64%,rgba(255,255,255,.07))!important;
-  -webkit-backdrop-filter:blur(16px) saturate(1.9) brightness(1.06);backdrop-filter:blur(16px) saturate(1.9) brightness(1.06);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.34),inset 0 -1px 0 rgba(255,255,255,.06),inset 0 -14px 28px -18px rgba(255,255,255,.22),0 18px 44px rgba(0,0,0,.42)!important}
+  -webkit-backdrop-filter:blur(10px) saturate(1.9) brightness(1.08);backdrop-filter:blur(10px) saturate(1.9) brightness(1.08)}
+.vapi-widget-wrapper div[style*="28rem"]{-webkit-backdrop-filter:blur(16px) saturate(1.7);backdrop-filter:blur(16px) saturate(1.7)}
+/* Chromium bends the page behind the glass a little (main.js adds .ask-refract there; other browsers keep the plain blur) */
+vapi-widget.ask-refract [class*="hover:scale-105"]{backdrop-filter:url(#ask-lens) blur(8px) saturate(1.9) brightness(1.08)}
+vapi-widget.ask-refract div[style*="28rem"]{backdrop-filter:url(#ask-lens) blur(14px) saturate(1.7)}
 /* the rim: a 1 px gradient ring whose light turns as the page scrolls */
-.vapi-widget-wrapper [class*="hover:scale-105"]::after,.vapi-widget-wrapper div[style*="28rem"]::after{content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;pointer-events:none;z-index:2;
-  background:linear-gradient(var(--ask-a),rgba(255,255,255,.7),rgba(255,255,255,.06) 32%,rgba(255,255,255,.04) 62%,rgba(159,196,255,.55));
+.vapi-widget-wrapper [class*="hover:scale-105"]::after,.vapi-widget-wrapper div[style*="28rem"]::after{content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;pointer-events:none;z-index:3;
+  background:linear-gradient(var(--ask-a),rgba(255,255,255,.75),rgba(255,255,255,.08) 30%,rgba(255,255,255,.03) 62%,rgba(159,196,255,.6));
   -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box exclude,linear-gradient(#000 0 0)}
-/* the sheen: a soft highlight that slides across the glass with the speed of travel */
-.vapi-widget-wrapper [class*="hover:scale-105"]::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:-1;
-  background:radial-gradient(70% 140% at var(--ask-x) -20%,rgba(255,255,255,.28),transparent 60%);mix-blend-mode:screen}
+/* the sheen and a fine grain: what makes the surface read as glass rather than a tinted box */
+.vapi-widget-wrapper [class*="hover:scale-105"]::before,.vapi-widget-wrapper div[style*="28rem"]::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:-1;
+  background:radial-gradient(70% 120% at var(--ask-x) -25%,rgba(255,255,255,.26),transparent 58%),url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:auto,160px;mix-blend-mode:screen;opacity:.22}
 @supports not ((-webkit-backdrop-filter:blur(1px)) or (backdrop-filter:blur(1px))){
   .vapi-widget-wrapper [class*="hover:scale-105"],.vapi-widget-wrapper div[style*="28rem"]{background:rgba(16,18,22,.94)!important}}
+
 /* the button: a glass pill with the site's blue dot in place of Vapi's logo */
-.vapi-widget-wrapper [class*="hover:scale-105"]{height:48px!important;padding:0 20px 0 16px!important;border-radius:999px!important;
+.vapi-widget-wrapper [class*="hover:scale-105"]{height:50px!important;padding:0 22px 0 18px!important;border-radius:999px!important;
+  background:var(--ask-glass),rgba(20,24,30,.2)!important;box-shadow:var(--ask-lift),0 14px 34px rgba(0,0,0,.45),0 2px 6px rgba(0,0,0,.3)!important;
   scale:var(--ask-sx) var(--ask-sy);translate:0 var(--ask-y);animation:ask-in var(--t-reveal) var(--ease-enter) both;transition:transform var(--t-tick) var(--ease-enter)!important}
 .vapi-widget-wrapper [class*="hover:scale-105"]:hover{transform:translateY(-2px)!important}
-.vapi-widget-wrapper [class*="hover:scale-105"] .relative{width:8px!important;height:8px!important;border-radius:50%;background:var(--accent);box-shadow:0 0 12px var(--accent);animation:breathe 2.4s ease-in-out infinite}
+vapi-widget.ask-back [class*="hover:scale-105"]{animation:ask-back .32s var(--ease-enter) both}
+.vapi-widget-wrapper [class*="hover:scale-105"] .relative{width:8px!important;height:8px!important;border-radius:50%;background:var(--accent);box-shadow:0 0 14px var(--accent);animation:breathe 2.4s ease-in-out infinite}
 .vapi-widget-wrapper [class*="hover:scale-105"] .relative svg{display:none}
-.vapi-widget-wrapper [class*="hover:scale-105"] span{font-size:15px!important;letter-spacing:-.005em;text-shadow:0 1px 8px rgba(0,0,0,.35)}
+.vapi-widget-wrapper [class*="hover:scale-105"] span{font-size:15px!important;letter-spacing:-.005em;text-shadow:0 1px 10px rgba(0,0,0,.45)}
 @keyframes ask-in{from{opacity:0;transform:translateY(16px)}}
-/* the open panel: darker glass so the conversation stays readable over the film and the cards */
-.vapi-widget-wrapper div[style*="28rem"]{height:min(40rem,calc(100svh - 120px))!important;border-radius:22px!important;border:0!important;
-  background:linear-gradient(160deg,rgba(255,255,255,.1),rgba(255,255,255,.02) 30%,rgba(255,255,255,.01) 70%,rgba(255,255,255,.05)),rgba(10,12,15,.62)!important;
-  -webkit-backdrop-filter:blur(28px) saturate(1.8);backdrop-filter:blur(28px) saturate(1.8);
-  transform-origin:100% 100%;animation:ask-open var(--t-move) var(--ease-enter) both}
-@keyframes ask-open{from{opacity:0;transform:translateY(14px) scale(.96)}}
+@keyframes ask-back{from{opacity:0}}
+
+/* the open panel: it flows out of the pill (a clip that grows from the pill's own shape on a spring), its contents settle in
+   after it, and main.js flows it back into the pill on close. The clip ends 60 px outside the panel to leave its shadow room */
+.vapi-widget-wrapper div[style*="28rem"]{width:26rem!important;max-height:min(40rem,calc(100svh - 112px));border-radius:28px!important;border:0!important;
+  background:var(--ask-glass),rgba(8,10,13,.62)!important;box-shadow:var(--ask-lift),0 30px 80px rgba(0,0,0,.55),0 4px 14px rgba(0,0,0,.35)!important;
+  animation:ask-open .78s var(--ask-spring) both}
+@keyframes ask-open{from{clip-path:inset(calc(100% - var(--ask-ph)) 0 0 calc(100% - var(--ask-pw)) round calc(var(--ask-ph) / 2))}to{clip-path:inset(-60px round 88px)}}
+.vapi-widget-wrapper div[style*="28rem"] > div{animation:ask-rise .52s var(--ease-enter) both}
+.vapi-widget-wrapper div[style*="28rem"] > div:nth-child(1){animation-delay:.16s}
+.vapi-widget-wrapper div[style*="28rem"] > div:nth-child(2){animation-delay:.22s}
+.vapi-widget-wrapper div[style*="28rem"] > div:nth-child(3){animation-delay:.28s}
+@keyframes ask-rise{from{opacity:0;transform:translateY(10px)}}
+.vapi-widget-wrapper div[style*="28rem"].ask-closing{animation:ask-shut .42s cubic-bezier(.55,0,.75,.2) both}
+.vapi-widget-wrapper div[style*="28rem"].ask-closing > div{animation:none;opacity:0;transition:opacity .14s linear}
+@keyframes ask-shut{from{clip-path:inset(-60px round 88px)}to{clip-path:inset(calc(100% - var(--ask-ph)) 0 0 calc(100% - var(--ask-pw)) round calc(var(--ask-ph) / 2))}}
 .vapi-widget-wrapper div[style*="28rem"] > div,.vapi-widget-wrapper .vapi-conversation-area{background:transparent!important;filter:none!important}
-.vapi-widget-wrapper div[style*="28rem"] > div:first-child{padding:16px 16px 16px 20px!important;border-color:rgba(255,255,255,.08)!important}
-.vapi-widget-wrapper div[style*="28rem"] > div:first-child .relative{width:8px!important;height:8px!important;border-radius:50%;background:var(--accent);box-shadow:0 0 12px var(--accent);margin-right:2px}
+.vapi-widget-wrapper .vapi-conversation-area{flex:1 1 auto!important;min-height:132px;padding:18px 20px 14px!important;gap:10px!important}
+/* header: title and status on the left, round glass controls on the right */
+.vapi-widget-wrapper div[style*="28rem"] > div:first-child{padding:18px 16px 14px 22px!important;border:0!important;box-shadow:inset 0 -1px 0 rgba(255,255,255,.06)}
+.vapi-widget-wrapper div[style*="28rem"] > div:first-child .relative{width:8px!important;height:8px!important;border-radius:50%;background:var(--accent);box-shadow:0 0 14px var(--accent);margin-right:4px}
 .vapi-widget-wrapper div[style*="28rem"] > div:first-child .relative svg{display:none}
-.vapi-widget-wrapper .font-medium{font-size:16px;font-weight:500;letter-spacing:-.01em;color:var(--text)}
-.vapi-widget-wrapper .text-gray-300{font:400 11px/1.6 "Geist Mono",ui-monospace,monospace!important;letter-spacing:.14em;text-transform:uppercase;color:var(--text-3)!important}
-.vapi-widget-wrapper .text-red-600{font:400 11px/1.6 "Geist Mono",ui-monospace,monospace!important;letter-spacing:.14em;text-transform:uppercase;color:var(--text-3)!important;border:0!important;transition:color var(--t-tick) linear}
-.vapi-widget-wrapper .text-red-600:hover,.vapi-widget-wrapper button.w-8:hover{color:var(--text)!important}
-.vapi-widget-wrapper button.w-8{color:var(--text-2)!important;background:transparent!important}
-.vapi-widget-wrapper .vapi-conversation-area{padding:20px!important;gap:10px!important}
-.vapi-widget-wrapper .vapi-conversation-area .max-w-xs{max-width:85%!important;padding:10px 14px!important;font-size:14.5px!important;line-height:1.55!important;filter:none!important}
-.vapi-widget-wrapper .justify-start .max-w-xs{background:rgba(255,255,255,.07)!important;color:var(--text)!important;border-radius:16px 16px 16px 5px!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.1)}
-.vapi-widget-wrapper .justify-end .max-w-xs{background:linear-gradient(160deg,#3A6BF0,var(--accent-fill))!important;color:#fff!important;border-radius:16px 16px 5px 16px!important;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.3);animation:ask-in var(--t-move) var(--ease-enter) both}
+.vapi-widget-wrapper .font-medium{font-size:16px;font-weight:500;letter-spacing:-.012em;color:var(--text)}
+.vapi-widget-wrapper .text-gray-300{font:400 10.5px/1.7 "Geist Mono",ui-monospace,monospace!important;letter-spacing:.16em;text-transform:uppercase;color:var(--text-3)!important}
+.vapi-widget-wrapper .text-red-600{height:30px;padding:0 12px!important;border-radius:999px!important;border:0!important;font:400 10.5px/30px "Geist Mono",ui-monospace,monospace!important;
+  letter-spacing:.16em;text-transform:uppercase;color:var(--text-2)!important;background:rgba(255,255,255,.06)!important;box-shadow:inset 1px 1px 0 rgba(255,255,255,.14);transition:color var(--t-tick) linear,background var(--t-tick) linear}
+.vapi-widget-wrapper button.w-8{width:32px!important;height:32px!important;color:var(--text-2)!important;background:rgba(255,255,255,.06)!important;box-shadow:inset 1px 1px 0 rgba(255,255,255,.14);transition:color var(--t-tick) linear,background var(--t-tick) linear}
+.vapi-widget-wrapper .text-red-600:hover,.vapi-widget-wrapper button.w-8:hover{color:var(--text)!important;background:rgba(255,255,255,.12)!important}
+/* bubbles: clear glass for Elysium, blue glass for the visitor */
+.vapi-widget-wrapper .vapi-conversation-area .max-w-xs{max-width:86%!important;padding:11px 15px!important;font-size:14.5px!important;line-height:1.55!important;filter:none!important}
+.vapi-widget-wrapper .justify-start .max-w-xs{background:rgba(255,255,255,.075)!important;color:var(--text)!important;border-radius:18px 18px 18px 6px!important;
+  box-shadow:inset 1px 1px 0 rgba(255,255,255,.16),inset -1px -1px 0 rgba(255,255,255,.04);animation:ask-rise .5s var(--ease-enter) both}
+.vapi-widget-wrapper .justify-end .max-w-xs{background:linear-gradient(155deg,rgba(76,125,255,.92),rgba(31,79,216,.88))!important;color:#fff!important;border-radius:18px 18px 6px 18px!important;
+  box-shadow:inset 1px 1px 0 rgba(255,255,255,.38),0 8px 22px rgba(31,79,216,.35);animation:ask-rise .5s var(--ask-spring) both}
 .vapi-widget-wrapper .markdown-content a{text-decoration-color:rgba(255,255,255,.4);text-underline-offset:3px}
 .vapi-widget-wrapper .markdown-content em{color:var(--text-2)}
-.vapi-widget-wrapper div[style*="28rem"] > div:last-child{padding:14px 16px 16px!important;border-color:rgba(255,255,255,.08)!important}
-.vapi-widget-wrapper input{height:44px;padding:0 18px!important;border-radius:999px!important;border:0!important;box-shadow:inset 0 0 0 1px rgba(255,255,255,.12),inset 0 2px 6px rgba(0,0,0,.35)!important;
-  background:rgba(0,0,0,.28)!important;filter:none!important;color:var(--text)!important;font-size:15px!important;transition:box-shadow var(--t-tick) linear}
-.vapi-widget-wrapper input:focus{box-shadow:inset 0 0 0 1px var(--accent),inset 0 2px 6px rgba(0,0,0,.35)!important;outline:0}
+/* composer: an inset glass pill and a blue glass send button */
+.vapi-widget-wrapper div[style*="28rem"] > div:last-child{padding:10px 14px 14px!important;border:0!important}
+.vapi-widget-wrapper input{height:46px;padding:0 18px!important;border-radius:999px!important;border:0!important;background:rgba(0,0,0,.24)!important;filter:none!important;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.1),inset 0 2px 8px rgba(0,0,0,.4),0 1px 0 rgba(255,255,255,.06)!important;color:var(--text)!important;font-size:15px!important;transition:box-shadow var(--t-tick) linear}
+.vapi-widget-wrapper input:focus{box-shadow:inset 0 0 0 1px rgba(159,196,255,.7),inset 0 2px 8px rgba(0,0,0,.4),0 0 0 4px rgba(31,79,216,.18)!important;outline:0}
 .vapi-widget-wrapper input::placeholder{color:var(--text-3)!important}
-.vapi-widget-wrapper input + button{width:44px!important;height:44px!important;border-radius:50%!important;background:linear-gradient(160deg,#3A6BF0,var(--accent-fill))!important;color:#fff!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.3)}
+.vapi-widget-wrapper input + button{width:46px!important;height:46px!important;border-radius:50%!important;color:#fff!important;
+  background:linear-gradient(155deg,rgba(76,125,255,.95),rgba(31,79,216,.9))!important;box-shadow:inset 1px 1px 0 rgba(255,255,255,.4),0 8px 20px rgba(31,79,216,.35);transition:transform var(--t-tick) var(--ease-enter)}
+.vapi-widget-wrapper input + button:not(:disabled):hover{transform:scale(1.06)}
 /* phones: the open panel fills the screen inside the gutters instead of running off its left edge */
 @media (max-width:599px){
   .vapi-widget-wrapper > div{bottom:16px!important;right:16px!important}
   .vapi-widget-wrapper > div:has(> div[style*="28rem"]){left:12px!important;right:12px!important;bottom:12px!important}
-  .vapi-widget-wrapper div[style*="28rem"]{width:auto!important;height:min(40rem,calc(100svh - 24px))!important}
-  .vapi-widget-wrapper [class*="hover:scale-105"]{height:44px!important;padding:0 16px 0 14px!important}
+  .vapi-widget-wrapper div[style*="28rem"]{width:auto!important;max-height:calc(100svh - 24px)}
+  .vapi-widget-wrapper [class*="hover:scale-105"]{height:46px!important;padding:0 18px 0 16px!important}
 }
 @media (prefers-reduced-motion:reduce){.vapi-widget-wrapper *{animation:none!important}}
