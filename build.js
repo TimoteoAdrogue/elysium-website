@@ -22,7 +22,7 @@ const skipTags = /<(script|style)[\s\S]*?<\/\1>/gi;
 const ATTRS = ['alt', 'title', 'aria-label', 'placeholder', 'content',
   'data-m', 'data-title', 'data-unit', 'data-source', 'data-where', 'data-topic',
   'data-of', 'data-source-label', 'data-bars', 'data-view-chart', 'data-view-table',
-  'data-err-name', 'data-err-email', 'data-err-format', 'data-err-msg', 'data-not-sent',
+  'data-err-name', 'data-err-email', 'data-err-format', 'data-err-msg', 'data-sent',
   'data-measured', 'data-interp', 'data-a00', 'data-a15'];
 const skipTags2 = /<(script|style)[\s\S]*?<\/\1>/gi;
 function strings(html) {

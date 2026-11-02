@@ -257,7 +257,9 @@ if (!reduce) {
    Self-contained: remove this block, film3d.js, the .hf-* markup and the .hf-* styles to drop it. ---- */
 const film = (() => {
   const sec = $('.hero-film');
-  if (!sec || reduce || !lenis || navigator.connection?.saveData || !window.WebGL2RenderingContext) return null;
+  // a browser can know WebGL2 and still refuse a context (blocked GPU, remote desktop): ask for one, or keep the short hero
+  const gl2 = () => { const g = document.createElement('canvas').getContext('webgl2'); g?.getExtension('WEBGL_lose_context')?.loseContext(); return !!g; };
+  if (!sec || reduce || !lenis || navigator.connection?.saveData || !window.WebGL2RenderingContext || !gl2()) return null;
   const portrait = matchMedia('(max-aspect-ratio: 1/1)').matches;
   const stage = $('.hf-stage', sec), media = $('.hf-media', sec), kids = [...$('.hero', sec).children];
   const pins = $$('.hf-pin', sec), hud = $('.hf-hud', sec), cue = $('.hf-cue', sec), scrim = $('.hf-scrim', sec);
@@ -601,7 +603,7 @@ if (!reduce) for (const b of $$('.fig b')) {
   }
 }
 
-/* ---- record: one column per year slides sideways past a fixed playhead, 2002 → 2026, on every screen. The strip is
+/* ---- record: one column per year slides sideways past a fixed playhead, 2005 → 2026, on every screen. The strip is
    pinned for the whole run; a year with more lines than the screen's height holds continues in the next column ---- */
 {
   const tl = $('#timeline');
@@ -819,7 +821,7 @@ const armReveal = scope => {
   }
 }
 
-/* ---- contact form: validates inline, and says plainly that it is not connected ---- */
+/* ---- contact form: validates inline, then opens an email to info@elysium.cc with the fields filled in ---- */
 {
   const f = $('#contact-form'), E = f.dataset;
   const rules = {
@@ -846,7 +848,13 @@ const armReveal = scope => {
     const bad = Object.keys(rules).map(id => $('#' + id)).filter(el => !check(el));
     const ok = $('.ok', f);
     if (bad.length) { bad[0].focus(); ok.textContent = ''; return; }
-    ok.textContent = E.notSent;
+    // ponytail: mailto needs an email app on the visitor's side; swap for a form endpoint once Elysium picks one
+    const lab = el => el.labels?.[0]?.textContent.trim() || el.name;
+    const lang = $('input[name=lang]:checked', f), fields = ['f-name', 'f-org', 'f-email'].map(id => $('#' + id)).filter(el => el.value.trim());
+    const body = [...fields.map(el => `${lab(el)}: ${el.value.trim()}`), `${$('legend', f).textContent.trim()}: ${lang ? lab(lang) : ''}`, '', $('#f-msg').value.trim()].join('\n');
+    const subject = [$('#f-name').value.trim(), $('#f-org').value.trim()].filter(Boolean).join(' · ');
+    location.href = `mailto:info@elysium.cc?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    ok.textContent = E.sent;
   });
 }
 
