@@ -893,3 +893,9 @@ if (lenis) for (const a of $$('a[href^="#"]')) a.addEventListener('click', e => 
 remeasure();
 if (document.fonts) document.fonts.ready.then(remeasure);
 addEventListener('load', remeasure);
+
+/* ---- Ask Elysium: Elysium's Vapi assistant (the <vapi-widget> in the page), fetched 1.5 s after load so it never competes with the film ---- */
+{
+  const load = () => setTimeout(() => document.body.append(Object.assign(document.createElement('script'), { src: 'https://unpkg.com/@vapi-ai/client-sdk-react@0.1.1/dist/embed/widget.umd.js', async: true })), 1500);
+  if (document.readyState === 'complete') load(); else addEventListener('load', load);
+}

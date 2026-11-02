@@ -534,3 +534,9 @@ footer{padding-block:56px 72px;box-shadow:inset 0 1px var(--line)}
 .credit{padding-top:20px;font-size:12px;line-height:1.5;color:var(--text-3)}
 @media (max-width:767px){.hf-frame,.hf-route,.hf-x{display:none}}
 @media (max-width:899px){.film-live .flag{display:none}}   /* below 900 the flag sits under the text; the stage has no room for it */
+
+/* Ask Elysium: the widget's open panel is 28rem × 40rem; on a phone it fills the screen inside the gutters instead of running off its left edge */
+@media (max-width:599px){
+  .vapi-widget-wrapper > div:has(> div[style*="28rem"]){left:12px!important;right:12px!important;bottom:12px!important}
+  .vapi-widget-wrapper > div > div[style*="28rem"]{width:auto!important;height:min(40rem,calc(100svh - 24px))!important}
+}

@@ -599,5 +599,14 @@
 
 <script src="../assets/vendor/lenis.min.js" defer></script>
 <script type="module" src="../main.js"></script>
+<!-- Ask Elysium: Elysium's own Vapi chat assistant, the same one elysium.cc runs; main.js loads the widget once the page is done -->
+<vapi-widget data-lenis-prevent
+  public-key="d5cd4f0c-f3d2-48d8-96c9-fc30148bef1b"
+  assistant-id="22ec16d3-cc54-4a45-9a18-f885c97abb7a"
+  mode="chat" theme="dark" position="bottom-right" size="full" border-radius="small"
+  base-bg-color="#15181D" accent-color="#F2F4F7" cta-button-color="#15181D" cta-button-text-color="#F2F4F7"
+  title="Elysium-Assistent" cta-title="Elysium fragen"
+  chat-first-message="Hallo! Ich bin der Assistent von Elysium. Fragen Sie mich alles zu unserer Arbeit, oder erzählen Sie mir von Ihrem Projekt.&#10;&#10;Mit der Nutzung des Chats akzeptieren Sie unsere [Datenschutzerklärung](https://www.elysium.cc/privacy_policy.html)."
+  chat-placeholder="Ihre Nachricht…"></vapi-widget>
 </body>
 </html>
