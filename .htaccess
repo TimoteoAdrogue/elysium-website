@@ -1,11 +1,12 @@
 # Elysium — static deploy on Apache (same host as the current site)
 <IfModule mod_deflate.c>
-  AddOutputFilterByType DEFLATE text/html text/css application/javascript image/svg+xml application/json
+  AddOutputFilterByType DEFLATE text/html text/css application/javascript image/svg+xml application/json application/octet-stream
 </IfModule>
 <IfModule mod_expires.c>
   ExpiresActive On
-  ExpiresByType text/css "access plus 1 year"
-  ExpiresByType application/javascript "access plus 1 year"
+  # code and page are checked on every visit (a quick "not modified" when unchanged), so an update reaches everyone at once
+  ExpiresByType text/css "access plus 0 seconds"
+  ExpiresByType application/javascript "access plus 0 seconds"
   ExpiresByType font/woff2 "access plus 1 year"
   ExpiresByType image/jpeg "access plus 6 months"
   ExpiresByType image/svg+xml "access plus 6 months"
@@ -14,6 +15,7 @@
 <IfModule mod_headers.c>
   Header always set X-Content-Type-Options "nosniff"
   Header always set Referrer-Policy "strict-origin-when-cross-origin"
-  Header always set Content-Security-Policy "default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; font-src 'self'; form-action 'self'; frame-ancestors 'none'; base-uri 'self'"
+  # unpkg serves the Ask Elysium widget, api.vapi.ai answers it; the widget and the page set some styles inline
+  Header always set Content-Security-Policy "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' https://unpkg.com; connect-src 'self' https://api.vapi.ai; font-src 'self'; form-action 'self'; frame-ancestors 'none'; base-uri 'self'"
 </IfModule>
 ErrorDocument 404 /404.html
